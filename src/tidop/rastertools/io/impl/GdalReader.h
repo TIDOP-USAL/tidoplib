@@ -45,17 +45,6 @@ namespace tl
 
 /// \cond
 
-//DataType gdalConvertDataType(GDALDataType dataType);
-//
-///*!
-// * \brief Gets the OpenCV data type corresponding to a GDAL data type.
-// * \param gdalType GDAL data type
-// * \param channels Number of channels
-// * \return OpenCV data type
-// */
-//int gdalToOpenCv(GDALDataType gdalType, int channels);
-
-
 
 class ImageReaderGdal final
   : public ImageReader
@@ -89,17 +78,17 @@ public:
     void update(const cv::Mat &image,
                 const BoundingBox2i &window) override;
     void copy(const std::string &outputPath,
-              std::shared_ptr<ImageOptions> options = nullptr,
+              const ImageOptions &options = ImageOptions(),
               const ImageMetadata &metadata = ImageMetadata(),
               const std::string &epsgCode = "") const override;
     void addOverviews(int levels,
-                      const std::shared_ptr<ImageOptions> &options = nullptr) override;
+                      const ImageOptions &options = ImageOptions()) override;
     auto rows() const -> int override;
     auto cols() const -> int override;
     auto channels() const -> int override;
     auto dataType() const -> DataType override;
     auto depth() const -> int override;
-    auto metadata() const -> ImageMetadata override;
+    auto metadata() const -> const ImageMetadata& override;
     auto isGeoreferenced() const -> bool override;
     auto georeference() const -> Affine<double, 2> override { return mAffine; }
     auto crsWkt() const -> std::string override;
@@ -109,12 +98,14 @@ public:
 protected:
 
     auto gdalDataType() const -> GDALDataType;
+    auto loadMetadata() const -> ImageMetadata;
 
 private:
 
     Mode mMode;
     GDALDataset *mDataset;
     Affine<double, 2> mAffine;
+    mutable std::optional<ImageMetadata> mMetadata;
 };
 
 /// \endcond

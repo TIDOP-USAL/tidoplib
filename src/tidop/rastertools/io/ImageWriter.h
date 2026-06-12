@@ -37,13 +37,11 @@
 #include "tidop/graphic/rect.h"
 #include "tidop/rastertools/img.h"
 #include "tidop/rastertools/io/Metadata.h"
+#include "tidop/rastertools/io/Formats.h"
 #include "tidop/geometry/transform/Affine.h"
 
 namespace tl
 {
-
-class ImageOptions;
-
 
 /*! \addtogroup RasterIO
  *  \{
@@ -118,7 +116,7 @@ public:
                         int cols,
                         int bands,
                         DataType type,
-                        const std::shared_ptr<ImageOptions> &imageOptions = nullptr) = 0;
+                        const ImageOptions &imageOptions = ImageOptions()) = 0;
 
     /*!
      * \brief Writes an image block to a specified rectangular region.

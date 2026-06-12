@@ -21,77 +21,56 @@
  * @license LGPL-3.0 <https://www.gnu.org/licenses/lgpl-3.0.html>         *
  *                                                                        *
  **************************************************************************/
+ 
+#define BOOST_TEST_MODULE Tidop image metadata test
+#include <boost/test/unit_test.hpp>
+#include <tidop/rastertools/io/Metadata.h>
 
-#include "tidop/rastertools/io/Metadata.h"
-#include "tidop/core/app/Message.h"
+using namespace tl;
 
-namespace tl
+
+BOOST_AUTO_TEST_SUITE(ImageMetadataTestSuite)
+
+struct ImageMetadataTest
 {
 
-
-auto ImageMetadata::contains(std::string_view key) -> bool
-{
-    return mMetadata.contains(key);
-}
-
-auto ImageMetadata::value(std::string_view key) const -> std::optional<std::string_view>
-{
-    if (auto it = mMetadata.find(key); it != mMetadata.end()) {
-        return it->second;
+    void setup()
+    {
+        metadata.set("Make", "Hasselblad");
+        metadata.set("ISO", "100");
+        metadata.set("Focal Length", "10.3 mm");
+        metadata.set("Color Space", "sRGB");
+        metadata.set("Image Size", "5472x3648");
     }
-    return std::nullopt;
-}
 
-auto ImageMetadata::value(std::span<const std::string> keys) const -> std::optional<std::string_view>
-{
-    for (const auto &key : keys) {
-        if (auto it = mMetadata.find(key); it != mMetadata.end()) {
-            return it->second;
-        }
+    void teardown()
+    {
     }
-    return std::nullopt;
-}
 
-void ImageMetadata::set(std::string key, std::string value)
+    ImageMetadata metadata;
+};
+
+BOOST_FIXTURE_TEST_CASE(exist_metadata, ImageMetadataTest)
 {
-    mMetadata[std::move(key)] = std::move(value);
+    BOOST_CHECK(metadata.contains("Make"));
+    BOOST_CHECK(metadata.contains("ISO"));
+    BOOST_CHECK(metadata.contains("Focal Length"));
+    BOOST_CHECK(!metadata.contains("GPS Latitude"));
+    BOOST_CHECK(!metadata.contains("GPS Longitude"));
 }
 
-auto ImageMetadata::begin() noexcept -> iterator
+BOOST_FIXTURE_TEST_CASE(move_constructor, ImageMetadataTest)
 {
-    return mMetadata.begin();
+    auto make = metadata.value("Make");
+    BOOST_CHECK(make.has_value());
+    BOOST_CHECK_EQUAL(make.value(), "Hasselblad");
+
+    auto iso = metadata.value("ISO");
+    BOOST_CHECK(iso.has_value());
+    BOOST_CHECK_EQUAL(iso.value(), "100");
+
+    auto lat = metadata.value("GPS Latitude");
+    BOOST_CHECK(!lat.has_value());
 }
 
-auto ImageMetadata::begin() const noexcept -> const_iterator
-{
-    return mMetadata.cbegin();
-}
-
-auto ImageMetadata::end() noexcept -> iterator
-{
-    return mMetadata.end();
-}
-
-auto ImageMetadata::end() const noexcept -> const_iterator
-{
-    return mMetadata.cend();
-}
-
-auto ImageMetadata::empty() const noexcept -> bool
-{
-    return mMetadata.empty();
-}
-
-auto ImageMetadata::size() const noexcept -> size_t
-{
-    return mMetadata.size();
-}
-
-void ImageMetadata::clear()
-{
-    mMetadata.clear();
-}
-
-
-
-} // End namespace tl
+BOOST_AUTO_TEST_SUITE_END()

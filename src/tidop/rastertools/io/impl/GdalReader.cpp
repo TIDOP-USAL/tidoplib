@@ -432,7 +432,7 @@ void ImageReaderGdal::update(const cv::Mat &image, const BoundingBox2i &window)
 }
 
 void ImageReaderGdal::copy(const std::string &outputPath, 
-                           std::shared_ptr<ImageOptions> options, 
+                           const ImageOptions &options, 
                            const ImageMetadata &metadata, 
                            const std::string &epsgCode) const
 {
@@ -485,22 +485,21 @@ void ImageReaderGdal::copy(const std::string &outputPath,
 
         }
 
-        char **gdal_opt = nullptr;
-        if (options) {
-            auto active_options = options->activeOptions();
-#if TL_CPP_VERSION>= 17
-            for (const auto &[name, value] : active_options) {
-#else
-            for (const auto &option : active_options) {
-                auto &name = option.first;
-                auto &value = option.second;
-#endif
-                gdal_opt = CSLSetNameValue(gdal_opt, name.c_str(), value.c_str());
+        char **gdal_options = nullptr;
+
+        if (!options.empty()) {
+
+            for (const auto &[name, value] : options) {
+                gdal_options = CSLSetNameValue(gdal_options, name.c_str(), value.c_str());
             }
         }
 
-        GDALDataset *copied_dataset = driver->CreateCopy(outputPath.c_str(), copy_source_dataset, FALSE, gdal_opt, nullptr, nullptr);
+        GDALDataset *copied_dataset = driver->CreateCopy(outputPath.c_str(), copy_source_dataset, FALSE, gdal_options, nullptr, nullptr);
         TL_ASSERT(copied_dataset != nullptr, "Failed to create copy: {}", CPLGetLastErrorMsg());
+
+        if (gdal_options) {
+            CSLDestroy(gdal_options);
+        }
 
         if (!metadata.empty()) {
             for (const auto &pair : metadata) {
@@ -518,7 +517,7 @@ void ImageReaderGdal::copy(const std::string &outputPath,
     }
 }
 
-void ImageReaderGdal::addOverviews(int levels, const std::shared_ptr<ImageOptions> &options)
+void ImageReaderGdal::addOverviews(int levels, const ImageOptions &options)
 {
     try {
 
@@ -691,31 +690,31 @@ void readXMP(CPLXMLNode *&xml_node, ImageMetadata &metadata)
                                         }
 
                                         if (key == "xmlns:drone-dji") {
-                                            metadata.setMetadata("EXIF_Make", "DJI");
+                                            metadata.set("EXIF_Make", "DJI");
                                         } if (std::string(rdfdescription_node->pszValue) == "xmpDM:cameraModel") {
-                                            metadata.setMetadata("EXIF_Model", value);
+                                            metadata.set("EXIF_Model", value);
                                         } else if (key.rfind("drone-dji:", 0) == 0) {
                                             std::string name = key.substr(std::string("drone-dji:").size());
-                                            metadata.setMetadata("XMP_DJI_" + name, value);
+                                            metadata.set("XMP_DJI_" + name, value);
                                         } else if (key.rfind("drone:", 0) == 0) {
                                             std::string name = key.substr(std::string("drone:").size());
-                                            metadata.setMetadata("XMP_DJI_" + name, value);
+                                            metadata.set("XMP_DJI_" + name, value);
                                         } else if (key.rfind("Camera:", 0) == 0) {
                                             std::string name = key.substr(std::string("Camera:").size());
-                                            metadata.setMetadata("XMP_CAMERA_" + name, value);
+                                            metadata.set("XMP_CAMERA_" + name, value);
                                             if (name == "RigName" && value == "Sequoia") {
-                                                metadata.setMetadata("EXIF_Make", "Parrot");
-                                                metadata.setMetadata("EXIF_Model", "Sequoia");
+                                                metadata.set("EXIF_Make", "Parrot");
+                                                metadata.set("EXIF_Model", "Sequoia");
                                             }
                                         } else if (key.rfind("MicaSense:", 0) == 0) {
                                             std::string name = key.substr(std::string("MicaSense:").size());
-                                            metadata.setMetadata("XMP_" + name, value);
+                                            metadata.set("XMP_" + name, value);
                                         } else if (key.rfind("DLS:", 0) == 0) {
                                             std::string name = key.substr(std::string("DLS:").size());
-                                            metadata.setMetadata("XMP_" + name, value);
+                                            metadata.set("XMP_" + name, value);
                                         } else if (key.rfind("tiff:", 0) == 0) {
                                             std::string name = key.substr(std::string("tiff:").size());
-                                            metadata.setMetadata("XMP_TIFF_" + name, value);
+                                            metadata.set("XMP_TIFF_" + name, value);
                                         }
                                     }
 
@@ -743,80 +742,13 @@ void readXMP(CPLXMLNode *&xml_node, ImageMetadata &metadata)
     }
 }
 
-auto ImageReaderGdal::metadata() const -> ImageMetadata
+auto ImageReaderGdal::metadata() const -> const ImageMetadata&
 {
-    ImageMetadata metadata;
-
-    try {
-
-        TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
-
-        bool xmp_found = false;
-
-
-
-        char **gdalMetadata = mDataset->GetMetadata(); // Si no hago esto no lee el exif...
-        unusedParameter(gdalMetadata);
-
-
-        char **gdalMetadataDomainList = mDataset->GetMetadataDomainList();
-        if (gdalMetadataDomainList != nullptr && *gdalMetadataDomainList != nullptr) {
-
-            for (int i = 0; gdalMetadataDomainList[i] != nullptr; i++) {
-
-                const char *domain = gdalMetadataDomainList[i];
-                char **gdalMetadata = mDataset->GetMetadata(domain);
-
-                if (std::string("xml:XMP") == domain) {
-
-                    xmp_found = true;
-
-                    CPLXMLNode *xml_node = CPLParseXMLString(*gdalMetadata);
-                    readXMP(xml_node, metadata);
-
-                } else {
-
-                    if (gdalMetadata != nullptr && *gdalMetadata != nullptr) {
-
-                        for (int j = 0; gdalMetadata[j] != nullptr; j++) {
-
-                            char *key = nullptr;
-                            std::string value(CPLParseNameValue(gdalMetadata[j], &key));
-
-                            if (key) {
-
-                                auto clean_value = cleanExifValue(value);
-
-                                if (key == std::string("EXIF_GPSLongitude") ||
-                                    key == std::string("EXIF_GPSLatitude")) {
-                                    tl::Degrees<double> angle = formatDegreesFromExif(clean_value);
-                                    clean_value = std::to_string(angle.value());
-                                }
-
-                                metadata.setMetadata(key, clean_value);
-                                CPLFree(key);
-                            }
-                        }
-
-                    }
-
-                }
-            }
-
-        }
-
-        if (xmp_found == false) {
-
-            auto xmp = extractXMP(file().toString());
-            CPLXMLNode *xml_node = CPLParseXMLString(xmp.c_str());
-            readXMP(xml_node, metadata);
-        }
-
-    } catch (...) {
-        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    if (!mMetadata) {
+        mMetadata = loadMetadata();
     }
 
-    return metadata;
+    return *mMetadata;
 }
 
 auto ImageReaderGdal::isGeoreferenced() const -> bool
@@ -909,6 +841,76 @@ auto ImageReaderGdal::gdalDataType() const -> GDALDataType
     }
 
     return dataType;
+}
+
+auto ImageReaderGdal::loadMetadata() const -> ImageMetadata
+{
+    ImageMetadata metadata;
+
+    try {
+
+        TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
+
+        bool xmp_found = false;
+
+
+
+        char **gdalMetadata = mDataset->GetMetadata();
+        unusedParameter(gdalMetadata);
+
+
+        char **gdalMetadataDomainList = mDataset->GetMetadataDomainList();
+        if (gdalMetadataDomainList != nullptr && *gdalMetadataDomainList != nullptr) {
+            for (int i = 0; gdalMetadataDomainList[i] != nullptr; ++i) {
+
+                std::string_view domain = gdalMetadataDomainList[i];
+                char **gdalMetadata = mDataset->GetMetadata(domain.data());
+
+                if (domain == "xml:XMP") {
+
+                    xmp_found = true;
+
+                    if (gdalMetadata != nullptr && *gdalMetadata != nullptr) {
+                        CPLXMLNode *xml_node = CPLParseXMLString(*gdalMetadata);
+                        readXMP(xml_node, metadata);
+                    }
+
+                } else if (gdalMetadata != nullptr) {
+
+                    for (int j = 0; gdalMetadata[j] != nullptr; ++j) {
+
+                        char *raw_key = nullptr;
+                        const char *raw_value = CPLParseNameValue(gdalMetadata[j], &raw_key);
+
+                        if (raw_key != nullptr && raw_value != nullptr) {
+                            std::string_view key(raw_key);
+                            std::string clean_value = cleanExifValue(raw_value);
+
+                            if (key == "EXIF_GPSLongitude" || key == "EXIF_GPSLatitude") {
+                                tl::Degrees<double> angle = formatDegreesFromExif(clean_value);
+                                clean_value = std::to_string(angle.value());
+                            }
+
+                            metadata.set(std::string(key), std::move(clean_value));
+                            CPLFree(raw_key);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (xmp_found == false) {
+
+            auto xmp = extractXMP(file().toString());
+            CPLXMLNode *xml_node = CPLParseXMLString(xmp.c_str());
+            readXMP(xml_node, metadata);
+        }
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
+
+    return metadata;
 }
 
 } // End namespace tl

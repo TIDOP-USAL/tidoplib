@@ -104,7 +104,7 @@ void RasterReader::update(const cv::Mat &image, const BoundingBox2i &window)
 }
 
 void RasterReader::copy(const tl::Path &outputPath,
-                        const std::shared_ptr<ImageOptions> &options, 
+                        const ImageOptions &options, 
                         const ImageMetadata &metadata, 
                         const std::string &epsgCode) const
 {
@@ -112,7 +112,7 @@ void RasterReader::copy(const tl::Path &outputPath,
     return mReader->copy(outputPath.toString(), options, metadata, epsgCode);
 }
 
-void RasterReader::addOverviews(int levels, const std::shared_ptr<ImageOptions> &options)
+void RasterReader::addOverviews(int levels, const ImageOptions &options)
 {
     TL_ASSERT(isOpen(), "RasterReader is not open");
     return mReader->addOverviews(levels, options);

@@ -150,7 +150,7 @@ void convertImageFormat(const Command::SharedPtr &command)
         RasterReader image_reader(img);
 
         if (image_reader.isOpen()) {
-            image_reader.copy(output_img.toString(), nullptr, ImageMetadata(), image_reader.isGeoreferenced() ? crs_out : "");
+            image_reader.copy(output_img.toString(), ImageOptions(), ImageMetadata(), image_reader.isGeoreferenced() ? crs_out : "");
             image_reader.close();
         }
 

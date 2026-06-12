@@ -24,12 +24,14 @@
 
 #pragma once
 
-#include "tidop/core/base/defs.h"
-#include "tidop/core/base/macros/SmartPtr.h"
+#include "tidop/config.h"
 
 #include <memory>
 #include <map>
 #include <vector>
+#include <string_view>
+#include <optional>
+#include <span>
 
 namespace tl
 {
@@ -40,219 +42,141 @@ namespace tl
  */
 
 /*!
- * \brief Abstract base class for metadata items.
+ * \brief Container for image metadata (key‑value pairs).
  *
- * The `MetadataItem` class provides an interface for handling different types of metadata items. 
- * Derived classes must implement the `parseValue` method to parse and handle specific metadata values.
- */
-class TL_EXPORT MetadataItem
-{
-
-public:
-
-    /*!
-     * \brief Default constructor.
-     */
-    MetadataItem() = default;
-    virtual ~MetadataItem() = default;
-
-    /*!
-     * \brief Parses and sets the value of the metadata item.
-     * \param[in] value The string representation of the value to parse.
-     */
-    virtual void parseValue(const std::string &value) = 0;
-
-};
-
-
-
-/*!
- * \brief Base class for specific types of metadata items.
- *
- * The `MetadataItemBase` class extends `MetadataItem` to handle common properties such as
- * name, default value, and current value. It also tracks whether the item is active.
- */
-class TL_EXPORT MetadataItemBase
-    : public MetadataItem
-{
-
-private:
-
-    std::string mName;         /*!< Name of the metadata item */
-    std::string mDefaultValue; /*!< Default value of the metadata item */
-    std::string mValue;        /*!< Current value of the metadata item */
-    bool bActive;              /*!< Flag indicating if the metadata item is active */
-
-public:
-
-    /*!
-     * \brief Constructor to initialize a metadata item with a name and optional default value.
-     * \param[in] name Name of the metadata item.
-     * \param[in] defValue Default value of the metadata item.
-     */
-    MetadataItemBase(std::string name,
-                     std::string defValue = "");
-
-    ~MetadataItemBase() override = default;
-
-    /*!
-     * \brief Returns the current value of the metadata item.
-     * \return Current value.
-     */
-    auto value() const -> std::string;
-
-    /*!
-     * \brief Sets the current value of the metadata item.
-     * \param[in] value New value to set.
-     */
-    void setValue(const std::string &value);
-
-    /*!
-     * \brief Returns the default value of the metadata item.
-     * \return Default value.
-     */
-    auto defaultValue() const -> std::string;
-
-    /*!
-     * \brief Sets the default value of the metadata item.
-     * \param[in] defValue New default value to set.
-     */
-    void setDefaultValue(const std::string &defValue);
-
-    /*!
-     * \brief Checks if the metadata item is active.
-     * \return True if active, false otherwise.
-     */
-    auto isActive() const -> bool;
-
-};
-
-
-
-/*!
- * \brief Metadata item representing a numeric value.
- *
- * The `MetadataItemNumber` class extends `MetadataItemBase` to handle numeric values.
- * It overrides the `parseValue` method to ensure the value is parsed as a number.
- */
-class MetadataItemNumber
-  : public MetadataItemBase
-{
-
-public:
-
-    /*!
-     * \brief Constructor to initialize a numeric metadata item.
-     * \param[in] name Name of the metadata item.
-     * \param[in] defValue Default numeric value as a string.
-     */
-    MetadataItemNumber(const std::string &name,
-                       const std::string &defValue = "");
-    ~MetadataItemNumber() override = default;
-
-    /*!
-     * \brief Parses and sets the value as a numeric value.
-     * \param[in] value The string representation of the numeric value to parse.
-     */
-    void parseValue(const std::string &value) override;
-
-};
-
-
-/*!
- * \brief Metadata item representing a text value.
- *
- * The `MetadataItemText` class extends `MetadataItemBase` to handle text values.
- * It overrides the `parseValue` method to handle text-specific parsing.
- */
-class MetadataItemText
-    : public MetadataItemBase
-{
-
-public:
-
-    /*!
-     * \brief Constructor to initialize a text metadata item.
-     * \param[in] name Name of the metadata item.
-     * \param[in] defValue Default text value.
-     */
-    MetadataItemText(const std::string &name,
-                     const std::string &defValue = "");
-
-    ~MetadataItemText() override = default;
-
-    /*!
-     * \brief Parses and sets the value as a text value.
-     * \param[in] value The string representation of the text value to parse.
-     */
-    void parseValue(const std::string &value) override;
-
-};
-
-
-
-/*!
- * \brief Class representing image metadata.
+ * This class stores arbitrary metadata associated with an image, such as
+ * EXIF, XMP, or other format‑specific tags. Keys are case‑sensitive strings
+ * (using std::less<> for heterogeneous lookup). The container is copyable
+ * and movable.
  */
 class TL_EXPORT ImageMetadata
 {
 
 public:
 
+    using container_type = std::map<std::string, std::string, std::less<>>;
     using iterator = typename std::map<std::string, std::string>::iterator;
     using const_iterator = typename std::map<std::string, std::string>::const_iterator;
 
 protected:
 
-    std::map<std::string, std::string> mMetadata;
+    container_type mMetadata;
 
 public:
 
     /*!
-     * \brief Constructor to initialize metadata with a specific format.
-     * \param[in] format Format of the image.
+     * \brief Default constructor – creates an empty metadata container.
      */
-    ImageMetadata();
-    ~ImageMetadata();
+    ImageMetadata() = default;
 
     /*!
-     * \brief Checks if a specific metadata item exists.
-     * \param[in] key Key of the metadata item.
-     * \return True if the metadata item exists, false otherwise.
+     * \brief Default destructor.
      */
-    auto existMetadata(const std::string &key) -> bool;
+    ~ImageMetadata() = default;
 
     /*!
-     * \brief Retrieves the value of a specific metadata item.
-     * \param[in] key Key of the metadata item.
-     * \param[out] active Flag indicating if the metadata item exists.
-     * \return Value of the metadata item.
+     * \brief Copy constructor.
      */
-    auto metadata(const std::string &key, bool &active) const -> std::string;
+    ImageMetadata(const ImageMetadata &) = default;
 
     /*!
-     * \brief Retrieves the value of the first existing metadata item from a list of keys.
-     * \param[in] keys List of keys to check.
-     * \param[out] active Flag indicating if a valid metadata item was found.
-     * \return Value of the first existing metadata item, or an empty string if none found.
+     * \brief Move constructor.
      */
-    auto metadata(const std::vector<std::string> &keys, bool &active) const -> std::string;    
+    ImageMetadata(ImageMetadata &&) noexcept = default;
 
     /*!
-     * \brief Sets the value of a specific metadata item.
-     * \param[in] key Key of the metadata item.
-     * \param[in] value Value to set.
+     * \brief Copy assignment operator.
+     * \return Reference to this object.
      */
-    void setMetadata(const std::string &key, const std::string &value);
+    auto operator=(const ImageMetadata &) -> ImageMetadata & = default;
 
-    auto begin() TL_NOEXCEPT -> iterator;
-    auto begin() const TL_NOEXCEPT -> const_iterator;
-    auto end() TL_NOEXCEPT -> iterator;
-    auto end() const TL_NOEXCEPT -> const_iterator;
+    /*!
+     * \brief Move assignment operator.
+     * \return Reference to this object.
+     */
+    auto operator=(ImageMetadata &&) noexcept -> ImageMetadata & = default;
 
-    auto empty() const -> bool;
-    auto size() const -> size_t;
+    /*!
+     * \brief Checks whether a metadata item exists.
+     * \param key Key to look up.
+     * \return true if the key exists, false otherwise.
+     */
+    [[nodiscard]]
+    auto contains(std::string_view key) -> bool;
 
+    /*!
+     * \brief Retrieves the value associated with a single key.
+     * \param key Key to look up.
+     * \return An optional containing the value as string_view if found,
+     *         or std::nullopt otherwise.
+     */
+    [[nodiscard]]
+    auto value(std::string_view key) const -> std::optional<std::string_view>;
+
+    /*!
+     * \brief Retrieves the value associated with the first existing key in a list.
+     *
+     * This method checks each key in the given order and returns the value
+     * of the first key that exists in the container.
+     *
+     * \param keys A span of candidate keys to try.
+     * \return An optional containing the value of the first matching key,
+     *         or std::nullopt if none of the keys exist.
+     */
+    [[nodiscard]]
+    auto value(std::span<const std::string> keys) const -> std::optional<std::string_view>;
+
+    /*!
+     * \brief Sets the value for a specific key.
+     *
+     * If the key already exists, its value is overwritten. If not, a new pair is inserted.
+     *
+     * \param key   The key to set.
+     * \param value The value to associate with the key.
+     */
+    void set(std::string key, std::string value);
+
+    /*!
+     * \brief Mutable iterator to the first metadata item.
+     * \return Iterator to the beginning.
+     */
+    auto begin() noexcept -> iterator;
+
+    /*!
+     * \brief Constant iterator to the first metadata item.
+     * \return Constant iterator to the beginning.
+     */
+    auto begin() const noexcept -> const_iterator;
+
+    /*!
+     * \brief Mutable iterator to the end of the metadata.
+     * \return End iterator.
+     */
+    auto end() noexcept -> iterator;
+
+    /*!
+     * \brief Constant iterator to the end of the metadata.
+     * \return Constant end iterator.
+     */
+    auto end() const noexcept -> const_iterator;
+
+    /*!
+     * \brief Checks whether the container is empty.
+     * \return true if no metadata is stored, false otherwise.
+     */
+    [[nodiscard]]
+    auto empty() const noexcept -> bool;
+
+    /*!
+     * \brief Returns the number of metadata items.
+     * \return Number of key‑value pairs.
+     */
+    [[nodiscard]]
+    auto size() const noexcept -> size_t;
+
+    /*!
+     * \brief Removes all metadata items.
+     */
     void clear();
 
 };

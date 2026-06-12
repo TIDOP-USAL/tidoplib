@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
  
-#define BOOST_TEST_MODULE Tidop vector reader test
+#define BOOST_TEST_MODULE Tidop raster reader test
 #include <boost/test/unit_test.hpp>
 #include <tidop/rastertools/io/ImageReader.h>
 #include <tidop/rastertools/io/Metadata.h>
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(read_png)
         BOOST_CHECK_EQUAL(georef.scale().y(), 1.0);
         BOOST_CHECK_EQUAL(georef.rotation().angle(), 0.0);
 
-        auto metadata = raster_reader->metadata();
+        auto &metadata = raster_reader->metadata();
         BOOST_CHECK_EQUAL(2, metadata.size());
 
         cv::Mat image = raster_reader->read();

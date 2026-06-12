@@ -38,12 +38,11 @@
 #include "tidop/graphic/rect.h"
 #include "tidop/rastertools/img.h"
 #include "tidop/rastertools/io/Metadata.h"
+#include "tidop/rastertools/io/Formats.h"
 #include "tidop/geometry/transform/Affine.h"
 
 namespace tl
 {
-
-class ImageOptions;
 
 /*! \addtogroup RasterIO
  *  \{
@@ -172,12 +171,12 @@ public:
      * \param[in] epsgCode 
      */
     virtual void copy(const std::string &outputPath,
-                      std::shared_ptr<ImageOptions> options = nullptr,
+                      const ImageOptions &options = ImageOptions(),
                       const ImageMetadata &metadata = ImageMetadata(),
                       const std::string &epsgCode = "") const = 0;
    
     virtual void addOverviews(int levels,
-                              const std::shared_ptr<ImageOptions> &options = nullptr) = 0;
+                              const ImageOptions &options = ImageOptions()) = 0;
 
     /*!
      * \brief Retrieves the number of rows in the image.
@@ -213,7 +212,7 @@ public:
     /*!
      * \brief Retrieves the metadata associated with the image.
      */
-    virtual auto metadata() const -> ImageMetadata = 0;
+    virtual auto metadata() const -> const ImageMetadata& = 0;
 
     /*!
      * \brief Checks if the image is georeferenced.
@@ -239,7 +238,7 @@ public:
      * \return The bounding box as a `WindowD` object.
      * \see Window
      */
-    virtual auto window() const ->BoundingBox2d = 0;
+    virtual auto window() const -> BoundingBox2d = 0;
 
     /*!
      * \brief Retrieves the file path of the image.

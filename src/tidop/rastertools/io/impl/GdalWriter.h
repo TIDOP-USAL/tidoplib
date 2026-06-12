@@ -28,6 +28,7 @@
 #include "tidop/core/base/Path.h"
 #include "tidop/rastertools/io/ImageWriter.h"
 #include "tidop/rastertools/io/Metadata.h"
+#include "tidop/rastertools/io/Formats.h"
 
 #ifdef TL_HAVE_GDAL
 TL_DISABLE_WARNINGS
@@ -67,7 +68,7 @@ public:
                 int cols,
                 int bands,
                 DataType type,
-                const std::shared_ptr<ImageOptions> &imageOptions) override;
+                const ImageOptions &imageOptions = ImageOptions()) override;
     void write(const cv::Mat &image,
                const Rect<int> &rect) override;
     void write(const cv::Mat &image,
@@ -124,7 +125,7 @@ private:
     bool bTempFile;
     Path mTempFile;
     DataType mDataType;
-    std::shared_ptr<ImageOptions> mImageOptions;
+    ImageOptions mImageOptions;
     ImageMetadata mImageMetadata;
     OGRSpatialReference *mSpatialReference;
 };

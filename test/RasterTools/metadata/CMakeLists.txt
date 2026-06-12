@@ -22,9 +22,32 @@
 #                                                                        #
 ##########################################################################
  
-# Math tests
+include_directories(${CMAKE_SOURCE_DIR}/src)
 
-if(TL_HAVE_RASTER_TOOLS)
-add_subdirectory(reader)
-add_subdirectory(metadata)
-endif()
+set(test_filename metadata_test.cpp)
+get_filename_component(test_name ${test_filename} NAME_WE)
+
+project("raster_${test_name}" LANGUAGES CXX)
+
+add_executable(${PROJECT_NAME} 
+               ${test_filename})
+
+target_link_libraries(${PROJECT_NAME}
+                      TidopLib::Core
+                      TidopLib::Graphic
+					  TidopLib::RasterTools
+                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+                      OUTPUT_NAME ${PROJECT_NAME}
+                      PROJECT_LABEL "(TEST) ${PROJECT_NAME}")
+
+set_target_properties(${PROJECT_NAME} PROPERTIES 
+                      FOLDER "test/RasterTools")
+
+add_test(NAME ${PROJECT_NAME} COMMAND $<TARGET_FILE:${PROJECT_NAME}>)
+
+if(MSVC)
+    set_user_enviroment_path(${PROJECT_NAME} "${ENV_VARS_LIST}")
+    set_tests_properties(${PROJECT_NAME} PROPERTIES ENVIRONMENT "PATH=$ENV{PATH}")
+endif(MSVC)

@@ -37,12 +37,12 @@
 #include "tidop/graphic/rect.h"
 #include "tidop/rastertools/img.h"
 #include "tidop/rastertools/io/Metadata.h"
+#include "tidop/rastertools/io/Formats.h"
 #include "tidop/geometry/transform/Affine.h"
 
 namespace tl
 {
 
-class ImageOptions;
 class ImageReader;
 
 /*! \addtogroup RasterIO
@@ -182,12 +182,12 @@ public:
      * \param[in] epsgCode EPSG code for reprojection or CRS override
      */
     void copy(const tl::Path &outputPath,
-              const std::shared_ptr<ImageOptions> &options = nullptr,
+              const ImageOptions &options = ImageOptions(),
               const ImageMetadata &metadata = ImageMetadata(),
               const std::string &epsgCode = "") const;
 
     void addOverviews(int levels,
-                      const std::shared_ptr<ImageOptions> &options = nullptr);
+                      const ImageOptions &options = ImageOptions());
 
     /*!
      * \brief Returns the number of rows in the image

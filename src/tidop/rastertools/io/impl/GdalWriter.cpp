@@ -42,7 +42,6 @@ ImageWriterGdal::ImageWriterGdal(tl::Path file)
     bTempFile(false),
     mTempFile(""),
     mDataType(DataType::TL_8U),
-    mImageOptions(nullptr),
 #ifdef _DEBUG
     mSpatialReference(static_cast<OGRSpatialReference *>(OSRNewSpatialReference(nullptr)))
 #else
@@ -105,20 +104,21 @@ void ImageWriterGdal::close()
         if (bTempFile) {
 
             GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(internal::gdalDriverFromExtension(mFile.extension().toString()).c_str());
-            char **gdalOpt = nullptr;
-            if (mImageOptions) {
-                std::map<std::string, std::string> options = mImageOptions->activeOptions();
-#if TL_CPP_VERSION>= 17
-                for (const auto &[name, value] : options) {
-#else
-                for (const auto &option : options) {
-                    auto &name = option.first;
-                    auto &value = option.second;
-#endif
-                    gdalOpt = CSLSetNameValue(gdalOpt, name.c_str(), value.c_str());
+            char **gdal_options = nullptr;
+
+            if (!mImageOptions.empty()) {
+                for (const auto &[name, value] : mImageOptions) {
+
+                    gdal_options = CSLSetNameValue(gdal_options, name.c_str(), value.c_str());
                 }
             }
-            GDALDataset *temp_data_set = driver->CreateCopy(mFile.toString().c_str(), mDataset, FALSE, gdalOpt, nullptr, nullptr);
+
+            GDALDataset *temp_data_set = driver->CreateCopy(mFile.toString().c_str(), mDataset, FALSE, gdal_options, nullptr, nullptr);
+
+            if (gdal_options) {
+                CSLDestroy(gdal_options);
+            }
+
             if (!temp_data_set) {
                 Message::error("No se pudo crear la imagen");
             } else {
@@ -179,7 +179,7 @@ void ImageWriterGdal::create(int rows,
                              int cols,
                              int bands,
                              DataType type,
-                             const std::shared_ptr<ImageOptions> &imageOptions)
+                             const ImageOptions &imageOptions)
 {
     try {
 
@@ -194,16 +194,11 @@ void ImageWriterGdal::create(int rows,
         }
 
         char **gdal_options = nullptr;
+
         mImageOptions = imageOptions;
-        if (mImageOptions && !bTempFile) {
-            auto options = mImageOptions->activeOptions();
-#if TL_CPP_VERSION>= 17
-            for (const auto &[name, value] : options) {
-#else
-            for (const auto &option : options) {
-                auto &name = option.first;
-                auto &value = option.second;
-#endif
+
+        if (!mImageOptions.empty() && !bTempFile) {
+            for (const auto &[name, value] : mImageOptions) {
                 gdal_options = CSLSetNameValue(gdal_options, name.c_str(), value.c_str());
             }
         }
@@ -212,16 +207,16 @@ void ImageWriterGdal::create(int rows,
         mDataset = mDriver->Create(bTempFile ? mTempFile.toString().c_str() : mFile.toString().c_str(),
                                    cols, rows, bands, gdal_data_type, gdal_options);
 
+        if (gdal_options) {
+            CSLDestroy(gdal_options);
+        }
+
         TL_ASSERT(mDataset != nullptr, "Creation of output file failed");
 
         if (!mImageMetadata.empty()) {
-#if TL_CPP_VERSION>= 17
+
             for (const auto &[name, value] : mImageMetadata) {
-#else
-            for (const auto &metadata : mImageMetadata) {
-                auto &name = metadata.first;
-                auto &value = metadata.second;
-#endif
+
                 mDataset->SetMetadataItem(name.c_str(), value.c_str());
             }
         }

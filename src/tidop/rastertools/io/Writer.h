@@ -36,13 +36,13 @@
 #include "tidop/core/base/macros/SmartPtr.h"
 #include "tidop/graphic/rect.h"
 #include "tidop/rastertools/img.h"
-#include "tidop/rastertools/io/Metadata.h"  
+#include "tidop/rastertools/io/Metadata.h"
+#include "tidop/rastertools/io/Formats.h"
 #include "tidop/geometry/transform/Affine.h"
 
 namespace tl
 {
 
-class ImageOptions;
 class ImageWriter;
 
 /*! \addtogroup RasterIO
@@ -105,8 +105,8 @@ public:
                 int cols,
                 int bands,
                 DataType type,
-                const std::shared_ptr<ImageOptions> &imageOptions = nullptr);
-				
+                const ImageOptions &imageOptions = ImageOptions());
+
     /*!
      * \brief Checks if the writer is ready and the file is open
      * \return true if open and writable, false otherwise

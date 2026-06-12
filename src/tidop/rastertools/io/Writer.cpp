@@ -53,7 +53,7 @@ void RasterWriter::open(const tl::Path &file)
     mWriter->open();
 }
 
-void RasterWriter::create(int rows, int cols, int bands, DataType type, const std::shared_ptr<ImageOptions> &imageOptions)
+void RasterWriter::create(int rows, int cols, int bands, DataType type, const ImageOptions &imageOptions)
 {
     TL_ASSERT(mWriter, "RasterWriter is not open");
     mWriter->create(rows, cols, bands, type, imageOptions);
