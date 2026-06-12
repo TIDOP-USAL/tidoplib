@@ -25,7 +25,7 @@
 #pragma once
 
 #include "tidop/core/base/defs.h"
-#include "tidop/rastertools/io/ImageReader.h"
+#include "tidop/rastertools/io/impl/ImageReader.h"
 
 #ifdef TL_HAVE_GDAL
 TL_DISABLE_WARNINGS
@@ -99,6 +99,8 @@ protected:
 
     auto gdalDataType() const -> GDALDataType;
     auto loadMetadata() const -> ImageMetadata;
+    auto readToMat(const Rect<int> &rectToRead, 
+                   const Size<int> &sizeToRead) -> cv::Mat;
 
 private:
 

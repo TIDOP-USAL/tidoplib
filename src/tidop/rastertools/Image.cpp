@@ -244,10 +244,6 @@ auto Image::isEmpty() const -> bool
 
 void Image::init()
 {
-    //mData = static_cast<unsigned char *>(std::malloc(static_cast<size_t>(mRows) *
-    //                                                 static_cast<size_t>(mCols) *
-    //                                                 static_cast<size_t>(mChannels) *
-    //                                                 static_cast<size_t>(this->depth())));
     auto size = static_cast<size_t>(mRows) * static_cast<size_t>(mCols) *
                 static_cast<size_t>(mChannels) * static_cast<size_t>(depth() / 8);
     mData = static_cast<unsigned char *>(std::malloc(size));

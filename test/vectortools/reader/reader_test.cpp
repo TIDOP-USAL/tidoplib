@@ -40,6 +40,7 @@ BOOST_AUTO_TEST_CASE(read_geojson)
     try {
 
         tl::Path file(tl::Path(TL_DATA_PATH).append("example.geojson"));
+
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) throw std::runtime_error("Vector open error");
 

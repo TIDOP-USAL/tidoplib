@@ -37,15 +37,15 @@ if(BUILD_TL_RASTER_TOOLS AND TL_HAVE_OPENCV)
                          SOURCE_FILES 
                              img.cpp
                              Image.cpp
-                             io/ImageReader.cpp
-                             io/ImageWriter.cpp
                              io/Reader.cpp
                              io/Writer.cpp
                              io/Formats.cpp
                              io/Metadata.cpp
+                             io/impl/CanonReader.cpp
                              io/impl/GdalReader.cpp
                              io/impl/GdalWriter.cpp
-                             io/impl/CanonReader.cpp
+                             io/impl/ImageReader.cpp
+                             io/impl/ImageWriter.cpp
                              io/private/DataTypeConverter.cpp
                              io/private/gdal.cpp
                              process/Anaglyph.cpp
@@ -79,15 +79,15 @@ if(BUILD_TL_RASTER_TOOLS AND TL_HAVE_OPENCV)
                              img.h
                              Image.h
                              DataType.h
-                             io/ImageReader.h
-                             io/ImageWriter.h
                              io/Reader.h
                              io/Writer.h
                              io/Formats.h
                              io/Metadata.h
+                             io/impl/CanonReader.h
                              io/impl/GdalReader.h
                              io/impl/GdalWriter.h
-                             io/impl/CanonReader.h
+                             io/impl/ImageReader.h
+                             io/impl/ImageWriter.h
                              io/private/DataTypeConverter.h
                              io/private/gdal.h
                              process/Anaglyph.h

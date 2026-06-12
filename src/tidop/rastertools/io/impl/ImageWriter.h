@@ -101,7 +101,7 @@ public:
      * \param[in] imageMetadata Shared pointer to the image metadata.
      * \see ImageMetadata
      */
-    virtual void setMetadata(const ImageMetadata &imageMetadata) = 0;
+    virtual void setMetadata(ImageMetadata imageMetadata) = 0;
 
     /*!
      * \brief Creates an image with the specified dimensions and data type.
@@ -116,7 +116,7 @@ public:
                         int cols,
                         int bands,
                         DataType type,
-                        const ImageOptions &imageOptions = ImageOptions()) = 0;
+                        ImageOptions imageOptions = ImageOptions()) = 0;
 
     /*!
      * \brief Writes an image block to a specified rectangular region.

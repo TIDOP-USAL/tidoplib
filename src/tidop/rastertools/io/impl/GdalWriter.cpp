@@ -90,7 +90,6 @@ void ImageWriterGdal::open()
             mTempFile = Path::tempPath();
             mTempFile.append(mFile.fileName());
             mTempFile.replaceExtension(".tif");
-
         }
 
     } catch (...) {
@@ -100,72 +99,79 @@ void ImageWriterGdal::open()
 
 void ImageWriterGdal::close()
 {
-    if (mDataset) {
-        if (bTempFile) {
+    try {
+        if (mDataset) {
+            if (bTempFile) {
 
-            GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(internal::gdalDriverFromExtension(mFile.extension().toString()).c_str());
-            char **gdal_options = nullptr;
+                GDALDriver *driver = GetGDALDriverManager()->GetDriverByName(internal::gdalDriverFromExtension(mFile.extension().toString()).c_str());
 
-            if (!mImageOptions.empty()) {
-                for (const auto &[name, value] : mImageOptions) {
+                TL_ASSERT(driver != nullptr, "GDAL driver not found for extension: {}", mFile.extension().toString());
 
-                    gdal_options = CSLSetNameValue(gdal_options, name.c_str(), value.c_str());
+                char **gdal_options = nullptr;
+
+                if (!mImageOptions.empty()) {
+                    for (const auto &[name, value] : mImageOptions) {
+
+                        gdal_options = CSLSetNameValue(gdal_options, name.c_str(), value.c_str());
+                    }
+                }
+
+                GDALDataset *temp_data_set = driver->CreateCopy(mFile.toString().c_str(), mDataset, FALSE, gdal_options, nullptr, nullptr);
+
+                if (gdal_options) {
+                    CSLDestroy(gdal_options);
+                }
+
+                if (!temp_data_set) {
+                    Message::error("Could not create final image via CreateCopy");
+                } else {
+                    GDALClose(static_cast<GDALDatasetH>(temp_data_set));
+                }
+
+            }
+
+            char **file_list = mDataset->GetFileList();
+
+            GDALClose(mDataset);
+            mDataset = nullptr;
+
+            if (bTempFile && file_list) {
+                //for (size_t i = 0; i < sizeof(**tmp); i++) {
+                //    Path::removeFile(Path(tmp[i]));
+                //}
+                for (char **p = file_list; *p != nullptr; ++p) {
+                    Path::removeFile(Path(*p));
                 }
             }
 
-            GDALDataset *temp_data_set = driver->CreateCopy(mFile.toString().c_str(), mDataset, FALSE, gdal_options, nullptr, nullptr);
-
-            if (gdal_options) {
-                CSLDestroy(gdal_options);
+            if (file_list) {
+                CSLDestroy(file_list);
             }
-
-            if (!temp_data_set) {
-                Message::error("No se pudo crear la imagen");
-            } else {
-                GDALClose(static_cast<GDALDatasetH>(temp_data_set));
-            }
-
         }
 
-        char **tmp = mDataset->GetFileList();
-
-        GDALClose(mDataset);
-        mDataset = nullptr;
-
-        if (bTempFile) {
-            for (size_t i = 0; i < sizeof(**tmp); i++) {
-                Path::removeFile(Path(tmp[i]));
-            }
-
-        }
+    } catch (const std::exception &e) {
+        Message::error("Exception caught in ImageWriterGdal::close(): {}", e.what());
+    } catch (...) {
+        Message::error("Unknown exception");
     }
 
     bTempFile = false;
     mTempFile.clear();
 }
     
-void ImageWriterGdal::setMetadata(const ImageMetadata &imageMetadata)
+void ImageWriterGdal::setMetadata(ImageMetadata imageMetadata)
 {
     try {
 
         TL_ASSERT(isOpen(), "The file has not been opened. Try to use the 'open()' method");
 
-        mImageMetadata = imageMetadata;
+        mImageMetadata = std::move(imageMetadata);
 
-        if (mDataset) {
+        if (mDataset && !mImageMetadata.empty()) {
 
-            char **gdalMetadata = nullptr;
+            for (const auto &[name, value] : imageMetadata) {
 
-            if (!mImageMetadata.empty()) {
-#if TL_CPP_VERSION>= 17
-                for (const auto &[name, value] : imageMetadata) {
-#else
-                for (const auto &metadata : imageMetadata) {
-                    auto &name = metadata.first;
-                    auto &value = metadata.second;
-#endif
-                    mDataset->SetMetadataItem(name.c_str(), value.c_str());
-                }
+                mDataset->SetMetadataItem(name.c_str(), value.c_str());
             }
 
         }
@@ -179,7 +185,7 @@ void ImageWriterGdal::create(int rows,
                              int cols,
                              int bands,
                              DataType type,
-                             const ImageOptions &imageOptions)
+                             ImageOptions imageOptions)
 {
     try {
 
@@ -195,7 +201,7 @@ void ImageWriterGdal::create(int rows,
 
         char **gdal_options = nullptr;
 
-        mImageOptions = imageOptions;
+        mImageOptions = std::move(imageOptions);
 
         if (!mImageOptions.empty() && !bTempFile) {
             for (const auto &[name, value] : mImageOptions) {
@@ -238,58 +244,60 @@ void ImageWriterGdal::write(const cv::Mat &image, const Rect<int> &rect)
         TL_ASSERT(mDataset, "The file has not been created. Use ImageWriter::create() method");
 
         Rect<int> rect_full_image(0, 0, this->cols(), this->rows());
-        Rect<int> rect_to_write;
-
-        bool crop_image = false;
-        if (rect.isEmpty()) {
-            rect_to_write = rect_full_image;
-        } else {
-            rect_to_write = intersect(rect_full_image, rect);
-            crop_image = rect_to_write != rect;
-        }
-
-        cv::Mat image_to_write;
-
-        if (crop_image) {
-
-            std::vector<Point<double>> image_points{
-                Point<double>(0, 0),
-                    Point<double>(image.cols, 0),
-                    Point<double>(image.cols, image.rows),
-                    Point<double>(0, image.rows)
-            };
-
-            std::vector<Point<double>> image_rect{
-                static_cast<Point<double>>(rect.topLeft()),
-                    static_cast<Point<double>>(rect.topRight()),
-                    static_cast<Point<double>>(rect.bottomRight()),
-                    static_cast<Point<double>>(rect.bottomLeft())
-            };
-
-            auto _affine = Affine2DEstimator<double>::estimate(image_points, image_rect);
-
-            std::vector<Point<double>> image_points_transform(image_points.size());
-            std::transform(image_points.begin(), image_points.end(), image_points_transform.begin(), _affine);
-            Rect<int> rect_image_points_transform(static_cast<Point2i>(image_points_transform[0]), 
-                                                  static_cast<Point2i>(image_points_transform[2]));
-            Rect<int> rect_to_crop_image = intersect(rect_image_points_transform, rect_full_image);
-
-            auto transform_inverse = _affine.inverse();
-            Point<double> tl = transform_inverse.transform(static_cast<Point<double>>(rect_to_crop_image.topLeft()));
-            Point<double> br = transform_inverse.transform(static_cast<Point<double>>(rect_to_crop_image.bottomRight()));
-
-            rect_to_crop_image = Rect<int>(static_cast<Point2i>(tl), static_cast<Point2i>(br));
-            image_to_write = image.colRange(rect_to_crop_image.x, rect_to_crop_image.bottomRight().x())
-                .rowRange(rect_to_crop_image.y, rect_to_crop_image.bottomLeft().y())
-                .clone();
-
-        } else {
-            image_to_write = image;
-        }
+        Rect<int> rect_to_write = rect.isEmpty() ? rect_full_image : intersect(rect_full_image, rect);
 
         GDALDataType gdal_data_type_in = internal::DataTypeConverter::toGdal(image.depth());
         GDALDataType gdal_data_type = internal::DataTypeConverter::toGdal(this->dataType());
         TL_ASSERT(gdal_data_type_in == gdal_data_type, "Input image depth is different to output image depth");
+
+        cv::Mat image_to_write;
+
+        if (!rect.isEmpty() && rect_to_write != rect) {
+
+            //std::vector<Point<double>> image_points{
+            //    Point<double>(0, 0),
+            //        Point<double>(image.cols, 0),
+            //        Point<double>(image.cols, image.rows),
+            //        Point<double>(0, image.rows)
+            //};
+
+            //std::vector<Point<double>> image_rect{
+            //    static_cast<Point<double>>(rect.topLeft()),
+            //        static_cast<Point<double>>(rect.topRight()),
+            //        static_cast<Point<double>>(rect.bottomRight()),
+            //        static_cast<Point<double>>(rect.bottomLeft())
+            //};
+
+            //auto _affine = Affine2DEstimator<double>::estimate(image_points, image_rect);
+
+            //std::vector<Point<double>> image_points_transform(image_points.size());
+            //std::transform(image_points.begin(), image_points.end(), image_points_transform.begin(), _affine);
+            //Rect<int> rect_image_points_transform(static_cast<Point2i>(image_points_transform[0]), 
+            //                                      static_cast<Point2i>(image_points_transform[2]));
+            //Rect<int> rect_to_crop_image = intersect(rect_image_points_transform, rect_full_image);
+
+            //auto transform_inverse = _affine.inverse();
+            //Point<double> tl = transform_inverse.transform(static_cast<Point<double>>(rect_to_crop_image.topLeft()));
+            //Point<double> br = transform_inverse.transform(static_cast<Point<double>>(rect_to_crop_image.bottomRight()));
+
+            //rect_to_crop_image = Rect<int>(static_cast<Point2i>(tl), static_cast<Point2i>(br));
+            //image_to_write = image.colRange(rect_to_crop_image.x, rect_to_crop_image.bottomRight().x())
+            //    .rowRange(rect_to_crop_image.y, rect_to_crop_image.bottomLeft().y())
+            //    .clone();
+
+            const int offset_x = rect_to_write.x - rect.x;
+            const int offset_y = rect_to_write.y - rect.y;
+
+            cv::Rect roi(offset_x, offset_y, rect_to_write.width, rect_to_write.height);
+            cv::Rect image_bounds(0, 0, image.cols, image.rows);
+
+            roi = roi & image_bounds;
+
+            image_to_write = image(roi).clone();
+
+        } else {
+            image_to_write = image;
+        }
 
         // Esto me da problemas con un TIFF
         //uchar *buff;
@@ -354,11 +362,11 @@ void ImageWriterGdal::write(const cv::Mat &image, const Rect<int> &rect)
                                          internal::gdalBandOrder(image_to_write.channels()).data(), pixel_space,
                                          line_space, band_space);
 
-        if (cerr != 0) {
+        if (cerr != CE_None) {
             throw TL_ERROR("GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-        } else {
-            mDataset->FlushCache();
         }
+            
+        mDataset->FlushCache();
 
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");

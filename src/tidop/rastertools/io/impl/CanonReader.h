@@ -25,7 +25,7 @@
 #pragma once
 
 #include "tidop/config.h"
-#include "tidop/rastertools/io/ImageReader.h"
+#include "tidop/rastertools/io/impl/ImageReader.h"
 #include "tidop/core/base/Path.h"
 
 #ifdef TL_HAVE_EDSDK

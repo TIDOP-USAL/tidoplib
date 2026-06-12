@@ -26,7 +26,7 @@
 
 #include "tidop/config.h"
 #include "tidop/core/base/Path.h"
-#include "tidop/rastertools/io/ImageWriter.h"
+#include "tidop/rastertools/io/impl/ImageWriter.h"
 #include "tidop/rastertools/io/Metadata.h"
 #include "tidop/rastertools/io/Formats.h"
 
@@ -63,12 +63,12 @@ public:
     void open() override;
     bool isOpen() const override { return mDriver != nullptr; }
     void close() override;
-    void setMetadata(const ImageMetadata &imageMetadata) override;
+    void setMetadata(ImageMetadata imageMetadata) override;
     void create(int rows,
                 int cols,
                 int bands,
                 DataType type,
-                const ImageOptions &imageOptions = ImageOptions()) override;
+                ImageOptions imageOptions) override;
     void write(const cv::Mat &image,
                const Rect<int> &rect) override;
     void write(const cv::Mat &image,

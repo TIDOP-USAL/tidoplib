@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "tidop/rastertools/io/ImageReader.h"
+#include "tidop/rastertools/io/impl/ImageReader.h"
 
 #include "tidop/core/base/Exception.h"
 #include "tidop/geometry/algorithms/spatial/Intersection.h"

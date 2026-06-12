@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "tidop/rastertools/io/ImageWriter.h"
+#include "tidop/rastertools/io/impl/ImageWriter.h"
 
 #ifdef TL_HAVE_OPENCV
 

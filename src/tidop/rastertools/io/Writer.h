@@ -105,7 +105,7 @@ public:
                 int cols,
                 int bands,
                 DataType type,
-                const ImageOptions &imageOptions = ImageOptions());
+                ImageOptions imageOptions = ImageOptions());
 
     /*!
      * \brief Checks if the writer is ready and the file is open
@@ -122,7 +122,7 @@ public:
      * \brief Sets metadata for the image
      * \param imageMetadata Metadata to associate with the output image
      */
-    void setMetadata(const ImageMetadata &imageMetadata);
+    void setMetadata(ImageMetadata imageMetadata);
 
     /*!
      * \brief Writes a block of image data

@@ -24,7 +24,7 @@
 
 #include "tidop/rastertools/io/Writer.h"
 
-#include "tidop/rastertools/io/ImageWriter.h"
+#include "tidop/rastertools/io/impl/ImageWriter.h"
 #include "tidop/rastertools/io/Formats.h"
 #include "tidop/rastertools/io/Metadata.h"
 #include "tidop/core/base/Exception.h"
@@ -53,10 +53,10 @@ void RasterWriter::open(const tl::Path &file)
     mWriter->open();
 }
 
-void RasterWriter::create(int rows, int cols, int bands, DataType type, const ImageOptions &imageOptions)
+void RasterWriter::create(int rows, int cols, int bands, DataType type, ImageOptions imageOptions)
 {
     TL_ASSERT(mWriter, "RasterWriter is not open");
-    mWriter->create(rows, cols, bands, type, imageOptions);
+    mWriter->create(rows, cols, bands, type, std::move(imageOptions));
 }
 
 auto RasterWriter::isOpen() const -> bool
@@ -72,10 +72,10 @@ void RasterWriter::close()
     }
 }
 
-void RasterWriter::setMetadata(const ImageMetadata &imageMetadata)
+void RasterWriter::setMetadata(ImageMetadata imageMetadata)
 {
     TL_ASSERT(mWriter, "RasterWriter is not open");
-    mWriter->setMetadata(imageMetadata);
+    mWriter->setMetadata(std::move(imageMetadata));
 }
 
 void RasterWriter::write(const cv::Mat &image, const Rect<int> &rect)

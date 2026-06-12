@@ -24,7 +24,7 @@
 
 #include "tidop/rastertools/io/Reader.h"
 
-#include "tidop/rastertools/io/ImageReader.h"
+#include "tidop/rastertools/io/impl/ImageReader.h"
 
 #include <utility>
 

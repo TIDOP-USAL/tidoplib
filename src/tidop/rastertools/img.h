@@ -89,23 +89,8 @@ template<typename T>
 constexpr T NoData = NoDataValue<T>::value;
 
 
-//TL_EXPORT std::vector<std::string> gdalValidExtensions();
-//TL_EXPORT bool gdalValidExtensions(const std::string &extension);
-//TL_EXPORT EnumFlags<DataType> gdalValidDataTypes(const std::string &format);
-//
-///*!
-// * \brief Returns the GDAL driver name corresponding to a file extension.
-// * If the extension does not match an available driver, it returns nullptr.
-// * \param[in] extension File extension
-// * \return GDAL driver name
-// */
-//TL_EXPORT std::string gdalDriverFromExtension(const std::string &extension);
-
 TL_EXPORT int dataTypeToOpenCVDataType(DataType dataType);
 TL_EXPORT DataType openCVDataTypeToDataType(int dataType);
-
-//TL_EXPORT std::vector<int> gdalBandOrder(int channels);
-
 
 
 #ifdef TL_HAVE_EDSDK

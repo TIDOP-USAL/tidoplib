@@ -170,6 +170,7 @@ int DataTypeConverter::toOpenCV(GDALDataType gdalType, int channels)
 
     return(CV_MAKETYPE(depth, channels));
 }
-} // End namespace internal
 
-} // End namespace tl
+} // namespace internal
+
+} // namespace tl

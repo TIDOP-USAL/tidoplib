@@ -61,7 +61,7 @@
 #include "tidop/config.h"
 #include "tidop/core/base/flags.h"
 
-#include <string>
+#include <string_view>
 
 
 namespace tl
