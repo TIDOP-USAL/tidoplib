@@ -25,6 +25,7 @@
 #pragma once
 
 #include "tidop/math/statistic/algorithms/robust/MAD.h"
+#include "tidop/core/base/Type.h"
 
 namespace tl
 {
@@ -47,7 +48,7 @@ template<NumericRange R>
 auto biweightMidvariance(R &&range)
 {
     using T = std::remove_cvref_t<std::ranges::range_value_t<R>>;
-    using ResultType = std::conditional_t<std::is_floating_point_v<T>, T, double>;
+    using ResultType = AccumulateType<T>;
 
     auto n = std::ranges::distance(range);
     if (n <= 2) return consts::zero<ResultType>;

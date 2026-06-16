@@ -76,7 +76,7 @@ public:
     /*!
      * \brief Default constructor
      */
-    constexpr Ellipse() = default;
+    constexpr Ellipse();
 
     /*!
      * \brief Constructor
@@ -164,13 +164,13 @@ public:
 
 
 
-//template<typename T>
-//Ellipse<T>::Ellipse()
-//  : center(Point<T>()),
-//    a(static_cast<T>(1)),
-//    b(static_cast<T>(1))
-//{
-//}
+template<typename T>
+constexpr Ellipse<T>::Ellipse()
+  : center(Point<T>()),
+    a(static_cast<T>(1)),
+    b(static_cast<T>(1))
+{
+}
 
 template<typename T>
 constexpr Ellipse<T>::Ellipse(const Point<T> &center, T a, T b)

@@ -211,37 +211,37 @@ BOOST_FIXTURE_TEST_CASE(matrix_zero_to_quaternion, RotationConverterTest)
 {
 
     Quaterniond q_rot = rot_zero;
-    BOOST_CHECK_CLOSE(0.5, q_rot.x, 0.01);
-    BOOST_CHECK_CLOSE(0., q_rot.y, 0.01);
-    BOOST_CHECK_CLOSE(0., q_rot.z, 0.01);
-    BOOST_CHECK_CLOSE(0., q_rot.w, 0.01);
+    BOOST_CHECK_CLOSE(0.5, q_rot.x(), 0.01);
+    BOOST_CHECK_CLOSE(0., q_rot.y(), 0.01);
+    BOOST_CHECK_CLOSE(0., q_rot.z(), 0.01);
+    BOOST_CHECK_CLOSE(0., q_rot.w(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(matrix_ones_to_quaternion, RotationConverterTest)
 {
     Quaterniond q_rot = rot_ones;
-    BOOST_CHECK_CLOSE(q_identity.x, q_rot.x, 0.01);
-    BOOST_CHECK_CLOSE(q_identity.y, q_rot.y, 0.01);
-    BOOST_CHECK_CLOSE(q_identity.z, q_rot.z, 0.01);
-    BOOST_CHECK_CLOSE(q_identity.w, q_rot.w, 0.01);
+    BOOST_CHECK_CLOSE(q_identity.x(), q_rot.x(), 0.01);
+    BOOST_CHECK_CLOSE(q_identity.y(), q_rot.y(), 0.01);
+    BOOST_CHECK_CLOSE(q_identity.z(), q_rot.z(), 0.01);
+    BOOST_CHECK_CLOSE(q_identity.w(), q_rot.w(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(matrix_identity_to_quaternion, RotationConverterTest)
 {
     Quaterniond q_rot = rot_identity;
-    BOOST_CHECK_CLOSE(q_identity.x, q_rot.x, 0.01);
-    BOOST_CHECK_CLOSE(q_identity.y, q_rot.y, 0.01);
-    BOOST_CHECK_CLOSE(q_identity.z, q_rot.z, 0.01);
-    BOOST_CHECK_CLOSE(q_identity.w, q_rot.w, 0.01);
+    BOOST_CHECK_CLOSE(q_identity.x(), q_rot.x(), 0.01);
+    BOOST_CHECK_CLOSE(q_identity.y(), q_rot.y(), 0.01);
+    BOOST_CHECK_CLOSE(q_identity.z(), q_rot.z(), 0.01);
+    BOOST_CHECK_CLOSE(q_identity.w(), q_rot.w(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(matrix_to_quaternion, RotationConverterTest)
 {
     Quaterniond q_rot = rot;
-    BOOST_CHECK_CLOSE(-0.1666667, q_rot.x, 0.01);
-    BOOST_CHECK_CLOSE(-0.5, q_rot.y, 0.01);
-    BOOST_CHECK_CLOSE(0.8333333, q_rot.z, 0.01);
-    BOOST_CHECK_CLOSE(-0.1666667, q_rot.w, 0.01);
+    BOOST_CHECK_CLOSE(-0.1666667, q_rot.x(), 0.01);
+    BOOST_CHECK_CLOSE(-0.5, q_rot.y(), 0.01);
+    BOOST_CHECK_CLOSE(0.8333333, q_rot.z(), 0.01);
+    BOOST_CHECK_CLOSE(-0.1666667, q_rot.w(), 0.01);
 }
 
 
@@ -312,46 +312,46 @@ BOOST_FIXTURE_TEST_CASE(quaternion_to_axis_angle, RotationConverterTest)
 BOOST_FIXTURE_TEST_CASE(axis_angle_to_quaternion, RotationConverterTest)
 {
     Quaterniond q_rot = aa;
-    BOOST_CHECK_CLOSE(0.2767965, q_rot.x, 0.01);
-    BOOST_CHECK_CLOSE(0.2767965, q_rot.y, 0.01);
-    BOOST_CHECK_CLOSE(0.2767965, q_rot.z, 0.01);
-    BOOST_CHECK_CLOSE(0.8775826, q_rot.w, 0.01);
+    BOOST_CHECK_CLOSE(0.2767965, q_rot.x(), 0.01);
+    BOOST_CHECK_CLOSE(0.2767965, q_rot.y(), 0.01);
+    BOOST_CHECK_CLOSE(0.2767965, q_rot.z(), 0.01);
+    BOOST_CHECK_CLOSE(0.8775826, q_rot.w(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(axis_x_angle1_to_quaternion, RotationConverterTest)
 {
     Quaterniond q_rot = aa_x;
-    BOOST_CHECK_CLOSE(0.4794255, q_rot.x, 0.01);
-    BOOST_CHECK_CLOSE(0., q_rot.y, 0.01);
-    BOOST_CHECK_CLOSE(0., q_rot.z, 0.01);
-    BOOST_CHECK_CLOSE(0.8775826, q_rot.w, 0.01);
+    BOOST_CHECK_CLOSE(0.4794255, q_rot.x(), 0.01);
+    BOOST_CHECK_CLOSE(0., q_rot.y(), 0.01);
+    BOOST_CHECK_CLOSE(0., q_rot.z(), 0.01);
+    BOOST_CHECK_CLOSE(0.8775826, q_rot.w(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(axis_y_angle2_to_quaternion, RotationConverterTest)
 {
     Quaterniond q_rot = aa_y;
-    BOOST_CHECK_CLOSE(0., q_rot.x, 0.01);
-    BOOST_CHECK_CLOSE(0.841471, q_rot.y, 0.01);
-    BOOST_CHECK_CLOSE(0., q_rot.z, 0.01);
-    BOOST_CHECK_CLOSE(0.5403023, q_rot.w, 0.01);
+    BOOST_CHECK_CLOSE(0., q_rot.x(), 0.01);
+    BOOST_CHECK_CLOSE(0.841471, q_rot.y(), 0.01);
+    BOOST_CHECK_CLOSE(0., q_rot.z(), 0.01);
+    BOOST_CHECK_CLOSE(0.5403023, q_rot.w(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(axis_z_angle_1_5_to_quaternion, RotationConverterTest)
 {
     Quaterniond q_rot = aa_z;
-    BOOST_CHECK_CLOSE(0., q_rot.x, 0.01);
-    BOOST_CHECK_CLOSE(0., q_rot.y, 0.01);
-    BOOST_CHECK_CLOSE(0.6816388, q_rot.z, 0.01);
-    BOOST_CHECK_CLOSE(0.7316889, q_rot.w, 0.01);
+    BOOST_CHECK_CLOSE(0., q_rot.x(), 0.01);
+    BOOST_CHECK_CLOSE(0., q_rot.y(), 0.01);
+    BOOST_CHECK_CLOSE(0.6816388, q_rot.z(), 0.01);
+    BOOST_CHECK_CLOSE(0.7316889, q_rot.w(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(axis_1_angle_to_quaternion, RotationConverterTest)
 {
     Quaterniond q_rot = aa_1;
-    BOOST_CHECK_CLOSE(0.0421013, q_rot.x, 0.01);
-    BOOST_CHECK_CLOSE(0.2778688, q_rot.y, 0.01);
-    BOOST_CHECK_CLOSE(0.5449116, q_rot.z, 0.01);
-    BOOST_CHECK_CLOSE(0.7899922, q_rot.w, 0.01);
+    BOOST_CHECK_CLOSE(0.0421013, q_rot.x(), 0.01);
+    BOOST_CHECK_CLOSE(0.2778688, q_rot.y(), 0.01);
+    BOOST_CHECK_CLOSE(0.5449116, q_rot.z(), 0.01);
+    BOOST_CHECK_CLOSE(0.7899922, q_rot.w(), 0.01);
 }
 
 /// Rotation Matrix to Axis Angle
@@ -643,71 +643,71 @@ BOOST_FIXTURE_TEST_CASE(EulerAngles_xyz_to_Quaternion, RotationConverterTest)
 {
     EulerAngles<double, Axes::xyz> eulerAngles(2.356194490192345, 2.5261129449194057, 0.7853981633974483/*, EulerAngles<double>::Axes::xyz*/);
     Quaterniond quaternion = eulerAngles;
-    BOOST_CHECK_CLOSE(0.398113, quaternion.x, 0.01);
-    BOOST_CHECK_CLOSE(0.22985, quaternion.y, 0.01);
-    BOOST_CHECK_CLOSE(0.857813, quaternion.z, 0.01);
-    BOOST_CHECK_CLOSE(-0.22985, quaternion.w, 0.01);
+    BOOST_CHECK_CLOSE(0.398113, quaternion.x(), 0.01);
+    BOOST_CHECK_CLOSE(0.22985, quaternion.y(), 0.01);
+    BOOST_CHECK_CLOSE(0.857813, quaternion.z(), 0.01);
+    BOOST_CHECK_CLOSE(-0.22985, quaternion.w(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(EulerAngles_xzy_to_Quaternion, RotationConverterTest)
 {
     EulerAngles<double, Axes::xzy> eulerAngles(2.356194490192345, 2.5261129449194057, 0.7853981633974483/*, EulerAngles<double>::Axes::xzy*/);
     Quaterniond quaternion = eulerAngles;
-    BOOST_CHECK_CLOSE(0.118979, quaternion.x, 0.01);
-    BOOST_CHECK_CLOSE(-0.769095, quaternion.y, 0.01);
-    BOOST_CHECK_CLOSE(0.444037, quaternion.z, 0.01);
-    BOOST_CHECK_CLOSE(0.444037, quaternion.w, 0.01);
+    BOOST_CHECK_CLOSE(0.118979, quaternion.x(), 0.01);
+    BOOST_CHECK_CLOSE(-0.769095, quaternion.y(), 0.01);
+    BOOST_CHECK_CLOSE(0.444037, quaternion.z(), 0.01);
+    BOOST_CHECK_CLOSE(0.444037, quaternion.w(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(EulerAngles_yxz_to_Quaternion, RotationConverterTest)
 {
     EulerAngles<double, Axes::yxz> eulerAngles(2.356194490192345, 2.5261129449194057, 0.7853981633974483/*, EulerAngles<double>::Axes::yxz*/);
     Quaterniond quaternion = eulerAngles;
-    BOOST_CHECK_CLOSE(0.444037, quaternion.x, 0.01);
-    BOOST_CHECK_CLOSE(0.118979, quaternion.y, 0.01);
-    BOOST_CHECK_CLOSE(-0.769095, quaternion.z, 0.01);
-    BOOST_CHECK_CLOSE(0.444037, quaternion.w, 0.01);
+    BOOST_CHECK_CLOSE(0.444037, quaternion.x(), 0.01);
+    BOOST_CHECK_CLOSE(0.118979, quaternion.y(), 0.01);
+    BOOST_CHECK_CLOSE(-0.769095, quaternion.z(), 0.01);
+    BOOST_CHECK_CLOSE(0.444037, quaternion.w(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(EulerAngles_yzx_to_Quaternion, RotationConverterTest)
 {
     EulerAngles<double, Axes::yzx> eulerAngles(2.356194490192345, 2.5261129449194057, 0.7853981633974483/*, EulerAngles<double>::Axes::yzx*/);
     Quaterniond quaternion = eulerAngles;
-    BOOST_CHECK_CLOSE(0.857813, quaternion.x, 0.01);
-    BOOST_CHECK_CLOSE(0.398113, quaternion.y, 0.01);
-    BOOST_CHECK_CLOSE(0.22985, quaternion.z, 0.01);
-    BOOST_CHECK_CLOSE(-0.22985, quaternion.w, 0.01);
+    BOOST_CHECK_CLOSE(0.857813, quaternion.x(), 0.01);
+    BOOST_CHECK_CLOSE(0.398113, quaternion.y(), 0.01);
+    BOOST_CHECK_CLOSE(0.22985, quaternion.z(), 0.01);
+    BOOST_CHECK_CLOSE(-0.22985, quaternion.w(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(EulerAngles_zxy_to_Quaternion, RotationConverterTest)
 {
     EulerAngles<double, Axes::zxy> eulerAngles(2.356194490192345, 2.5261129449194057, 0.7853981633974483/*, EulerAngles<double>::Axes::zxy*/);
     Quaterniond quaternion = eulerAngles;
-    BOOST_CHECK_CLOSE(0.22985, quaternion.x, 0.01);
-    BOOST_CHECK_CLOSE(0.857813, quaternion.y, 0.01);
-    BOOST_CHECK_CLOSE(0.398113, quaternion.z, 0.01);
-    BOOST_CHECK_CLOSE(-0.22985, quaternion.w, 0.01);
+    BOOST_CHECK_CLOSE(0.22985, quaternion.x(), 0.01);
+    BOOST_CHECK_CLOSE(0.857813, quaternion.y(), 0.01);
+    BOOST_CHECK_CLOSE(0.398113, quaternion.z(), 0.01);
+    BOOST_CHECK_CLOSE(-0.22985, quaternion.w(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(EulerAngles_zyx_to_Quaternion, RotationConverterTest)
 {
     EulerAngles<double, Axes::zyx> eulerAngles(2.356194490192345, 2.5261129449194057, 0.7853981633974483/*, EulerAngles<double>::Axes::zyx*/);
     Quaterniond quaternion = eulerAngles;
-    BOOST_CHECK_CLOSE(-0.769095, quaternion.x, 0.01);
-    BOOST_CHECK_CLOSE(0.444037, quaternion.y, 0.01);
-    BOOST_CHECK_CLOSE(0.118979, quaternion.z, 0.01);
-    BOOST_CHECK_CLOSE(0.444037, quaternion.w, 0.01);
+    BOOST_CHECK_CLOSE(-0.769095, quaternion.x(), 0.01);
+    BOOST_CHECK_CLOSE(0.444037, quaternion.y(), 0.01);
+    BOOST_CHECK_CLOSE(0.118979, quaternion.z(), 0.01);
+    BOOST_CHECK_CLOSE(0.444037, quaternion.w(), 0.01);
 }
 
 BOOST_FIXTURE_TEST_CASE(EulerAngles_xyx_to_Quaternion, RotationConverterTest)
 {
     EulerAngles<double, Axes::xyx> eulerAngles(2.356194490192345, 2.5261129449194057, 0.7853981633974483/*, EulerAngles<double>::Axes::xyx*/);
     Quaterniond quaternion = eulerAngles;
-    BOOST_CHECK_CLOSE(0.302905, quaternion.x, 0.01);
-    BOOST_CHECK_CLOSE(0.673887, quaternion.y, 0.01);
-    BOOST_CHECK_CLOSE(0.673887, quaternion.z, 0.01);
+    BOOST_CHECK_CLOSE(0.302905, quaternion.x(), 0.01);
+    BOOST_CHECK_CLOSE(0.673887, quaternion.y(), 0.01);
+    BOOST_CHECK_CLOSE(0.673887, quaternion.z(), 0.01);
     /// Número muy pequeño, lo cual da problemas con el test normal
-    double abs_w = std::abs(quaternion.w);
+    double abs_w = std::abs(quaternion.w());
     bool check = abs_w < 0.0000001;
     BOOST_CHECK(check);
 }
@@ -716,11 +716,11 @@ BOOST_FIXTURE_TEST_CASE(EulerAngles_xzx_to_Quaternion, RotationConverterTest)
 {
     EulerAngles<double, Axes::xzx> eulerAngles(2.356194490192345, 2.5261129449194057, 0.7853981633974483/*, EulerAngles<double>::Axes::xzx*/);
     Quaterniond quaternion = eulerAngles;
-    BOOST_CHECK_CLOSE(0.302905, quaternion.x, 0.01);
-    BOOST_CHECK_CLOSE(-0.673887, quaternion.y, 0.01);
-    BOOST_CHECK_CLOSE(0.673887, quaternion.z, 0.01);
+    BOOST_CHECK_CLOSE(0.302905, quaternion.x(), 0.01);
+    BOOST_CHECK_CLOSE(-0.673887, quaternion.y(), 0.01);
+    BOOST_CHECK_CLOSE(0.673887, quaternion.z(), 0.01);
     /// Número muy pequeño, lo cual da problemas con el test normal
-    double abs_w = std::abs(quaternion.w);
+    double abs_w = std::abs(quaternion.w());
     bool check = abs_w < 0.0000001;
     BOOST_CHECK(check);
 }
@@ -729,11 +729,11 @@ BOOST_FIXTURE_TEST_CASE(EulerAngles_yxy_to_Quaternion, RotationConverterTest)
 {
     EulerAngles<double, Axes::yxy> eulerAngles(2.356194490192345, 2.5261129449194057, 0.7853981633974483/*, EulerAngles<double>::Axes::yxy*/);
     Quaterniond quaternion = eulerAngles;
-    BOOST_CHECK_CLOSE(0.673887, quaternion.x, 0.01);
-    BOOST_CHECK_CLOSE(0.302905, quaternion.y, 0.01);
-    BOOST_CHECK_CLOSE(-0.673887, quaternion.z, 0.01);
+    BOOST_CHECK_CLOSE(0.673887, quaternion.x(), 0.01);
+    BOOST_CHECK_CLOSE(0.302905, quaternion.y(), 0.01);
+    BOOST_CHECK_CLOSE(-0.673887, quaternion.z(), 0.01);
     /// Número muy pequeño, lo cual da problemas con el test normal
-    double abs_w = std::abs(quaternion.w);
+    double abs_w = std::abs(quaternion.w());
     bool check = abs_w < 0.0000001;
     BOOST_CHECK(check);
 }
@@ -742,11 +742,11 @@ BOOST_FIXTURE_TEST_CASE(EulerAngles_yzy_to_Quaternion, RotationConverterTest)
 {
     EulerAngles<double, Axes::yzy> eulerAngles(2.356194490192345, 2.5261129449194057, 0.7853981633974483/*, EulerAngles<double>::Axes::yzy*/);
     Quaterniond quaternion = eulerAngles;
-    BOOST_CHECK_CLOSE(0.673887, quaternion.x, 0.01);
-    BOOST_CHECK_CLOSE(0.302905, quaternion.y, 0.01);
-    BOOST_CHECK_CLOSE(0.673887, quaternion.z, 0.01);
+    BOOST_CHECK_CLOSE(0.673887, quaternion.x(), 0.01);
+    BOOST_CHECK_CLOSE(0.302905, quaternion.y(), 0.01);
+    BOOST_CHECK_CLOSE(0.673887, quaternion.z(), 0.01);
     /// Número muy pequeño, lo cual da problemas con el test normal
-    double abs_w = std::abs(quaternion.w);
+    double abs_w = std::abs(quaternion.w());
     bool check = abs_w < 0.0000001;
     BOOST_CHECK(check);
 }
@@ -755,11 +755,11 @@ BOOST_FIXTURE_TEST_CASE(EulerAngles_zxz_to_Quaternion, RotationConverterTest)
 {
     EulerAngles<double, Axes::zxz> eulerAngles(2.356194490192345, 2.5261129449194057, 0.7853981633974483);
     Quaterniond quaternion = eulerAngles;
-    BOOST_CHECK_CLOSE(0.673887, quaternion.x, 0.01);
-    BOOST_CHECK_CLOSE(0.673887, quaternion.y, 0.01);
-    BOOST_CHECK_CLOSE(0.302905, quaternion.z, 0.01);
+    BOOST_CHECK_CLOSE(0.673887, quaternion.x(), 0.01);
+    BOOST_CHECK_CLOSE(0.673887, quaternion.y(), 0.01);
+    BOOST_CHECK_CLOSE(0.302905, quaternion.z(), 0.01);
     /// Número muy pequeño, lo cual da problemas con el test normal
-    double abs_w = std::abs(quaternion.w);
+    double abs_w = std::abs(quaternion.w());
     bool check = abs_w < 0.0000001;
     BOOST_CHECK(check);
 }
@@ -768,11 +768,11 @@ BOOST_FIXTURE_TEST_CASE(EulerAngles_zyz_to_Quaternion, RotationConverterTest)
 {
     EulerAngles<double, Axes::zyz> eulerAngles(2.356194490192345, 2.5261129449194057, 0.7853981633974483);
     Quaterniond quaternion = eulerAngles;
-    BOOST_CHECK_CLOSE(-0.673887, quaternion.x, 0.01);
-    BOOST_CHECK_CLOSE(0.673887, quaternion.y, 0.01);
-    BOOST_CHECK_CLOSE(0.302905, quaternion.z, 0.01);
+    BOOST_CHECK_CLOSE(-0.673887, quaternion.x(), 0.01);
+    BOOST_CHECK_CLOSE(0.673887, quaternion.y(), 0.01);
+    BOOST_CHECK_CLOSE(0.302905, quaternion.z(), 0.01);
     /// Número muy pequeño, lo cual da problemas con el test normal
-    double abs_w = std::abs(quaternion.w);
+    double abs_w = std::abs(quaternion.w());
     bool check = abs_w < 0.0000001;
     BOOST_CHECK(check);
 }

@@ -2654,6 +2654,28 @@ BOOST_FIXTURE_TEST_CASE(mul_scalar_add, MatrixTest)
             BOOST_CHECK_EQUAL(result3(r, c), mat2(r, c) + mat1(r, c) * scalar);
 }
 
+BOOST_FIXTURE_TEST_CASE(mul_minus_matrix, MatrixTest)
+{
+    Matrix<double, 2, 2> mat1;
+    mat1[0][0] = 2.;
+    mat1[0][1] = 3.;
+    mat1[1][0] = 1.;
+    mat1[1][1] = 4.;
+
+    Matrix<double, 2, 2> mat2;
+    mat2[0][0] = 1.;
+    mat2[0][1] = 5.;
+    mat2[1][0] = 2.;
+    mat2[1][1] = 3.;
+
+    Matrix<double, 2, 2> mat3 = mat1 * -mat2;
+
+    BOOST_CHECK_EQUAL(-8, mat3[0][0]);
+    BOOST_CHECK_EQUAL(-19, mat3[0][1]);
+    BOOST_CHECK_EQUAL(-9, mat3[1][0]);
+    BOOST_CHECK_EQUAL(-17, mat3[1][1]);
+}
+
 BOOST_FIXTURE_TEST_CASE(mul_add, MatrixTest)
 {
     Matrix<double> mat1 = Matrix<double>::randon(100, 100);

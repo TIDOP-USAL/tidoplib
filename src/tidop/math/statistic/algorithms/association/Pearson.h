@@ -26,6 +26,7 @@
 
 #include "tidop/math/statistic/algorithms/association/Covariance.h"
 #include "tidop/math/statistic/algorithms/descriptive/StandardDeviation.h"
+#include "tidop/core/base/Type.h"
 
 namespace tl
 {
@@ -39,7 +40,7 @@ auto pearsonCorrelationCoefficient(R1 &&rangeX, R2 &&rangeY)
 {
     using T1 = std::remove_cvref_t<std::ranges::range_value_t<R1>>;
     using T2 = std::remove_cvref_t<std::ranges::range_value_t<R2>>;
-    using ResultType = CovarianceResultType<T1, T2>;
+    using ResultType = AccumulateType<T1, T2>;
 
     auto n_x = std::ranges::distance(rangeX);
     auto n_y = std::ranges::distance(rangeY);

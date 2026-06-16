@@ -28,6 +28,7 @@
 #include "tidop/math/base/Concepts.h"
 #include "tidop/math/statistic/base/Series.h"
 #include "tidop/core/base/Exception.h"
+#include "tidop/core/base/Type.h"
 
 namespace tl
 {
@@ -35,13 +36,6 @@ namespace tl
 /*! \addtogroup Statistics
  * \{
  */
-
-template<typename T1, typename T2>
-using CovarianceResultType = std::conditional_t<
-    std::is_floating_point_v<T1> || std::is_floating_point_v<T2>,
-    std::common_type_t<T1, T2>,
-    double
->;
 
 /*!
  * \brief Covariance of two datasets
@@ -51,7 +45,7 @@ auto covariance(R1 &&rangeX, R2 &&rangeY)
 {
     using T1 = std::remove_cvref_t<std::ranges::range_value_t<R1>>;
     using T2 = std::remove_cvref_t<std::ranges::range_value_t<R2>>;
-    using ResultType = CovarianceResultType<T1, T2>;
+    using ResultType = AccumulateType<T1, T2>;
 
     auto n_x = std::ranges::distance(rangeX);
     auto n_y = std::ranges::distance(rangeY);

@@ -456,6 +456,31 @@ struct TypeTraits<std::map<Key, Value>>
     static constexpr auto name_type = "std::map";
 };
 
+
+
+
+template<typename... Ts>
+struct Accumulator;
+
+template<typename T>
+struct Accumulator<T>
+{
+    using type = std::conditional_t<std::is_integral_v<T>, double, T>;
+};
+
+template<typename T, typename... Ts>
+struct Accumulator<T, Ts...>
+{
+    using type = std::conditional_t<
+        std::is_floating_point_v<T> || std::is_floating_point_v<typename Accumulator<Ts...>::type>,
+        std::common_type_t<T, typename Accumulator<Ts...>::type>,
+        double>;
+};
+
+template<typename... Ts>
+using AccumulateType = typename Accumulator<Ts...>::type;
+
+
 // ============================================================================
 // Helper Functions
 // ============================================================================

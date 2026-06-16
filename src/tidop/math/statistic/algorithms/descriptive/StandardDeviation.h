@@ -53,7 +53,7 @@ template<NumericRange R>
 auto standardDeviation(R &&range)
 {
     using T = std::remove_cvref_t<std::ranges::range_value_t<R>>;
-    using ResultType = std::conditional_t<std::is_floating_point_v<T>, T, double>;
+    using ResultType = AccumulateType<T>;
     return std::sqrt(variance(std::forward<R>(range)));
 }
 

@@ -28,8 +28,10 @@
 #include <algorithm>
 #include <cmath>
 #include <ranges>
+
 #include "tidop/math/base/Concepts.h"
 #include "tidop/core/base/exception.h"
+#include "tidop/core/base/Type.h"
 
 namespace tl
 {
@@ -42,7 +44,7 @@ template<NumericRange R>
 auto quantile(R &&range, double p)
 {
     using T = std::ranges::range_value_t<R>;
-    using ResultType = std::conditional_t<std::integral<T>, double, T>;
+    using ResultType = AccumulateType<T>;
 
     TL_ASSERT(!std::ranges::empty(range), "quantile: empty range");
     TL_ASSERT(std::isfinite(p), "quantile: p must be finite");
@@ -79,7 +81,7 @@ template<NumericRange R>
 auto quartileDeviation(R &&range)
 {
     using T = std::ranges::range_value_t<R>;
-    using ResultType = std::conditional_t<std::integral<T>, double, T>;
+    using ResultType = AccumulateType<T>;
 
     auto q1 = tl::quantile(range, 0.25);
     auto q3 = tl::quantile(range, 0.75);

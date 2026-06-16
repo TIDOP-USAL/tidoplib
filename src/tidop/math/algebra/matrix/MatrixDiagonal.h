@@ -161,7 +161,7 @@ private:
 
 public:
 
-    using value_type = T;
+    using value_type = std::remove_cv_t<T>;
     using size_type = size_t;
     using pointer = T *;
     using const_pointer = const T *;

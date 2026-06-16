@@ -69,20 +69,20 @@ constexpr auto assign(Matrix_t &dst, const Expr &expr) -> Matrix_t&
         return assign(dst, tmp);
     }
 
-    if constexpr (is_matrix_product_v<CleanExpr>) {
-        const auto &lhs = expr.lhs();
-        const auto &rhs = expr.rhs();
-        
-        if (std::is_constant_evaluated()) {
-            decltype(auto) a = require_linear_access(lhs);
-            decltype(auto) b = require_linear_access(rhs);
-            mulmat_cpp(a, b, dst);
-        } else {
-            mulmat(lhs, rhs, dst);
-        }
+    //if constexpr (is_matrix_product_v<CleanExpr>) {
+    //    const auto &lhs = expr.lhs();
+    //    const auto &rhs = expr.rhs();
+    //    
+    //    if (std::is_constant_evaluated()) {
+    //        decltype(auto) a = require_linear_access(lhs);
+    //        decltype(auto) b = require_linear_access(rhs);
+    //        mulmat_cpp(a, b, dst);
+    //    } else {
+    //        mulmat(lhs, rhs, dst);
+    //    }
 
-        return dst;
-    }
+    //    return dst;
+    //}
 
     if (std::is_constant_evaluated()) {
 
@@ -136,26 +136,26 @@ constexpr void assign_block(Block &dst, const Expr &expr)
         return;
     }
 
-    if constexpr (is_matrix_product_v<CleanExpr>) {
+    //if constexpr (is_matrix_product_v<CleanExpr>) {
 
-        const auto &lhs = expr.lhs();
-        const auto &rhs = expr.rhs();
+    //    const auto &lhs = expr.lhs();
+    //    const auto &rhs = expr.rhs();
 
-        // TODO: Aqui no siempre se necesita un temporal, solo cuando hay alias
-        Matrix<typename matrix_traits<Block>::value_type> tmp(lhs.rows(), rhs.cols());
+    //    // TODO: Aqui no siempre se necesita un temporal, solo cuando hay alias
+    //    Matrix<typename matrix_traits<Block>::value_type> tmp(lhs.rows(), rhs.cols());
 
-        //detail::mulmat(lhs, rhs, tmp);
-        if (std::is_constant_evaluated()) {
-            decltype(auto) a = require_linear_access(lhs);
-            decltype(auto) b = require_linear_access(rhs);
-            mulmat_cpp(a, b, tmp);
-        } else {
-            mulmat(lhs, rhs, tmp);
-        }
+    //    //detail::mulmat(lhs, rhs, tmp);
+    //    if (std::is_constant_evaluated()) {
+    //        decltype(auto) a = require_linear_access(lhs);
+    //        decltype(auto) b = require_linear_access(rhs);
+    //        mulmat_cpp(a, b, tmp);
+    //    } else {
+    //        mulmat(lhs, rhs, tmp);
+    //    }
 
-        assign_block(dst, tmp);
+    //    assign_block(dst, tmp);
 
-    } else {
+    //} else {
 
         Evaluator<CleanExpr> eval(expr);
 
@@ -164,7 +164,7 @@ constexpr void assign_block(Block &dst, const Expr &expr)
                 dst(r, c) = eval.coeff(r, c);
             }
         }
-    }
+    //}
 }
 
 

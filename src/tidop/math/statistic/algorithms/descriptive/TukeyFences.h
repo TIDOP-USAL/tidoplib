@@ -29,6 +29,7 @@
 
 #include "tidop/math/statistic/algorithms/descriptive/Quantile.h"
 #include "tidop/math/base/Concepts.h"
+#include "tidop/core/base/Type.h"
 
 namespace tl
 {
@@ -70,7 +71,7 @@ template<NumericRange R>
 auto tukeyFences(R &&range, TukeyFencesK k = TukeyFencesK::outlier) -> std::vector<bool>
 {
     using T = std::ranges::range_value_t<R>;
-    using value_type = std::conditional_t<std::integral<T>, double, T>;
+    using value_type = AccumulateType<T>;
 
     value_type _k{};
 

@@ -97,7 +97,7 @@ public:
      * \note Only available when SIMD intrinsics are enabled.
      */
     [[nodiscard]]
-    auto packet(size_t i) const
+    auto packet(size_t i) const -> Packed<value_type>
     {
         return mMatrixRow.packet(i);
     }

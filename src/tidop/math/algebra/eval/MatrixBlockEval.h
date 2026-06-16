@@ -65,7 +65,7 @@ private:
 
 public:
 
-    using value_type = std::remove_cv_t<T>;
+    using value_type = typename matrix_traits<MatrixBlock<T>>::value_type;
 
     /*!
      * \brief Constructs the evaluator from a `MatrixBlock`.

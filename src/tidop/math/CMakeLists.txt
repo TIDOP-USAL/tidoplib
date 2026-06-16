@@ -58,6 +58,7 @@ if(BUILD_TL_MATH)
                              algebra/eval/VecBinaryEval.h
                              algebra/eval/VecScalarEval.h
                              algebra/eval/VectorEval.h
+                             algebra/eval/VectorViewEval.h
                              algebra/eval/VecUnaryMinusEval.h
                              algebra/expr/DiagonalMatrixExpr.h
                              algebra/expr/MatBinaryExpr.h
@@ -103,6 +104,7 @@ if(BUILD_TL_MATH)
                              algebra/rotations/detail/RotationConverter.h
                              algebra/vector/Vector.h
                              algebra/vector/VectorBase.h
+                             algebra/vector/VectorView.h
                              algebra/vector/detail/Assign.h
                              algebra/vector/detail/VecEqual.h
                              algebra/vector/detail/MatVecMul.h

@@ -28,6 +28,7 @@
 
 #include "tidop/math/statistic/algorithms/descriptive/Mean.h"
 #include "tidop/math/base/Concepts.h"
+#include "tidop/core/base/Type.h"
 
 namespace tl
 {
@@ -60,7 +61,7 @@ template<NumericRange R>
 auto range(R &&range)
 {
     using T = std::ranges::range_value_t<R>;
-    using Accumulator = std::conditional_t<std::integral<T>, double, T>;
+    using Accumulator = AccumulateType<T>;
 
     if (std::ranges::empty(range)) {
         return T{0};

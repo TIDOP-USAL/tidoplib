@@ -32,46 +32,46 @@ namespace detail
 
 //TODO: Si se usa un expr_traits y vector_traits y matrix_traits heredan de él quedaría mas sencillo
 
-template<MatrixExpr Expr>
-constexpr decltype(auto) require_physical_memory(const Expr &expr)
-{
-    if constexpr (matrix_traits<Expr>::is_plain) {
-        return expr;
-    } else {
-        return expr.eval();
-    }
-}
-
-template<MatrixExpr Expr>
-constexpr decltype(auto) require_linear_access(const Expr &expr) 
-{
-    if constexpr (matrix_traits<Expr>::has_contiguous_memory) {
-        return expr;
-    } else {
-        return expr.eval();
-    }
-}
-
-
-template<VectorExpr Expr>
-constexpr decltype(auto) require_physical_memory(const Expr &expr)
-{
-    if constexpr (vector_traits<Expr>::is_plain) {
-        return expr;
-    } else {
-        return expr.eval();
-    }
-}
-
-template<VectorExpr Expr>
-constexpr decltype(auto) require_linear_access(const Expr &expr)
-{
-    if constexpr (vector_traits<Expr>::has_contiguous_memory) { 
-        return expr;
-    } else {
-        return expr.eval();
-    }
-}
+//template<MatrixExpr Expr>
+//constexpr decltype(auto) require_physical_memory(const Expr &expr)
+//{
+//    if constexpr (matrix_traits<Expr>::is_plain) {
+//        return expr;
+//    } else {
+//        return expr.eval();
+//    }
+//}
+//
+//template<MatrixExpr Expr>
+//constexpr decltype(auto) require_linear_access(const Expr &expr) 
+//{
+//    if constexpr (matrix_traits<Expr>::has_contiguous_memory) {
+//        return expr;
+//    } else {
+//        return expr.eval();
+//    }
+//}
+//
+//
+//template<VectorExpr Expr>
+//constexpr decltype(auto) require_physical_memory(const Expr &expr)
+//{
+//    if constexpr (vector_traits<Expr>::is_plain) {
+//        return expr;
+//    } else {
+//        return expr.eval();
+//    }
+//}
+//
+//template<VectorExpr Expr>
+//constexpr decltype(auto) require_linear_access(const Expr &expr)
+//{
+//    if constexpr (vector_traits<Expr>::has_contiguous_memory) { 
+//        return expr;
+//    } else {
+//        return expr.eval();
+//    }
+//}
 
 } // namespace detail
 

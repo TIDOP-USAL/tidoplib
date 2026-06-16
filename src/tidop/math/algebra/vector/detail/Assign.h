@@ -25,10 +25,12 @@
 #pragma once
 
 #include "tidop/core/base/Exception.h"
+#include "tidop/math/base/Simd.h"
 #include "tidop/math/algebra/eval/MatVecMulEval.h"
 #include "tidop/math/algebra/eval/VecBinaryEval.h"
 #include "tidop/math/algebra/eval/VecScalarEval.h"
 #include "tidop/math/algebra/eval/VectorEval.h"
+#include "tidop/math/algebra/eval/VectorViewEval.h"
 #include "tidop/math/algebra/eval/VecUnaryMinusEval.h"
 #include "tidop/math/algebra/eval/MatrixColEval.h"
 #include "tidop/math/algebra/eval/MatrixRowEval.h"
@@ -71,20 +73,20 @@ constexpr auto assign(Vector_t &dst, const Expr &expr) -> Vector_t &
         return assign(dst, tmp);
     }
 
-    if constexpr (is_matvec_product_v<CleanExpr>) {
+    //if constexpr (is_matvec_product_v<CleanExpr>) {
 
-        const auto &mat = expr.lhs();
-        const auto &vec = expr.rhs();
+    //    const auto &mat = expr.lhs();
+    //    const auto &vec = expr.rhs();
 
-        if (std::is_constant_evaluated()) {
-            decltype(auto) a = require_linear_access(mat);
-            decltype(auto) b = require_linear_access(vec);
-            mat_vec_mul_cpp(a, b, dst);
-        } else {
-            mat_vec_mul(mat, vec, dst);
-        }
-        return dst;
-    }
+    //    if (std::is_constant_evaluated()) {
+    //        decltype(auto) a = require_linear_access(mat);
+    //        decltype(auto) b = require_linear_access(vec);
+    //        mat_vec_mul_cpp(a, b, dst);
+    //    } else {
+    //        mat_vec_mul(mat, vec, dst);
+    //    }
+    //    return dst;
+    //}
         
     if (std::is_constant_evaluated()) {
 
@@ -138,21 +140,21 @@ constexpr void assign_row(Row &dst, const Expr &expr)
         return;
     }
 
-    if constexpr (is_matvec_product_v<CleanExpr>) {
+    //if constexpr (is_matvec_product_v<CleanExpr>) {
 
-        const auto &mat = expr.lhs();
-        const auto &vec = expr.rhs();
-        //detail::mat_vec_mul(mat, vec, dst);
+    //    const auto &mat = expr.lhs();
+    //    const auto &vec = expr.rhs();
+    //    //detail::mat_vec_mul(mat, vec, dst);
 
-        if (std::is_constant_evaluated()) {
-            decltype(auto) a = require_linear_access(mat);
-            decltype(auto) b = require_linear_access(vec);
-            mat_vec_mul_cpp(a, b, dst);
-        } else {
-            mat_vec_mul(mat, vec, dst);
-        }
+    //    if (std::is_constant_evaluated()) {
+    //        decltype(auto) a = require_linear_access(mat);
+    //        decltype(auto) b = require_linear_access(vec);
+    //        mat_vec_mul_cpp(a, b, dst);
+    //    } else {
+    //        mat_vec_mul(mat, vec, dst);
+    //    }
 
-    } else {
+    //} else {
 
         if (std::is_constant_evaluated()) {
 
@@ -184,7 +186,7 @@ constexpr void assign_row(Row &dst, const Expr &expr)
                 dst[i] = eval.coeff(i);
             }
         }
-    }
+    //}
 }
 
 template<typename Col, typename Expr>
@@ -201,27 +203,27 @@ constexpr void assign_col(Col &dst, const Expr &expr)
         return;
     }
 
-    if constexpr (is_matvec_product_v<CleanExpr>) {
+    //if constexpr (is_matvec_product_v<CleanExpr>) {
 
-        const auto &mat = expr.lhs();
-        const auto &vec = expr.rhs();
-        
-        if (std::is_constant_evaluated()) {
-            decltype(auto) a = require_linear_access(mat);
-            decltype(auto) b = require_linear_access(vec);
-            mat_vec_mul_cpp(a, b, dst);
-        } else {
-            mat_vec_mul(mat, vec, dst);
-        }
+    //    const auto &mat = expr.lhs();
+    //    const auto &vec = expr.rhs();
+    //    
+    //    if (std::is_constant_evaluated()) {
+    //        decltype(auto) a = require_linear_access(mat);
+    //        decltype(auto) b = require_linear_access(vec);
+    //        mat_vec_mul_cpp(a, b, dst);
+    //    } else {
+    //        mat_vec_mul(mat, vec, dst);
+    //    }
 
-    } else {
+    //} else {
                 
         Evaluator<CleanExpr> eval(expr);
 
         for (size_t i = 0; i < dst.size(); ++i) {
             dst[i] = eval.coeff(i);
         }
-    }
+    //}
 }
 
 template<typename Diag, typename Expr>
@@ -238,28 +240,76 @@ constexpr void assign_diagonal(Diag &dst, const Expr &expr)
         return;
     }
 
-    if constexpr (is_matvec_product_v<CleanExpr>) {
+    //if constexpr (is_matvec_product_v<CleanExpr>) {
 
-        const auto &mat = expr.lhs();
-        const auto &vec = expr.rhs();
+    //    const auto &mat = expr.lhs();
+    //    const auto &vec = expr.rhs();
 
-        if (std::is_constant_evaluated()) {
-            decltype(auto) a = require_linear_access(mat);
-            decltype(auto) b = require_linear_access(vec);
-            mat_vec_mul_cpp(a, b, dst);
-        } else {
-            mat_vec_mul(mat, vec, dst);
-        }
+    //    if (std::is_constant_evaluated()) {
+    //        decltype(auto) a = require_linear_access(mat);
+    //        decltype(auto) b = require_linear_access(vec);
+    //        mat_vec_mul_cpp(a, b, dst);
+    //    } else {
+    //        mat_vec_mul(mat, vec, dst);
+    //    }
 
-    } else {
+    //} else {
 
         Evaluator<CleanExpr> eval(expr);
 
         for (size_t i = 0; i < dst.size(); ++i) {
             dst[i] = eval.coeff(i);
         }
+    //}
+}
+
+
+template<typename Vec, typename Expr>
+constexpr void assign_vector_view(Vec &dst, const Expr &expr)
+{
+    TL_ASSERT(expr.size() == dst.size(), "Row size mismatch");
+
+    using CleanExpr = std::remove_cvref_t<Expr>;
+    using value_type = typename vector_traits<Vec>::value_type;
+
+    if (expr.aliases(&dst[0])) {
+        Vector<value_type> tmp = expr;
+        assign_row(dst, tmp);
+        return;
+    }
+
+    if (std::is_constant_evaluated()) {
+
+        Evaluator<CleanExpr> eval(expr);
+        for (size_t i = 0; i < dst.size(); ++i) {
+            dst[i] = eval.coeff(i);
+        }
+
+    } else {
+
+        Evaluator<CleanExpr> eval(expr);
+        size_t size = dst.size();
+        size_t i = 0;
+
+#ifdef TL_HAVE_SIMD_INTRINSICS
+        if constexpr (vector_traits<Expr>::has_contiguous_memory) {
+
+            constexpr size_t packed_size = Packed<value_type>::size();
+            const size_t max_size = size - (size % packed_size);
+
+            for (; i < max_size; i += packed_size) {
+                auto result_packet = eval.packet(i);
+                result_packet.storeUnaligned(&dst[i]);
+            }
+        }
+#endif
+
+        for (; i < size; ++i) {
+            dst[i] = eval.coeff(i);
+        }
     }
 }
+
 
 } // namespace detail
 

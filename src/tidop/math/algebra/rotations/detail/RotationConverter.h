@@ -320,34 +320,34 @@ void RotationConverter<T, P...>::convert(const RotationMatrix<T> &rotationMatrix
 
         T r11_r00 = rotationMatrix[1][1] - rotationMatrix[0][0];
         if (r11_r00 <= consts::zero<T>) {
-            quaternion.x = sqrt((consts::one<T> -r22 - r11_r00) / four);
-            T qx4 = quaternion.x * four;
-            quaternion.y = (rotationMatrix[0][1] + rotationMatrix[1][0]) / qx4;
-            quaternion.z = (rotationMatrix[0][2] + rotationMatrix[2][0]) / qx4;
-            quaternion.w = (rotationMatrix[2][1] - rotationMatrix[1][2]) / qx4;
+            quaternion.x() = sqrt((consts::one<T> -r22 - r11_r00) / four);
+            T qx4 = quaternion.x() * four;
+            quaternion.y() = (rotationMatrix[0][1] + rotationMatrix[1][0]) / qx4;
+            quaternion.z() = (rotationMatrix[0][2] + rotationMatrix[2][0]) / qx4;
+            quaternion.w() = (rotationMatrix[2][1] - rotationMatrix[1][2]) / qx4;
         } else {
-            quaternion.y = sqrt((consts::one<T>  -r22 + r11_r00) / four);
-            T qy4 = quaternion.y * four;
-            quaternion.x = (rotationMatrix[0][1] + rotationMatrix[1][0]) / qy4;
-            quaternion.z = (rotationMatrix[1][2] + rotationMatrix[2][1]) / qy4;
-            quaternion.w = (rotationMatrix[0][2] - rotationMatrix[2][0]) / qy4;
+            quaternion.y() = sqrt((consts::one<T>  -r22 + r11_r00) / four);
+            T qy4 = quaternion.y() * four;
+            quaternion.x() = (rotationMatrix[0][1] + rotationMatrix[1][0]) / qy4;
+            quaternion.z() = (rotationMatrix[1][2] + rotationMatrix[2][1]) / qy4;
+            quaternion.w() = (rotationMatrix[0][2] - rotationMatrix[2][0]) / qy4;
         }
 
     } else {
 
         T r11_r00 = rotationMatrix[1][1] + rotationMatrix[0][0];
         if (r11_r00 <= consts::zero<T>) {
-            quaternion.z = sqrt((consts::one<T>  +r22 - r11_r00) / four);
-            T qz4 = quaternion.z * four;
-            quaternion.x = (rotationMatrix[0][2] + rotationMatrix[2][0]) / qz4;
-            quaternion.y = (rotationMatrix[1][2] + rotationMatrix[2][1]) / qz4;
-            quaternion.w = (rotationMatrix[1][0] - rotationMatrix[0][1]) / qz4;
+            quaternion.z() = sqrt((consts::one<T>  +r22 - r11_r00) / four);
+            T qz4 = quaternion.z() * four;
+            quaternion.x() = (rotationMatrix[0][2] + rotationMatrix[2][0]) / qz4;
+            quaternion.y() = (rotationMatrix[1][2] + rotationMatrix[2][1]) / qz4;
+            quaternion.w() = (rotationMatrix[1][0] - rotationMatrix[0][1]) / qz4;
         } else {
-            quaternion.w = sqrt((consts::one<T>  +r22 + r11_r00) / four);
-            T qw4 = quaternion.w * four;
-            quaternion.x = (rotationMatrix[2][1] - rotationMatrix[1][2]) / qw4;
-            quaternion.y = (rotationMatrix[0][2] - rotationMatrix[2][0]) / qw4;
-            quaternion.z = (rotationMatrix[1][0] - rotationMatrix[0][1]) / qw4;
+            quaternion.w() = sqrt((consts::one<T>  +r22 + r11_r00) / four);
+            T qw4 = quaternion.w() * four;
+            quaternion.x() = (rotationMatrix[2][1] - rotationMatrix[1][2]) / qw4;
+            quaternion.y() = (rotationMatrix[0][2] - rotationMatrix[2][0]) / qw4;
+            quaternion.z() = (rotationMatrix[1][0] - rotationMatrix[0][1]) / qw4;
         }
 
     }
@@ -357,18 +357,18 @@ template<typename T, int... P>
 void RotationConverter<T, P...>::convert(const Quaternion<T> &quaternion,
                                          RotationMatrix<T> &rotationMatrix)
 {
-    T _2x = consts::two<T> *quaternion.x;
-    T _2y = consts::two<T> *quaternion.y;
-    T _2z = consts::two<T> *quaternion.z;
-    T _2xx = _2x * quaternion.x;
-    T _2xy = _2x * quaternion.y;
-    T _2xz = _2x * quaternion.z;
-    T _2xw = _2x * quaternion.w;
-    T _2yy = _2y * quaternion.y;
-    T _2yz = _2y * quaternion.z;
-    T _2yw = _2y * quaternion.w;
-    T _2zz = _2z * quaternion.z;
-    T _2zw = _2z * quaternion.w;
+    T _2x = consts::two<T> *quaternion.x();
+    T _2y = consts::two<T> *quaternion.y();
+    T _2z = consts::two<T> *quaternion.z();
+    T _2xx = _2x * quaternion.x();
+    T _2xy = _2x * quaternion.y();
+    T _2xz = _2x * quaternion.z();
+    T _2xw = _2x * quaternion.w();
+    T _2yy = _2y * quaternion.y();
+    T _2yz = _2y * quaternion.z();
+    T _2yw = _2y * quaternion.w();
+    T _2zz = _2z * quaternion.z();
+    T _2zw = _2z * quaternion.w();
 
     rotationMatrix[0][0] = consts::one<T> -_2yy - _2zz;
     rotationMatrix[0][1] = _2xy - _2zw;
@@ -385,14 +385,14 @@ template<typename T, int... P>
 void RotationConverter<T, P...>::convert(const Quaternion<T> &quaternion,
                                          AxisAngle<T> &axisAngle)
 {
-    T n2 = std::sqrt(quaternion.x * quaternion.x + quaternion.y * quaternion.y + quaternion.z * quaternion.z);
+    T n2 = std::sqrt(quaternion.x() * quaternion.x() + quaternion.y() * quaternion.y() + quaternion.z() * quaternion.z());
     if (n2 > consts::zero<T>) {
         Vector<T, 3> axis;
-        axis[0] = quaternion.x / n2;
-        axis[1] = quaternion.y / n2;
-        axis[2] = quaternion.z / n2;
+        axis[0] = quaternion.x() / n2;
+        axis[1] = quaternion.y() / n2;
+        axis[2] = quaternion.z() / n2;
         axisAngle.setAxis(axis);
-        T angle = consts::two<T> *std::acos(tl::clamp(quaternion.w, -consts::one<T>, consts::one<T>));
+        T angle = consts::two<T> *std::acos(tl::clamp(quaternion.w(), -consts::one<T>, consts::one<T>));
         axisAngle.setAngle(angle);
     } else {
         axisAngle.setAxis({consts::one<T>, consts::zero<T>, consts::zero<T>});
@@ -406,10 +406,10 @@ void RotationConverter<T, P...>::convert(const AxisAngle<T> &axisAngle,
 {
     T a_2 = axisAngle.angle() * consts::one_half<T>;
     T sin_a_2 = std::sin(a_2);
-    quaternion.x = sin_a_2 * axisAngle.axis(0);
-    quaternion.y = sin_a_2 * axisAngle.axis(1);
-    quaternion.z = sin_a_2 * axisAngle.axis(2);
-    quaternion.w = std::cos(a_2);
+    quaternion.x() = sin_a_2 * axisAngle.axis(0);
+    quaternion.y() = sin_a_2 * axisAngle.axis(1);
+    quaternion.z() = sin_a_2 * axisAngle.axis(2);
+    quaternion.w() = std::cos(a_2);
 }
 
 template<typename T, int... P>
@@ -849,89 +849,89 @@ void RotationConverter<T, P...>::convert(const EulerAngles<T, P...> &eulerAngles
     // Tait-Bryan angles
     if (eulerAngles.axes == Axes::xyz) {
 
-        quaternion.x = s1 * c2 * c3 + c1 * s2 * s3;
-        quaternion.y = c1 * s2 * c3 - s1 * c2 * s3;
-        quaternion.z = c1 * c2 * s3 + s1 * s2 * c3;
-        quaternion.w = c1 * c2 * c3 - s1 * s2 * s3;
+        quaternion.x() = s1 * c2 * c3 + c1 * s2 * s3;
+        quaternion.y() = c1 * s2 * c3 - s1 * c2 * s3;
+        quaternion.z() = c1 * c2 * s3 + s1 * s2 * c3;
+        quaternion.w() = c1 * c2 * c3 - s1 * s2 * s3;
 
     } else if (eulerAngles.axes == Axes::yxz) {
 
-        quaternion.x = s1 * s3 * c2 + s2 * c1 * c3;
-        quaternion.y = s1 * c2 * c3 - s2 * s3 * c1;
-        quaternion.z = c1 * c2 * s3 - s1 * s2 * c3;
-        quaternion.w = c1 * c2 * c3 + s1 * s2 * s3;
+        quaternion.x() = s1 * s3 * c2 + s2 * c1 * c3;
+        quaternion.y() = s1 * c2 * c3 - s2 * s3 * c1;
+        quaternion.z() = c1 * c2 * s3 - s1 * s2 * c3;
+        quaternion.w() = c1 * c2 * c3 + s1 * s2 * s3;
 
     } else if (eulerAngles.axes == Axes::zxy) {
 
-        quaternion.x = s2 * c1 * c3 - s1 * s3 * c2;
-        quaternion.y = s1 * s2 * c3 + s3 * c1 * c2;
-        quaternion.z = s1 * c2 * c3 + s2 * s3 * c1;
-        quaternion.w = c1 * c2 * c3 - s1 * s2 * s3;
+        quaternion.x() = s2 * c1 * c3 - s1 * s3 * c2;
+        quaternion.y() = s1 * s2 * c3 + s3 * c1 * c2;
+        quaternion.z() = s1 * c2 * c3 + s2 * s3 * c1;
+        quaternion.w() = c1 * c2 * c3 - s1 * s2 * s3;
 
     } else if (eulerAngles.axes == Axes::zyx) {
 
-        quaternion.x = s3 * c1 * c2 - s1 * s2 * c3;
-        quaternion.y = s1 * s3 * c2 + s2 * c1 * c3;
-        quaternion.z = s1 * c2 * c3 - s2 * s3 * c1;
-        quaternion.w = c1 * c2 * c3 + s1 * s2 * s3;
+        quaternion.x() = s3 * c1 * c2 - s1 * s2 * c3;
+        quaternion.y() = s1 * s3 * c2 + s2 * c1 * c3;
+        quaternion.z() = s1 * c2 * c3 - s2 * s3 * c1;
+        quaternion.w() = c1 * c2 * c3 + s1 * s2 * s3;
 
     } else if (eulerAngles.axes == Axes::yzx) {
 
-        quaternion.x = s1 * s2 * c3 + s3 * c1 * c2;
-        quaternion.y = s1 * c2 * c3 + s2 * s3 * c1;
-        quaternion.z = s2 * c1 * c3 - s1 * s3 * c2;
-        quaternion.w = c1 * c2 * c3 - s1 * s2 * s3;
+        quaternion.x() = s1 * s2 * c3 + s3 * c1 * c2;
+        quaternion.y() = s1 * c2 * c3 + s2 * s3 * c1;
+        quaternion.z() = s2 * c1 * c3 - s1 * s3 * c2;
+        quaternion.w() = c1 * c2 * c3 - s1 * s2 * s3;
 
     } else if (eulerAngles.axes == Axes::xzy) {
 
-        quaternion.x = s1 * c2 * c3 - s2 * s3 * c1;
-        quaternion.y = s3 * c1 * c2 - s1 * s2 * c3;
-        quaternion.z = s1 * s3 * c2 + s2 * c1 * c3;
-        quaternion.w = s1 * s2 * s3 + c1 * c2 * c3;
+        quaternion.x() = s1 * c2 * c3 - s2 * s3 * c1;
+        quaternion.y() = s3 * c1 * c2 - s1 * s2 * c3;
+        quaternion.z() = s1 * s3 * c2 + s2 * c1 * c3;
+        quaternion.w() = s1 * s2 * s3 + c1 * c2 * c3;
 
     }
     // Euler angles
     else if (eulerAngles.axes == Axes::xyx) {
 
-        quaternion.x = c2 * sin((x + z) * consts::one_half<T>);
-        quaternion.y = s2 * cos((x - z) * consts::one_half<T>);
-        quaternion.z = s2 * sin((x - z) * consts::one_half<T>);
-        quaternion.w = c2 * cos((x + z) * consts::one_half<T>);
+        quaternion.x() = c2 * sin((x + z) * consts::one_half<T>);
+        quaternion.y() = s2 * cos((x - z) * consts::one_half<T>);
+        quaternion.z() = s2 * sin((x - z) * consts::one_half<T>);
+        quaternion.w() = c2 * cos((x + z) * consts::one_half<T>);
 
     } else if (eulerAngles.axes == Axes::xzx) {
 
-        quaternion.x = c2 * sin((x + z) * consts::one_half<T>);
-        quaternion.y = -s2 * sin((x - z) * consts::one_half<T>);
-        quaternion.z = s2 * cos((x - z) * consts::one_half<T>);
-        quaternion.w = c2 * cos((x + z) * consts::one_half<T>);
+        quaternion.x() = c2 * sin((x + z) * consts::one_half<T>);
+        quaternion.y() = -s2 * sin((x - z) * consts::one_half<T>);
+        quaternion.z() = s2 * cos((x - z) * consts::one_half<T>);
+        quaternion.w() = c2 * cos((x + z) * consts::one_half<T>);
 
     } else if (eulerAngles.axes == Axes::yxy) {
 
-        quaternion.x = s2 * cos((x - z) * consts::one_half<T>);
-        quaternion.y = c2 * sin((x + z) * consts::one_half<T>);
-        quaternion.z = -s2 * sin((x - z) * consts::one_half<T>);
-        quaternion.w = c2 * cos((x + z) * consts::one_half<T>);
+        quaternion.x() = s2 * cos((x - z) * consts::one_half<T>);
+        quaternion.y() = c2 * sin((x + z) * consts::one_half<T>);
+        quaternion.z() = -s2 * sin((x - z) * consts::one_half<T>);
+        quaternion.w() = c2 * cos((x + z) * consts::one_half<T>);
 
     } else if (eulerAngles.axes == Axes::yzy) {
 
-        quaternion.x = s2 * sin((x - z) * consts::one_half<T>);
-        quaternion.y = c2 * sin((x + z) * consts::one_half<T>);
-        quaternion.z = s2 * cos((x - z) * consts::one_half<T>);
-        quaternion.w = c2 * cos((x + z) * consts::one_half<T>);
+        quaternion.x() = s2 * sin((x - z) * consts::one_half<T>);
+        quaternion.y() = c2 * sin((x + z) * consts::one_half<T>);
+        quaternion.z() = s2 * cos((x - z) * consts::one_half<T>);
+        quaternion.w() = c2 * cos((x + z) * consts::one_half<T>);
 
     } else if (eulerAngles.axes == Axes::zxz) {
 
-        quaternion.x = s2 * cos((x - z) * consts::one_half<T>);
-        quaternion.y = s2 * sin((x - z) * consts::one_half<T>);
-        quaternion.z = c2 * sin((x + z) * consts::one_half<T>);
-        quaternion.w = c2 * cos((x + z) * consts::one_half<T>);
+        quaternion.x() = s2 * cos((x - z) * consts::one_half<T>);
+        quaternion.y() = s2 * sin((x - z) * consts::one_half<T>);
+        quaternion.z() = c2 * sin((x + z) * consts::one_half<T>);
+        quaternion.w() = c2 * cos((x + z) * consts::one_half<T>);
 
     } else if (eulerAngles.axes == Axes::zyz) {
 
-        quaternion.x = -s2 * sin((x - z) * consts::one_half<T>);
-        quaternion.y = s2 * cos((x - z) * consts::one_half<T>);
-        quaternion.z = c2 * sin((x + z) * consts::one_half<T>);
-        quaternion.w = c2 * cos((x + z) * consts::one_half<T>);
+        quaternion.x() = -s2 * sin((x - z) * consts::one_half<T>);
+        quaternion.y() = s2 * cos((x - z) * consts::one_half<T>);
+        quaternion.z() = c2 * sin((x + z) * consts::one_half<T>);
+        quaternion.w() = c2 * cos((x + z) * consts::one_half<T>);
 
     }
 }

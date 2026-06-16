@@ -26,6 +26,7 @@
 
 #include "tidop/math/statistic/algorithms/descriptive/Mean.h"
 #include "tidop/math/statistic/algorithms/descriptive/Median.h"
+#include "tidop/core/base/Type.h"
 
 namespace tl
 {
@@ -43,7 +44,7 @@ template<NumericRange R>
 auto meanAbsoluteDeviation(R &&range)
 {
     using T = std::remove_cvref_t<std::ranges::range_value_t<R>>;
-    using ResultType = std::conditional_t<std::is_floating_point_v<T>, T, double>;
+    using ResultType = AccumulateType<T>;
 
     auto n = std::ranges::distance(range);
     if (n <= 1) return consts::zero<ResultType>;
@@ -72,7 +73,7 @@ template<NumericRange R>
 auto medianAbsoluteDeviation(R &&range)
 {
     using T = std::remove_cvref_t<std::ranges::range_value_t<R>>;
-    using ResultType = std::conditional_t<std::is_floating_point_v<T>, T, double>;
+    using ResultType = AccumulateType<T>;
 
     auto n = std::ranges::distance(range);
     if (n <= 1) return consts::zero<ResultType>;

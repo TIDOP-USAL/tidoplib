@@ -155,7 +155,7 @@ public:
      */
     template<VectorExpr Expr>
     [[nodiscard]]
-    constexpr auto dotProduct(const Expr &expr) const -> double;
+    constexpr auto dotProduct(const Expr &expr) const;
 
     /*!
      * \brief Computes the cross product of two 3‑dimensional vectors.
@@ -434,13 +434,14 @@ constexpr auto VectorBase<Derived>::asDiagonal() const -> DiagonalMatrixExpr<Der
 
 template<typename Derived>
 template<VectorExpr Expr>
-constexpr auto VectorBase<Derived>::dotProduct(const Expr &expr) const -> double
+constexpr auto VectorBase<Derived>::dotProduct(const Expr &expr) const
 {
     auto &derived = this->derived();
 
     TL_ASSERT(derived.size() == expr.size(), "Different vector size");
 
-    double dot = 0.0;
+    using Accumulator = AccumulateType<value_type>;
+    Accumulator dot = 0.0;
     size_t i = 0;
 
     auto eval_derived = make_evaluator(derived);
@@ -448,7 +449,7 @@ constexpr auto VectorBase<Derived>::dotProduct(const Expr &expr) const -> double
 
     auto run_scalar_loop = [&]() constexpr {
         for (; i < derived.size(); ++i) {
-            dot += static_cast<double>(eval_derived.coeff(i)) * static_cast<double>(eval_expr.coeff(i));
+            dot += static_cast<Accumulator>(eval_derived.coeff(i)) * static_cast<Accumulator>(eval_expr.coeff(i));
         }
     };
 
@@ -472,7 +473,7 @@ constexpr auto VectorBase<Derived>::dotProduct(const Expr &expr) const -> double
             packed_result += eval_derived.packet(i) * eval_expr.packet(i);
         }
 
-        dot += static_cast<double>(packed_result.sum());
+        dot += static_cast<Accumulator>(packed_result.sum());
     }
 #endif
 
@@ -488,10 +489,16 @@ template<typename Derived>
 template<VectorExpr Expr>
 constexpr auto VectorBase<Derived>::cross(const Expr &expr) const -> Vector<value_type, 3>
 {
-    static_assert(dimensions == 3, "The cross product is only defined for 3 dimensions.");
+    static_assert((dimensions == 3 || dimensions == DynamicData) &&
+                  (vector_traits<Expr>::size == 3 || vector_traits<Expr>::size == DynamicData),
+        "The cross product is only defined for 3 dimensions");
+
+    auto &derived = this->derived();
+
+    TL_ASSERT(derived.size() == 3 && expr.size() == 3, "The cross product is only defined for 3 dimensions");
 
     Vector<value_type, 3> res{};
-    Vector<value_type, 3> a = this->derived();
+    Vector<value_type, 3> a = derived;
     Vector<value_type, 3> b = expr;
 
     res[0] = a[1] * b[2] - a[2] * b[1];

@@ -25,6 +25,7 @@
 #pragma once
 
 #include "tidop/math/statistic/algorithms/descriptive/Quantile.h"
+#include "tidop/core/base/Type.h"
 
 namespace tl
 {
@@ -45,7 +46,7 @@ template<NumericRange R>
 auto interquartileRange(R &&range)
 {
     using T = std::remove_cvref_t<std::ranges::range_value_t<R>>;
-    using ResultType = std::conditional_t<std::is_floating_point_v<T>, T, double>;
+    using ResultType = AccumulateType<T>;
 
     ResultType q1 = quantile(range, 0.25);
     ResultType q3 = quantile(range, 0.75);

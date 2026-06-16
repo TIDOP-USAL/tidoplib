@@ -22,45 +22,66 @@
  *                                                                        *
  **************************************************************************/
 
+
 #pragma once
 
-#include "tidop/math/base/Concepts.h"
-#include <cmath>
+#include "tidop/math/base/Traits.h"
+#include "tidop/math/algebra/eval/Evaluator.h"
 
 namespace tl
 {
 
-/*! \addtogroup Statistics
+/*! \addtogroup Evaluators
  *  \{
  */
 
-/*!
- * \brief Computes the Root Mean Square (RMS) of a range of values.
- * \param[in] range The numeric range.
- * \return The Root Mean Square (RMS) of the values in the range.
- */
-template<NumericRange R>
-auto rootMeanSquare(R &&range)
+template<typename Scalar>
+class Evaluator<VectorView<Scalar>>
 {
-    using T = std::remove_cvref_t<std::ranges::range_value_t<R>>;
-    using Accumulator = AccumulateType<T>;
 
-    Accumulator sum{};
-    Accumulator i{1};
+private:
 
-    for (auto &&value : range) {
-        Accumulator x = static_cast<Accumulator>(value);
-        sum += (x * x - sum) / i++;
+    const VectorView<Scalar> &mVectorView;
+
+public:
+
+    using value_type = typename vector_traits<VectorView<Scalar>>::value_type;
+	
+public:
+
+    /*!
+     * \brief Constructs the evaluator from a `VectorView`.
+     * \param[in] row The row view.
+     */
+    constexpr Evaluator(const VectorView<Scalar> &vectorView)
+      : mVectorView(vectorView) {}
+
+    /*!
+     * \brief Returns the element at linear index i (column index within the row).
+     * \param[in] i Column index (0-based).
+     * \return The coefficient at the given column.
+     */
+    [[nodiscard]]
+    constexpr auto coeff(size_t i) const -> value_type
+    {
+        return mVectorView[i];
     }
 
-    return std::sqrt(sum);
-}
+#ifdef TL_HAVE_SIMD_INTRINSICS
+    /*!
+     * \brief Returns a SIMD packet of coefficients starting at column index i.
+     * \param[in] i Column index.
+     * \return A `Packed<T>` containing the coefficients from the row.
+     * \note Only available when SIMD intrinsics are enabled.
+     */
+    [[nodiscard]]
+    auto packet(size_t i) const -> Packed<value_type>
+    {
+        return mVectorView.packet(i);
+    }
+#endif
+};
 
-template<typename It>
-auto rootMeanSquare(It first, It last)
-{
-    return rootMeanSquare(std::ranges::subrange<It, It>(first, last));
-}
 
 /*! \} */
 

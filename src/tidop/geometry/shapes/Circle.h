@@ -66,7 +66,7 @@ public:
     /*!
      * \brief Default constructor
      */
-    constexpr Circle() = default;
+    constexpr Circle();
 
     /*!
      * \brief Constructs a circle with a given center and radius
@@ -147,12 +147,12 @@ public:
 
 
 
-//template<typename T>
-//Circle<T>::Circle()
-//  : center(Point<T>()),
-//    radius(static_cast<T>(1))
-//{
-//}
+template<typename T>
+constexpr Circle<T>::Circle()
+  : center(Point<T>()),
+    radius(static_cast<T>(1))
+{
+}
 
 template<typename T>
 constexpr Circle<T>::Circle(const Point<T> &center, T radius)

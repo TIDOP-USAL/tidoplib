@@ -25,8 +25,10 @@
 #pragma once
 
 #include <ranges>
+
 #include "tidop/math/statistic/algorithms/descriptive/Mean.h"
 #include "tidop/math/base/Concepts.h"
+#include "tidop/core/base/Type.h"
 
 namespace tl
 {
@@ -38,8 +40,8 @@ namespace tl
 template<NumericRange R>
 auto variance(R &&range)
 {
-    using T = std::ranges::range_value_t<R>;
-    using Accumulator = std::conditional_t<std::integral<T>, double, T>;
+    using T = std::remove_cvref_t<std::ranges::range_value_t<R>>;
+    using Accumulator = AccumulateType<T>;
 
     Accumulator mean = 0;
     Accumulator M2 = 0;
@@ -61,8 +63,8 @@ auto variance(R &&range)
 template<NumericRange R>
 auto populationVariance(R &&range)
 {
-    using T = std::ranges::range_value_t<R>;
-    using Accumulator = std::conditional_t<std::integral<T>, double, T>;
+    using T = std::remove_cvref_t<std::ranges::range_value_t<R>>;
+    using Accumulator = AccumulateType<T>;
 
     Accumulator mean = 0;
     Accumulator M2 = 0;

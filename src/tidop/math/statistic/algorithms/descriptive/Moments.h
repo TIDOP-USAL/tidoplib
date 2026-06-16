@@ -27,6 +27,7 @@
 #include "tidop/math/base/Simd.h"
 #include "tidop/math/base/Concepts.h"
 #include "tidop/math/statistic/base/CentralMoments.h"
+#include "tidop/core/base/Type.h"
 
 namespace tl
 {
@@ -42,7 +43,7 @@ template<NumericRange R>
 auto momentsScalar(R &&range)
 {
     using Value = std::ranges::range_value_t<R>;
-    using T = std::conditional_t<std::integral<Value>, double, Value>;
+    using T = AccumulateType<Value>;
 
     CentralMoments<T> moments;
 

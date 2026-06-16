@@ -46,6 +46,7 @@ template<typename T> class MatrixRow;
 template<typename T> class MatrixCol;
 template<typename T> class MatrixDiagonal;
 template<typename T, size_t Size> class Vector;
+template<typename T> class VectorView;
 template<typename T> class RotationMatrix;
 
 template<typename LHS, typename RHS, typename Op> class MatBinaryExpr;
@@ -221,6 +222,19 @@ struct vector_traits<Vector<T, Size>>
 };
 
 template<typename T>
+struct vector_traits<VectorView<T>>
+{
+    using value_type = std::remove_cv_t<T>;
+    static constexpr size_t size = std::numeric_limits<size_t>::max();
+    static constexpr bool is_view = true;
+    static constexpr bool is_mutable = !std::is_const_v<T>;
+    static constexpr bool is_element_wise = false;
+    static constexpr bool has_contiguous_memory = true;
+    static constexpr bool is_expression = false;
+    static constexpr bool is_plain = false;
+};
+
+template<typename T>
 struct vector_traits<MatrixRow<T>>
 {
     using value_type = std::remove_cv_t<T>;
@@ -332,6 +346,8 @@ struct matrix_traits<DiagonalMatrixExpr<Expr>>
     static constexpr bool is_expression = true;
     static constexpr bool is_plain = false;
 };
+
+
 
 template<typename D>
 struct is_vector : std::false_type {};

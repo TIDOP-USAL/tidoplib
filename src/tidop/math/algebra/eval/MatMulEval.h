@@ -97,7 +97,13 @@ public:
     constexpr Evaluator(const MatMulExpr<LHS,RHS> &expr)
       : mTemp(expr.rows(), expr.cols())
     {
-        detail::mulmat(expr.lhs(), expr.rhs(), mTemp);
+        if (std::is_constant_evaluated()) {
+            //decltype(auto) a = detail::require_linear_access(expr.lhs());
+            //decltype(auto) b = detail::require_linear_access(expr.rhs());
+            detail::mulmat_cpp(expr.lhs().eval(), expr.rhs().eval(), mTemp);
+        } else {
+            detail::mulmat(expr.lhs().eval(), expr.rhs().eval(), mTemp);
+        }
     }
 
     /*!

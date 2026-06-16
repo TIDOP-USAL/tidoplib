@@ -77,18 +77,18 @@ void mat_vec_mul(const Mat &matrix, const VecIn &vectorIn, VecOut &vectorOut)
 #ifdef TL_HAVE_SIMD_INTRINSICS
     case MatrixConfig::Product::SIMD:
     {
-        decltype(auto) a = require_linear_access(matrix);
-        decltype(auto) b = require_linear_access(vectorIn);
-        mat_vec_mul_simd(a, b, vectorOut);
+        //decltype(auto) a = require_linear_access(matrix);
+        //decltype(auto) b = require_linear_access(vectorIn);
+        mat_vec_mul_simd(matrix, vectorIn, vectorOut);
         break;
     }
 #endif
     case MatrixConfig::Product::CPP:
     default:
     {
-        decltype(auto) a = require_linear_access(matrix);
-        decltype(auto) b = require_linear_access(vectorIn);
-        mat_vec_mul_cpp(a, b, vectorOut);
+        //decltype(auto) a = require_linear_access(matrix);
+        //decltype(auto) b = require_linear_access(vectorIn);
+        mat_vec_mul_cpp(matrix, vectorIn, vectorOut);
         break;
     }
     }

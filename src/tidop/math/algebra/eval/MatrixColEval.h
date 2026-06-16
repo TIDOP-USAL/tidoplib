@@ -65,7 +65,7 @@ private:
 	
 public:
 
-    using value_type = std::remove_const_t<Scalar>;
+    using value_type = typename vector_traits<MatrixCol<Scalar>>::value_type;
 	
 public:
 

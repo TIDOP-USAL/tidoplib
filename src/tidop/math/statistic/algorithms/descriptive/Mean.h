@@ -31,6 +31,7 @@
 #include "tidop/core/base/exception.h"
 #include "tidop/math/base/Simd.h"
 #include "tidop/math/base/Concepts.h"
+#include "tidop/core/base/Type.h"
 
 namespace tl
 {
@@ -42,7 +43,7 @@ template<NumericRange R>
 auto meanScalar(R &&range)
 {
     using T = std::ranges::range_value_t<R>;
-    using Accumulator = std::conditional_t<std::integral<T>, double, T>;
+    using Accumulator = AccumulateType<T>;
 
     TL_ASSERT(!std::ranges::empty(range), "mean: empty range");
 

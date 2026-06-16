@@ -90,10 +90,10 @@ void mulmat(const LHS &lhs, const RHS &rhs, OutMat &out)
     case MatrixConfig::Product::CuBLAS:
     {
         if constexpr (std::floating_point<T>) {
-            decltype(auto) a = require_physical_memory(lhs);
-            decltype(auto) b = require_physical_memory(rhs);
-            cuda::gemm(a.rows(), b.cols(), a.cols(),
-                a.data(), b.data(), out.data());
+            //decltype(auto) a = require_physical_memory(lhs);
+            //decltype(auto) b = require_physical_memory(rhs);
+            cuda::gemm(lhs.rows(), rhs.cols(), lhs.cols(),
+                lhs.data(), rhs.data(), out.data());
         } else {
             TL_ASSERT(false, "CuBLAS no soporta tipos enteros");
         }
@@ -105,9 +105,9 @@ void mulmat(const LHS &lhs, const RHS &rhs, OutMat &out)
     case MatrixConfig::Product::BLAS:
     {
         if constexpr (std::floating_point<T>) {
-            decltype(auto) a = require_physical_memory(lhs);
-            decltype(auto) b = require_physical_memory(rhs);
-            mulmat_blas(a, b, out);
+            //decltype(auto) a = require_physical_memory(lhs);
+            //decltype(auto) b = require_physical_memory(rhs);
+            mulmat_blas(lhs, rhs, out);
         } else {
             TL_ASSERT(false, "OpenBLAS no soporta tipos enteros");
         }
@@ -119,9 +119,9 @@ void mulmat(const LHS &lhs, const RHS &rhs, OutMat &out)
     case MatrixConfig::Product::SIMD:
     {
         //if (out.rows() * out.cols() > 1000) {
-        decltype(auto) a = require_linear_access(lhs);
-        decltype(auto) b = require_linear_access(rhs);
-        if (a.rows() * a.cols() * b.cols() > 1000000) {
+        //decltype(auto) a = require_linear_access(lhs);
+        //decltype(auto) b = require_linear_access(rhs);
+        if (lhs.rows() * lhs.cols() * rhs.cols() > 1000000) {
             //detail::mulmat_simd_parallel(lhs, rhs, out);
             //detail::mulmat_simd_parallel_blocked(lhs, rhs, out);
             //detail::mulmat_simd_parallel_microkernel(lhs, rhs, out);
@@ -129,12 +129,12 @@ void mulmat(const LHS &lhs, const RHS &rhs, OutMat &out)
             //detail::mulmat_simd_kernel_opt2(lhs, rhs, out);
             // En este caso tengo que inicializar la matriz de salida a 0, porque el micro-kernel no hace acumulación sobre la salida, sino que la escribe directamente.
             out.fill(0);
-            mulmat_simd_kernel_opt3(a, b, out);
+            mulmat_simd_kernel_opt3(lhs, rhs, out);
         } else {
             //detail::mulmat_simd(lhs, rhs, out);
             //detail::mulmat_simd2(lhs, rhs, out);
             out.fill(0);
-            mulmat_simd3(a, b, out);
+            mulmat_simd3(lhs, rhs, out);
         }
         break;
     }
@@ -143,9 +143,9 @@ void mulmat(const LHS &lhs, const RHS &rhs, OutMat &out)
     case MatrixConfig::Product::CPP:
     default:
     {
-        decltype(auto) a = require_linear_access(lhs);
-        decltype(auto) b = require_linear_access(rhs);
-        mulmat_cpp(a, b, out);
+        //decltype(auto) a = require_linear_access(lhs);
+        //decltype(auto) b = require_linear_access(rhs);
+        mulmat_cpp(lhs, rhs, out);
         break;
     }
     }

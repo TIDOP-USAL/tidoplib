@@ -367,6 +367,15 @@ public:
         return res;
     }
 
+    template<VectorExpr Vec>
+    [[nodiscard]]
+    constexpr auto operator+=(const Vec &vec)
+    {
+        this->mData += vec;
+
+        return this;
+    }
+
     [[nodiscard]]
     constexpr auto operator*(T scalar) const -> Point
     {
@@ -589,7 +598,7 @@ template<typename T, typename Tag>
 auto operator*(T scalar, const Point<T, Tag> &p) -> Point<T, Tag>
 {
     Point<T, Tag> res;
-    res.mData = p.mData * scalar;
+    res.mData = p.vector() * scalar;
     return res;
 }
 
@@ -655,7 +664,7 @@ auto operator*(const Quaternion<T> &q, const Point<T, Tag> &p) -> Point<T, Tag>
     // Rotación: q * v * q'
     auto q_rot = q_norm * Quaternion<T>(p[0], p[1], p[2], consts::zero<T>) * q_norm.conjugate();
 
-    return Point<T, Tag>{q_rot.x, q_rot.y, q_rot.z};
+    return Point<T, Tag>{q_rot.x(), q_rot.y(), q_rot.z()};
 }
 
 

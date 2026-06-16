@@ -85,7 +85,7 @@ private:
 
 public:
 
-    using value_type = T;
+    using value_type = std::remove_cv_t<T>;
     using size_type = size_t;
     using pointer = T *;
     using const_pointer = const T *;
@@ -180,7 +180,7 @@ public:
      * \param[in] i Index (column offset) within the row.
      * \return `Packed<T>` containing the elements (if SIMD is enabled).
      */
-    auto packet(size_t i) const noexcept -> Packed<T>;
+    auto packet(size_t i) const noexcept -> Packed<value_type>;
 #endif
 };
 
@@ -206,25 +206,25 @@ constexpr auto MatrixRow<T>::operator=(const Expr &expr) -> MatrixRow &
 template<typename T>
 constexpr auto MatrixRow<T>::begin() noexcept -> iterator
 {
-    return iterator(&matrixData[matrixRow * matrixCols]);
+    return &matrixData[matrixRow * matrixCols];
 }
 
 template<typename T>
 constexpr auto MatrixRow<T>::begin() const noexcept -> const_iterator
 {
-    return iterator(&matrixData[matrixRow * matrixCols]);
+    return &matrixData[matrixRow * matrixCols];
 }
 
 template<typename T>
 constexpr auto MatrixRow<T>::end() noexcept -> iterator
 {
-    return iterator(&matrixData[matrixRow * matrixCols] + matrixCols);
+    return &matrixData[matrixRow * matrixCols] + matrixCols;
 }
 
 template<typename T>
 constexpr auto MatrixRow<T>::end() const noexcept -> const_iterator
 {
-  return iterator(&matrixData[matrixRow * matrixCols] + matrixCols);
+  return &matrixData[matrixRow * matrixCols] + matrixCols;
 }
 
 template<typename T>
@@ -259,9 +259,9 @@ constexpr auto MatrixRow<T>::aliases(const void *ptr) const -> bool
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
 template<typename T>
-auto MatrixRow<T>::packet(size_t i) const noexcept -> Packed<T>
+auto MatrixRow<T>::packet(size_t i) const noexcept -> Packed<value_type>
 {
-    Packed<T> p;
+    Packed<value_type> p;
     p.loadUnaligned(&matrixData[matrixRow * matrixCols + i]);
     return p;
 }

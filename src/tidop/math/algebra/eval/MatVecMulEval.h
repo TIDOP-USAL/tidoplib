@@ -94,7 +94,11 @@ public:
     constexpr Evaluator(const MatVecMulExpr<LHS, RHS> &expr)
       : mTemp(expr.size())
     {
-        detail::mat_vec_mul(expr.lhs(), expr.rhs(), mTemp);
+        if (std::is_constant_evaluated()) {
+            detail::mat_vec_mul_cpp(expr.lhs().eval(), expr.rhs().eval(), mTemp);
+        } else {
+            detail::mat_vec_mul(expr.lhs().eval(), expr.rhs().eval(), mTemp);
+        }
     }
 
     /*!

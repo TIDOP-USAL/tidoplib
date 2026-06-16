@@ -38,6 +38,7 @@
 #include "tidop/math/base/Concepts.h"
 #include "tidop/math/algebra/rotations/Rotations.h"
 #include "tidop/math/algebra/vector/Vector.h"
+#include "tidop/math/algebra/vector/VectorView.h"
 
 namespace tl
 {
@@ -69,10 +70,15 @@ class Quaternion
 
 public:
 
-    T x; /*!< The x coefficient of the quaternion. */
-    T y; /*!< The y coefficient of the quaternion. */
-    T z; /*!< The z coefficient of the quaternion. */
-    T w; /*!< The scalar part (w) of the quaternion. */
+    using value_type = T;
+    using reference = T &;
+    using const_reference = const T &;
+    using pointer = T *;
+    using const_pointer = const T *;
+
+private:
+
+    Vector<T, 4> mData;
 
 public:
 
@@ -95,13 +101,13 @@ public:
      * \brief Copy constructor
      * \param[in] quaternion The quaternion object to copy.
      */
-    Quaternion(const Quaternion<T> &quaternion);
+    constexpr Quaternion(const Quaternion<T> &quaternion) = default;
 
     /*!
      * \brief Move constructor
      * \param[in] quaternion The quaternion object to move.
      */
-    Quaternion(Quaternion<T> &&quaternion) noexcept;
+    constexpr Quaternion(Quaternion<T> &&quaternion) noexcept = default;
 
     /*!
      * \brief Destructor
@@ -113,14 +119,78 @@ public:
      * \param[in] quaternion The quaternion object to copy.
      * \return A reference to the current quaternion object.
      */
-    auto operator=(const Quaternion<T> &quaternion) -> Quaternion &;
+    constexpr auto operator=(const Quaternion<T> &quaternion) -> Quaternion & = default;
 
     /*!
      * \brief Move assignment operator
      * \param[in] quaternion The quaternion object to move.
      * \return A reference to the current quaternion object.
      */
-    auto operator=(Quaternion<T> &&quaternion) noexcept -> Quaternion &;
+    constexpr auto operator=(Quaternion<T> &&quaternion) noexcept -> Quaternion & = default;
+
+    /*!
+     * \brief Access the x-component of the point.
+     * \return A const reference to the x-component.
+     * \note Only valid for points with size at least 1.
+     */
+    [[nodiscard]]
+    constexpr auto x() const noexcept -> const_reference { return mData[0]; }
+
+    /*!
+     * \brief Access the x-component of the point (non-const version).
+     * \return A reference to the x-component.
+     * \note Only valid for points with size at least 1.
+     */
+    [[nodiscard]]
+    constexpr auto x() noexcept -> reference { return mData[0]; }
+
+    /*!
+     * \brief Access the y-component of the point.
+     * \return A const reference to the y-component.
+     * \note Only valid for points with size at least 2.
+     */
+    [[nodiscard]]
+    constexpr auto y() const noexcept -> const_reference { return mData[1]; }
+
+    /*!
+     * \brief Access the y-component of the point (non-const version).
+     * \return A reference to the y-component.
+     * \note Only valid for points with size at least 2.
+     */
+    [[nodiscard]]
+    constexpr auto y() noexcept -> reference { return mData[1]; }
+
+    /*!
+     * \brief Access the z-component of the point.
+     * \return A const reference to the z-component.
+     * \note Only valid for points with size at least 3.
+     */
+    [[nodiscard]]
+    constexpr auto z() const noexcept -> const_reference { return mData[2]; }
+
+    /*!
+     * \brief Access the z-component of the point (non-const version).
+     * \return A reference to the z-component.
+     * \note Only valid for points with size at least 3.
+     */
+    [[nodiscard]]
+    constexpr auto z() noexcept -> reference { return mData[2]; }
+
+    /*!
+     * \brief Access the w-component of the point.
+     * \return A const reference to the w-component.
+     * \note Only valid for points with size at least 4.
+     */
+    [[nodiscard]]
+    constexpr auto w() const noexcept -> const_reference { return mData[3]; }
+
+    /*!
+     * \brief Access the w-component of the vector (non-const version).
+     * \return A reference to the w-component.
+     * \note Only valid for vectors with size at least 4.
+     */
+    [[nodiscard]]
+    constexpr auto w() noexcept -> reference { return mData[3]; }
 
     /*!
      * \brief Quaternion conjugate
@@ -197,6 +267,16 @@ public:
      */
     auto operator /=(T scalar) -> Quaternion&;
 
+
+    constexpr auto vector() noexcept -> Vector<T, 4> & { return mData; }
+    constexpr auto vector() const noexcept -> const Vector<T, 4> & { return mData; }
+
+    constexpr auto imag() noexcept -> VectorView<T> { return VectorView<T>(mData.data(), 0, 3); }
+    constexpr auto imag() const noexcept -> VectorView<const T> { return VectorView<const T>(mData.data(), 0, 3); }
+
+    constexpr auto real() noexcept -> T & { return mData[3]; }
+    constexpr auto real() const noexcept -> const T & { return mData[3]; }
+
     /* Factory methods */
 
     /*!
@@ -204,42 +284,48 @@ public:
      * \f[ z = 0*i + 0*j + 0*k + 0 \f]
      * \return The zero quaternion.
      */
-    [[nodiscard]] static auto zero() -> Quaternion;
+    [[nodiscard]] 
+    static auto zero() -> Quaternion;
 
     /*!
      * \brief Returns the quaternion representing the unit vector along the i-axis.
      * \f[ i = 1*i + 0*j + 0*k + 0 \f]
      * \return The quaternion representing the i-axis.
      */
-    [[nodiscard]] static auto i() -> Quaternion;
+    [[nodiscard]] 
+    static auto i() -> Quaternion;
 
     /*!
      * \brief Returns the quaternion representing the unit vector along the j-axis.
      * \f[ j = 0*i + 1*j + 0*k + 0 \f]
      * \return The quaternion representing the j-axis.
      */
-    [[nodiscard]] static auto j() -> Quaternion;
+    [[nodiscard]] 
+    static auto j() -> Quaternion;
 
     /*!
      * \brief Returns the quaternion representing the unit vector along the k-axis.
      * \f[ k = 0*i + 0*j + 1*k + 0 \f]
      * \return The quaternion representing the k-axis.
      */
-    [[nodiscard]] static auto k() -> Quaternion;
+    [[nodiscard]] 
+    static auto k() -> Quaternion;
 
     /*!
      * \brief Returns the identity quaternion
      * \f[ 1 = 0*i + 0*j + 0*k + 1 \f]
      * \return The identity quaternion (1).
      */
-    [[nodiscard]] static auto identity() -> Quaternion;
+    [[nodiscard]] 
+    static auto identity() -> Quaternion;
 
     /*!
      * \brief Normalize a quaternion
      * \param[in] quaternion The quaternion to normalize.
      * \return The normalized quaternion.
      */
-    [[nodiscard]] static auto normalize(const Quaternion<T> &quaternion) -> Quaternion;
+    [[nodiscard]] 
+    static auto normalize(const Quaternion<T> &quaternion) -> Quaternion;
 
 };
 
@@ -253,76 +339,26 @@ using Quaterniond = Quaternion<double>;
 
 template<typename T>
 Quaternion<T>::Quaternion()
-  : x(-std::numeric_limits<T>::max()),
-    y(-std::numeric_limits<T>::max()),
-    z(-std::numeric_limits<T>::max()),
-    w(-std::numeric_limits<T>::max())
+  : mData{0, 0, 0, 1}
 {
 }
 
 template<typename T>
 Quaternion<T>::Quaternion(T x, T y, T z, T w)
-  : x(x),
-    y(y),
-    z(z),
-    w(w)
+  : mData{x, y, z, w}
 {
-}
-
-template<typename T>
-Quaternion<T>::Quaternion(const Quaternion<T> &quaternion)
-  : x(quaternion.x),
-    y(quaternion.y),
-    z(quaternion.z),
-    w(quaternion.w)
-{
-}
-
-template<typename T>
-Quaternion<T>::Quaternion(Quaternion<T> &&quaternion) noexcept
-  : x(std::exchange(quaternion.x, -std::numeric_limits<T>::max())),
-    y(std::exchange(quaternion.y, -std::numeric_limits<T>::max())),
-    z(std::exchange(quaternion.z, -std::numeric_limits<T>::max())),
-    w(std::exchange(quaternion.w, -std::numeric_limits<T>::max()))
-{
-}
-
-template<typename T>
-auto Quaternion<T>::operator = (const Quaternion &quaternion) -> Quaternion<T> &
-{
-    if (this != &quaternion) {
-        this->x = quaternion.x;
-        this->y = quaternion.y;
-        this->z = quaternion.z;
-        this->w = quaternion.w;
-    }
-
-    return *this;
-}
-
-template<typename T>
-auto Quaternion<T>::operator = (Quaternion &&quaternion) noexcept -> Quaternion<T> &
-{
-    if (this != &quaternion) {
-        this->x = std::exchange(quaternion.x, -std::numeric_limits<T>::max());
-        this->y = std::exchange(quaternion.y, -std::numeric_limits<T>::max());
-        this->z = std::exchange(quaternion.z, -std::numeric_limits<T>::max());
-        this->w = std::exchange(quaternion.w, -std::numeric_limits<T>::max());
-    }
-
-    return *this;
 }
 
 template<typename T>
 auto Quaternion<T>::conjugate() const -> Quaternion<T>
 {
-    return Quaternion<T>(-x, -y, -z, w);
+    return Quaternion<T>(-x(), -y(), -z(), w());
 }
 
 template<typename T>
 auto Quaternion<T>::norm() const -> T
 {
-    return sqrt(x * x + y * y + z * z + w * w);
+    return static_cast<T>(mData.norm());
 }
 
 template<typename T>
@@ -345,22 +381,16 @@ template<typename T>
 auto Quaternion<T>::operator *= (const Quaternion<T> &quaternion) -> Quaternion &
 {
     Quaternion<T> copy = *this;
-
-    this->x = copy.x * quaternion.w + copy.y * quaternion.z - copy.z * quaternion.y + copy.w * quaternion.x;
-    this->y = -copy.x * quaternion.z + copy.y * quaternion.w + copy.z * quaternion.x + copy.w * quaternion.y;
-    this->z = copy.x * quaternion.y - copy.y * quaternion.x + copy.z * quaternion.w + copy.w * quaternion.z;
-    this->w = -copy.x * quaternion.x - copy.y * quaternion.y - copy.z * quaternion.z + copy.w * quaternion.w;
-
+    
+    this->mData[3] = copy.real() * quaternion.real() - copy.imag().dotProduct(quaternion.imag());
+    this->imag() = quaternion.imag() * copy.real() + copy.imag() * quaternion.real() + copy.imag().cross(quaternion.imag());
     return *this;
 }
 
 template<typename T>
 auto Quaternion<T>::operator += (const Quaternion<T> &quaternion) -> Quaternion &
 {
-    this->x += quaternion.x;
-    this->y += quaternion.y;
-    this->z += quaternion.z;
-    this->w += quaternion.w;
+    this->mData += quaternion.mData;
 
     return *this;
 }
@@ -368,10 +398,7 @@ auto Quaternion<T>::operator += (const Quaternion<T> &quaternion) -> Quaternion 
 template<typename T>
 auto Quaternion<T>::operator -= (const Quaternion<T> &quaternion) -> Quaternion &
 {
-    this->x -= quaternion.x;
-    this->y -= quaternion.y;
-    this->z -= quaternion.z;
-    this->w -= quaternion.w;
+    this->mData -= quaternion.mData;
 
     return *this;
 }
@@ -379,10 +406,7 @@ auto Quaternion<T>::operator -= (const Quaternion<T> &quaternion) -> Quaternion 
 template<typename T>
 auto Quaternion<T>::operator *= (T scalar) -> Quaternion &
 {
-    this->x *= scalar;
-    this->y *= scalar;
-    this->z *= scalar;
-    this->w *= scalar;
+    this->mData *= scalar;
 
     return *this;
 }
@@ -395,10 +419,7 @@ auto Quaternion<T>::operator /= (T scalar) -> Quaternion &
         this->operator*=(consts::one<T> / scalar);
 
     } else {
-        this->x = consts::zero<T>;
-        this->y = consts::zero<T>;
-        this->z = consts::zero<T>;
-        this->w = consts::zero<T>;
+        this->mData = Vector<T, 4>::zeros();
     }
 
     return *this;
@@ -460,23 +481,10 @@ auto Quaternion<T>::normalize(const Quaternion<T> &quaternion) -> Quaternion<T>
 
 /* Operaciones unarias */
 
-template <typename T>
-auto operator -(const Quaternion<T>& quaternion) -> Quaternion<T>
+template<typename T>
+auto operator-(Quaternion<T> quaternion) -> Quaternion<T>
 {
-    return Quaternion<T>(-quaternion.x,
-                         -quaternion.y,
-                         -quaternion.z,
-                         -quaternion.w);
-}
-
-template <typename T>
-auto operator -(Quaternion<T>&& quaternion) -> Quaternion<T>
-{
-    quaternion.x = -quaternion.x;
-    quaternion.y = -quaternion.y;
-    quaternion.z = -quaternion.z;
-    quaternion.w = -quaternion.w;
-
+    quaternion.vector() = -quaternion.vector();
     return quaternion;
 }
 
@@ -489,29 +497,12 @@ auto operator -(Quaternion<T>&& quaternion) -> Quaternion<T>
  * \f[ q_1 \cdot q_2 = \f]
  */
 template<typename T>
-auto operator *(const Quaternion<T>& quat1,
-                const Quaternion<T>& quat2) -> Quaternion<T>
+auto operator *(Quaternion<T> lhs,
+                const Quaternion<T> &rhs) -> Quaternion<T>
 {
-    Quaternion<T> quaternion = quat1;
-    quaternion *= quat2;
-    return quaternion;
+    return lhs *= rhs;
 }
 
-template<typename T>
-auto operator *(Quaternion<T> &&quat1,
-                const Quaternion<T> &quat2) -> Quaternion<T>
-{
-    quat1 *= quat2;
-    return quat1;
-}
-
-template<typename T>
-auto operator *(Quaternion<T> &&quat1,
-                Quaternion<T> &&quat2) -> Quaternion<T>
-{
-    quat1 *= quat2;
-    return quat1;
-}
 
 /*!
  * \brief Quaternion addition
@@ -522,32 +513,10 @@ auto operator *(Quaternion<T> &&quat1,
  * \f[ q = (w_1 + w_2) + (x_1 + x_2) \cdot i + (y_1 + y_2) \cdot j + (z_1 + z_2) \cdot k \f]
  */
 template<typename T>
-auto operator +(const Quaternion<T>& quat1,
-                const Quaternion<T>& quat2) -> Quaternion<T>
+auto operator +(Quaternion<T> lhs,
+                const Quaternion<T> &rhs) -> Quaternion<T>
 {
-    Quaternion<T> q = quat1;
-    return q += quat2;
-}
-
-template<typename T>
-auto operator +(Quaternion<T>&& quat1,
-                const Quaternion<T>& quat2) -> Quaternion<T>
-{
-    return quat1 += quat2;
-}
-
-template<typename T>
-auto operator +(const Quaternion<T>& quat1,
-                Quaternion<T>&& quat2) -> Quaternion<T>
-{
-    return quat2 += quat1;
-}
-
-template<typename T>
-auto operator +(Quaternion<T>&& quat1,
-                Quaternion<T>&& quat2) -> Quaternion<T>
-{
-    return quat1 += quat2;
+    return lhs += rhs;
 }
 
 
@@ -560,106 +529,58 @@ auto operator +(Quaternion<T>&& quat1,
  * \f[ q = (w_1 - w_2) + (x_1 - x_2) \cdot i + (y_1 - y_2) \cdot j + (z_1 - z_2) \cdot k \f]
  */
 template<typename T>
-auto operator -(const Quaternion<T> &quat1,
-                const Quaternion<T> &quat2) -> Quaternion<T>
+auto operator -(Quaternion<T> lhs,
+                const Quaternion<T> &rhs) -> Quaternion<T>
 {
-    Quaternion<T> q = quat1;
-    return q -= quat2;
+    return lhs -= rhs;
+}
+
+
+
+template<typename T>
+auto operator *(Quaternion<T> quaternion, T scalar) -> Quaternion<T>
+{
+    return quaternion *= scalar;
 }
 
 template<typename T>
-auto operator -(Quaternion<T> &&quat1,
-                const Quaternion<T> &quat2) -> Quaternion<T>
+auto operator *(T scalar, Quaternion<T> quaternion) -> Quaternion<T>
 {
-    return quat1 -= quat2;
+    return quaternion *= scalar;
+}
+
+
+template<typename T>
+auto operator /(Quaternion<T> quaternion, T scalar) -> Quaternion<T>
+{
+    return quaternion /= scalar;
 }
 
 template<typename T>
-auto operator -(const Quaternion<T> &quat1,
-                Quaternion<T> &&quat2) -> Quaternion<T>
+auto operator /(T scalar, Quaternion<T> quaternion) -> Quaternion<T>
 {
-    return -(quat2 -= quat1);
+    return quaternion /= scalar;
 }
 
-template<typename T>
-auto operator -(Quaternion<T> &&quat1,
-                Quaternion<T> &&quat2) -> Quaternion<T>
-{
-    return quat1 -= quat2;
-}
 
-template<typename T>
-auto operator *(const Quaternion<T> &quaternion, T scalar) -> Quaternion<T>
-{
-    Quaternion<T> q = quaternion;
-    return q *= scalar;
-}
-
-template<typename T>
-auto operator *(Quaternion<T> &&quaternion, T scalar) -> Quaternion<T>
-{
-    quaternion *= scalar;
-    return quaternion;
-}
-
-template<typename T>
-auto operator *(T scalar, const Quaternion<T> &quaternion) -> Quaternion<T>
-{
-    Quaternion<T> q = quaternion;
-    return q *= scalar;
-}
-
-template<typename T>
-auto operator *(T scalar, Quaternion<T> &&quaternion) -> Quaternion<T>
-{
-    quaternion *= scalar;
-    return quaternion;
-}
-
-template<typename T>
-auto operator /(const Quaternion<T> &quaternion, T scalar) -> Quaternion<T>
-{
-    Quaternion<T> q = quaternion;
-    return q /= scalar;
-}
-
-template<typename T>
-auto operator /(Quaternion<T> &&quaternion, T scalar) -> Quaternion<T>
-{
-    quaternion /= scalar;
-    return quaternion;
-}
-
-template<typename T>
-auto operator /(T scalar, const Quaternion<T> &quaternion) -> Quaternion<T>
-{
-    Quaternion<T> q = quaternion;
-    return q /= scalar;
-}
-
-template<typename T>
-auto operator /(T scalar, Quaternion<T> &&quaternion) -> Quaternion<T>
-{
-    quaternion /= scalar;
-    return quaternion;
-}
 
 template<typename T>
 auto dot(const Quaternion<T> &quat1, const Quaternion<T> &quat2) -> T
 {
-    return quat1.x * quat2.x + quat1.y * quat2.y + quat1.z * quat2.z + quat1.w * quat2.w;
+    return quat1.vector().dotProduct(quat2.vector());
+    //return quat1.x() * quat2.x() + quat1.y() * quat2.y() + quat1.z() * quat2.z() + quat1.w() * quat2.w();
 }
 
 template<typename T> 
 auto operator ==(const Quaternion<T> &q1, const Quaternion<T> &q2) -> bool
 {
-    return q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w;
+    return q1.x() == q2.x() && q1.y() == q2.y() && q1.z() == q2.z() && q1.w() == q2.w();
 }
 
 template<typename T> 
 auto operator !=(const Quaternion<T> &q1, const Quaternion<T> &q2) -> bool
 {
-    return q1.x != q2.x || q1.y != q2.y || q1.z != q2.z || q1.w != q2.w;
+    return q1.x() != q2.x() || q1.y() != q2.y() || q1.z() != q2.z() || q1.w() != q2.w();
 }
 
 template<typename T, VectorExpr Vec>
@@ -676,7 +597,7 @@ auto operator*(const Quaternion<T> &q, const Vec &vector) -> Vector<T, 3>
     // Rotacion: q * v * q'
     auto q_rot = q_norm * Quaternion<T>(vector[0], vector[1], vector[2], consts::zero<T>) * q_norm.conjugate();
 
-    return Vector<T, 3>{q_rot.x, q_rot.y, q_rot.z};
+    return Vector<T, 3>{q_rot.x(), q_rot.y(), q_rot.z()};
 }
 
 template<typename T>
