@@ -31,7 +31,7 @@
 namespace tl
 {
 
-std::mutex Logger::mtx;
+//std::mutex Logger::mtx;
 
 Logger::Logger()
   : messageLevelFlags(MessageLevel::all)
@@ -46,24 +46,35 @@ auto Logger::instance() -> Logger &
 
 void Logger::open(const tl::Path &file)
 {
-    std::lock_guard<std::mutex> lck(Logger::mtx);
-
-    if (isOpen()) close();
+    std::scoped_lock lck(mtx);
+    if (_stream.is_open()) {
+        _stream.close();
+    }
     _stream.open(file.toString(), std::ofstream::app);
+
+    //std::lock_guard<std::mutex> lck(Logger::mtx);
+
+    //if (isOpen()) close();
+    //_stream.open(file.toString(), std::ofstream::app);
 }
 
 void Logger::close()
 {
-    std::lock_guard<std::mutex> lck(Logger::mtx);
-    _stream.close();
+    //std::lock_guard<std::mutex> lck(Logger::mtx);
+    //_stream.close();
+    std::scoped_lock lck(mtx);
+    if (_stream.is_open()) {
+        _stream.close();
+    }
 }
 
 auto Logger::isOpen() const -> bool
 {
+    std::scoped_lock lck(mtx);
     return _stream.is_open();
 }
 
-auto Logger::messageLevel() const -> EnumFlags<MessageLevel>
+auto Logger::messageLevel() const noexcept -> EnumFlags<MessageLevel>
 {
     return messageLevelFlags;
 }
@@ -73,56 +84,69 @@ void Logger::setMessageLevel(MessageLevel level)
     messageLevelFlags = level;
 }
 
-static const char *getPadding(size_t level_len)
+//static const char *getPadding(size_t level_len)
+//{
+//    static const char *padding[] = {"", " ", "  ", "   ", "    ", "    ", "    ", ""};
+//    return padding[level_len < 8 ? level_len : 7];
+//}
+
+
+
+void Logger::debug(std::string_view message)
 {
-    static const char *padding[] = {"", " ", "  ", "   ", "    ", "    ", "    ", ""};
-    return padding[level_len < 8 ? level_len : 7];
+    logMessage(MessageLevel::debug, message);
 }
 
-void Logger::logMessage(MessageLevel level, String level_name, String message)
+void Logger::info(std::string_view message)
 {
-    std::lock_guard<std::mutex> lck(Logger::mtx);
+    logMessage(MessageLevel::info, message);
+}
+
+void Logger::success(std::string_view message)
+{
+    logMessage(MessageLevel::success, message);
+}
+
+void Logger::warning(std::string_view message)
+{
+    logMessage(MessageLevel::warning, message);
+}                          
+
+void Logger::error(std::string_view message)
+{
+    logMessage(MessageLevel::error, message);
+}
+
+void Logger::logMessage(MessageLevel level, std::string_view message)
+{
+    //std::lock_guard<std::mutex> lck(Logger::mtx);
+    std::scoped_lock lck(mtx);
 
     if (!isOpen() || !messageLevelFlags.isEnabled(level))
         return;
 
+    //auto level_name = levelToString(level);
     auto date = formatTimeToString("%d/%b/%Y %H:%M:%S");
 
-#if TL_CPP_VERSION>= 17
-    constexpr std::string_view padding[] = {"", " ", "  ", "   "};
-    size_t level_len = level_name.length();
-    std::string_view pad = (level_len < 7) ? padding[7 - level_len] : "";
-    _stream << date << " - " << level_name << ":" << pad << " " << message << std::endl;
-#else
-    size_t level_len = level_name.length();
-    auto pad = getPadding(7 - (level_len < 7 ? level_len : 7));
-    _stream << date << " - " << level_name << ":" << pad << " " << message << std::endl;
-#endif
+    //constexpr std::string_view padding[] = {"", " ", "  ", "   "};
+    //size_t level_len = level_name.length();
+    //std::string_view pad = (level_len < 7) ? padding[7 - level_len] : "";
+    //_stream << date << " - " << level_name << ":" << pad << " " << message << std::endl;
+    auto now = std::chrono::system_clock::now();
+
+    _stream << std::format("{:%d/%b/%Y %H:%M:%S} - {:<7}: {}\n", now, levelToString(level), message);
 }
 
-void Logger::debug(String message)
+constexpr auto Logger::levelToString(MessageLevel level) -> std::string_view
 {
-    logMessage(MessageLevel::debug, "Debug", message);
-}
-
-void Logger::info(String message)
-{
-    logMessage(MessageLevel::info, "Info", message);
-}
-
-void Logger::success(String message)
-{
-    logMessage(MessageLevel::success, "Success", message);
-}
-
-void Logger::warning(String message)
-{
-    logMessage(MessageLevel::warning, "Warning", message);
-}                          
-
-void Logger::error(String message)
-{
-    logMessage(MessageLevel::error, "Error", message);
+    switch (level) {
+        case MessageLevel::debug:   return "Debug";
+        case MessageLevel::info:    return "Info";
+        case MessageLevel::success: return "Success";
+        case MessageLevel::warning: return "Warning";
+        case MessageLevel::error:   return "Error";
+        default:                    return "Unknown";
+    }
 }
 
 } // End namespace tl

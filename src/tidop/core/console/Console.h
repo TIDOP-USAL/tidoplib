@@ -1114,11 +1114,11 @@ private:
 
 public:
 
-    void debug(String message) override;
-    void info(String message) override;
-    void success(String message) override;
-    void warning(String message) override;
-    void error(String message) override;
+    void debug(std::string_view message) override;
+    void info(std::string_view message) override;
+    void success(std::string_view message) override;
+    void warning(std::string_view message) override;
+    void error(std::string_view message) override;
 
 };
 

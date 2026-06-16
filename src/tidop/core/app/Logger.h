@@ -121,7 +121,7 @@ class TL_EXPORT Logger
 private:
 
     std::ofstream _stream;                      /*!< Output stream for the log file */
-    static std::mutex mtx;                      /*!< Static mutex for thread-safe operations */
+    mutable std::mutex mtx;                     /*!< Static mutex for thread-safe operations */
     EnumFlags<MessageLevel> messageLevelFlags;  /*!< Enabled message levels */
 
 private:
@@ -154,6 +154,7 @@ public:
      * \note This function is thread-safe due to static local variable initialization
      *       (C++11 Magic Statics).
      */
+    [[nodiscard]]
     static auto instance() -> Logger&;
 
 public:
@@ -201,6 +202,7 @@ public:
      *
      * \see open(), close()
      */
+    [[nodiscard]]
     auto isOpen() const -> bool;
 
     // ========================================================================
@@ -225,7 +227,8 @@ public:
      *
      * \see setMessageLevel(), MessageLevel
      */
-    auto messageLevel() const -> EnumFlags<MessageLevel>;
+    [[nodiscard]]
+    auto messageLevel() const noexcept -> EnumFlags<MessageLevel>;
 
     /*!
      * \brief Set which message levels should be logged
@@ -256,6 +259,7 @@ public:
      * \param[in] level Message level(s) to enable
      * \see messageLevel(), MessageLevel
      */
+    [[nodiscard]]
     void setMessageLevel(MessageLevel level);
 	
     // ========================================================================
@@ -282,8 +286,10 @@ public:
     template<typename... Args>
     static void debug(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        if (Logger::instance().isOpen())
-            Logger::instance().debug(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+        //auto &log = Logger::instance();
+        //if (log.isOpen())
+        //    Logger::instance().debug(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+        logMessageFormat(MessageLevel::debug, s, std::forward<Args>(args)...);
     }
 
     /*!
@@ -297,8 +303,9 @@ public:
     template<typename... Args>
     static void info(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        if (Logger::instance().isOpen())
-            Logger::instance().info(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+        logMessageFormat(MessageLevel::info, s, std::forward<Args>(args)...);
+        //if (Logger::instance().isOpen())
+        //    Logger::instance().info(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
     }
 
     /*!
@@ -312,8 +319,9 @@ public:
     template<typename... Args>
     static void success(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        if (Logger::instance().isOpen())
-            Logger::instance().success(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+        logMessageFormat(MessageLevel::success, s, std::forward<Args>(args)...);
+        //if (Logger::instance().isOpen())
+        //    Logger::instance().success(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
     }
 
     /*!
@@ -327,8 +335,9 @@ public:
     template<typename... Args>
     static void warning(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        if (Logger::instance().isOpen())
-            Logger::instance().warning(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+        logMessageFormat(MessageLevel::warning, s, std::forward<Args>(args)...);
+        //if (Logger::instance().isOpen())
+        //    Logger::instance().warning(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
     }
 
     /*!
@@ -342,8 +351,9 @@ public:
     template<typename... Args>
     static void error(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        if (Logger::instance().isOpen())
-            Logger::instance().error(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+        logMessageFormat(MessageLevel::error, s, std::forward<Args>(args)...);
+        //if (Logger::instance().isOpen())
+        //    Logger::instance().error(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
     }
 
     // ========================================================================
@@ -361,7 +371,7 @@ public:
      * \see MessageHandler
      * \note Thread-safe.
      */
-    void debug(String message) override;
+    void debug(std::string_view message) override;
 
     /*!
      * \brief Handle an informational message from the Message publisher
@@ -373,7 +383,7 @@ public:
      * \see MessageHandler
      * \note Thread-safe.
      */
-    void info(String message) override;
+    void info(std::string_view message) override;
 
     /*!
      * \brief Handle a success message from the Message publisher
@@ -385,7 +395,7 @@ public:
      * \see MessageHandler
      * \note Thread-safe.
      */
-    void success(String message) override;
+    void success(std::string_view message) override;
 
     /*!
      * \brief Handle a warning message from the Message publisher
@@ -397,7 +407,7 @@ public:
      * \see MessageHandler
      * \note Thread-safe.
      */
-    void warning(String message) override;
+    void warning(std::string_view message) override;
 
     /*!
      * \brief Handle an error message from the Message publisher
@@ -409,12 +419,22 @@ public:
      * \see MessageHandler
      * \note Thread-safe.
      */
-    void error(String message) override;
+    void error(std::string_view message) override;
 	
 private:
 
-    void logMessage(MessageLevel level, String levelName, String message);
+    template<typename... Args>
+    static void logMessageFormat(MessageLevel level, FORMAT_NAMESPACE format_string<Args...> fmt, Args&&... args)
+    {
+        auto &log = Logger::instance();
+        if (log.isOpen() && log.messageLevel().isEnabled(level)) {
+            log.logMessage(level, FORMAT_NAMESPACE format(fmt, std::forward<Args>(args)...));
+        }
+    }
 
+    void logMessage(MessageLevel level, std::string_view message);
+
+    static constexpr auto levelToString(MessageLevel level) -> std::string_view;
 };
 
 /*! \} */

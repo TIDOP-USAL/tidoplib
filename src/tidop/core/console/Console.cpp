@@ -330,7 +330,7 @@ bool Console::enableVTMode()
     return true;
 }
 
-void Console::debug(String message)
+void Console::debug(std::string_view message)
 {
     std::lock_guard<std::mutex> lck(Console::mtx);
 
@@ -340,7 +340,7 @@ void Console::debug(String message)
     }
 }
 
-void Console::info(String message)
+void Console::info(std::string_view message)
 {
     std::lock_guard<std::mutex> lck(Console::mtx);
 
@@ -350,7 +350,7 @@ void Console::info(String message)
     }
 }
 
-void Console::success(String message)
+void Console::success(std::string_view message)
 {
     std::lock_guard<std::mutex> lck(Console::mtx);
 
@@ -362,7 +362,7 @@ void Console::success(String message)
     }
 }
 
-void Console::warning(String message)
+void Console::warning(std::string_view message)
 {
     std::lock_guard<std::mutex> lck(Console::mtx);
 
@@ -374,7 +374,7 @@ void Console::warning(String message)
     }
 }
 
-void Console::error(String message)
+void Console::error(std::string_view message)
 {
     std::lock_guard<std::mutex> lck(Console::mtx);
 

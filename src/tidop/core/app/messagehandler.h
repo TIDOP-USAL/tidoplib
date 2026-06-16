@@ -115,14 +115,6 @@ class TL_EXPORT MessageHandler
 
 public:
 
-#if TL_CPP_VERSION>= 17
-    using String = std::string_view;
-#else
-    using String = const std::string &;
-#endif
-
-public:
-
     /*!
      * \brief Constructor.
      */
@@ -137,31 +129,31 @@ public:
      * \brief Handle a debug message.
      * \param[in] message Message string.
      */
-    virtual void debug(String message) = 0;
+    virtual void debug(std::string_view message) = 0;
 
     /*!
      * \brief Handle an informational message.
      * \param[in] message Message string.
      */
-    virtual void info(String message) = 0;
+    virtual void info(std::string_view message) = 0;
 
     /*!
      * \brief Handle a success message.
      * \param[in] message Message string.
      */
-    virtual void success(String message) = 0;
+    virtual void success(std::string_view message) = 0;
 
     /*!
      * \brief Handle a warning message.
      * \param[in] message Message string.
      */
-    virtual void warning(String message) = 0;
+    virtual void warning(std::string_view message) = 0;
 
     /*!
      * \brief Handle an error message.
      * \param[in] message Message string.
      */
-    virtual void error(String message) = 0;
+    virtual void error(std::string_view message) = 0;
 
 };
 

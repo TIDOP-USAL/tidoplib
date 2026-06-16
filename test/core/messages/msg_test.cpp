@@ -59,27 +59,27 @@ public:
 
 // Heredado vía MessageHandler
 
-    virtual void debug(String message) override
+    virtual void debug(std::string_view message) override
     {
         debugMessage = message;
     }
 
-    virtual void info(String message) override
+    virtual void info(std::string_view message) override
     {
         infoMessage = message;
     }
 
-    virtual void success(String message) override
+    virtual void success(std::string_view message) override
     {
         successMessage = message;
     }
 
-    virtual void warning(String message) override
+    virtual void warning(std::string_view message) override
     {
         warningMessage = message;
     }
 
-    virtual void error(String message) override
+    virtual void error(std::string_view message) override
     {
         errorMessage = message;
     }
