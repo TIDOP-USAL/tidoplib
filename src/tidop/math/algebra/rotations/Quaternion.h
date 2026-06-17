@@ -63,7 +63,7 @@ namespace tl
   */
 template<typename T>
 class Quaternion
-  : public OrientationBase<Quaternion<T>>
+  : public RotationBase<Quaternion<T>>
 {
 
     static_assert(Floating<T>, "Integral type not supported");
@@ -86,7 +86,7 @@ public:
      * \brief Default constructor
      * Initializes the quaternion to zero.
      */
-    Quaternion();
+    constexpr Quaternion();
 
     /*!
      * \brief Constructor
@@ -95,7 +95,7 @@ public:
      * \param[in] z Coefficient for the z-axis component.
      * \param[in] w Scalar part of the quaternion.
      */
-    Quaternion(T x, T y, T z, T w);
+    constexpr Quaternion(T x, T y, T z, T w);
 
     /*!
      * \brief Copy constructor
@@ -325,7 +325,7 @@ public:
      * \return The normalized quaternion.
      */
     [[nodiscard]] 
-    static auto normalize(const Quaternion<T> &quaternion) -> Quaternion;
+    static auto normalize(Quaternion<T> quaternion) -> Quaternion;
 
 };
 
@@ -338,13 +338,13 @@ using Quaterniond = Quaternion<double>;
 
 
 template<typename T>
-Quaternion<T>::Quaternion()
+constexpr Quaternion<T>::Quaternion()
   : mData{0, 0, 0, 1}
 {
 }
 
 template<typename T>
-Quaternion<T>::Quaternion(T x, T y, T z, T w)
+constexpr Quaternion<T>::Quaternion(T x, T y, T z, T w)
   : mData{x, y, z, w}
 {
 }
@@ -471,11 +471,10 @@ auto Quaternion<T>::identity() -> Quaternion<T>
 }
 
 template<typename T> inline
-auto Quaternion<T>::normalize(const Quaternion<T> &quaternion) -> Quaternion<T>
+auto Quaternion<T>::normalize(Quaternion<T> quaternion) -> Quaternion<T>
 {
-    Quaternion<T> _quaternion(quaternion);
-    _quaternion.normalize();
-    return _quaternion;
+    quaternion.normalize();
+    return quaternion;
 }
 
 
@@ -568,36 +567,36 @@ template<typename T>
 auto dot(const Quaternion<T> &quat1, const Quaternion<T> &quat2) -> T
 {
     return quat1.vector().dotProduct(quat2.vector());
-    //return quat1.x() * quat2.x() + quat1.y() * quat2.y() + quat1.z() * quat2.z() + quat1.w() * quat2.w();
 }
 
 template<typename T> 
-auto operator ==(const Quaternion<T> &q1, const Quaternion<T> &q2) -> bool
+[[nodiscard]]
+constexpr auto operator ==(const Quaternion<T> &lhs, const Quaternion<T> &rhs) -> bool
 {
-    return q1.x() == q2.x() && q1.y() == q2.y() && q1.z() == q2.z() && q1.w() == q2.w();
+    return lhs.vector() == rhs.vector();
 }
 
 template<typename T> 
-auto operator !=(const Quaternion<T> &q1, const Quaternion<T> &q2) -> bool
+[[nodiscard]]
+constexpr auto operator !=(const Quaternion<T> &lhs, const Quaternion<T> &rhs) -> bool
 {
-    return q1.x() != q2.x() || q1.y() != q2.y() || q1.z() != q2.z() || q1.w() != q2.w();
+    return !(lhs == rhs);
 }
 
 template<typename T, VectorExpr Vec>
-auto operator*(const Quaternion<T> &q, const Vec &vector) -> Vector<T, 3>
+auto operator*(Quaternion<T> q, Vec vector) -> Vector<T, 3>
 {
     static_assert(vector_traits<Vec>::size == 3 || vector_traits<Vec>::size == DynamicData,
         "Quaternion rotation is only defined for 3D entities.");
 
     TL_ASSERT(vector.size() == 3, "Quaternion rotation requires a vector of size 3.");
 
-    Quaternion<T> q_norm = q;
-    q_norm.normalize();
+    q.normalize();
 
-    // Rotacion: q * v * q'
-    auto q_rot = q_norm * Quaternion<T>(vector[0], vector[1], vector[2], consts::zero<T>) * q_norm.conjugate();
+    auto u = q.imag();
+    auto t = consts::two<T> * u.cross(vector);
 
-    return Vector<T, 3>{q_rot.x(), q_rot.y(), q_rot.z()};
+    return vector + q.w() * t + u.cross(t);
 }
 
 template<typename T>

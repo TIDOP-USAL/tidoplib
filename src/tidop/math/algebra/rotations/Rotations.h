@@ -27,6 +27,7 @@
 #include <concepts>
 #include <type_traits>
 
+#include "tidop/math/algebra/rotations/Concepts.h" 
 #include "tidop/math/algebra/rotations/detail/RotationConverter.h"
 
 namespace tl
@@ -35,11 +36,6 @@ namespace tl
 /*! \addtogroup Rotations
  *  \{
  */
-
-template<typename T>
-class OrientationBase;
-
-/// \endcond
 
 /*!
  * \brief CRTP base class for orientation representations.
@@ -51,87 +47,57 @@ class OrientationBase;
  * \tparam T The scalar type (e.g., float, double) used for the orientation representation.
  * \tparam P Additional template parameters that may be used by the derived classes.
  */
-template<
-    template<typename, int... P>
-    class OrientationDerived, typename T, int... P>
-class OrientationBase<OrientationDerived<T, P...>>
+template<typename Derived>
+class RotationBase
 {
-
-public:
-
-    using value_type = T;
 
 public:
 
     /*!
      * \brief Default constructor
      */
-    constexpr OrientationBase() = default;
+    constexpr RotationBase() = default;
 
     /*!
      * \brief Copy constructor
      */
-    constexpr OrientationBase(const OrientationBase &) = default;
+    constexpr RotationBase(const RotationBase &) = default;
 
     /*!
      * \brief Move constructor
      */
-    constexpr OrientationBase(OrientationBase &&) noexcept = default;
-    ~OrientationBase() = default;
+    constexpr RotationBase(RotationBase &&) noexcept = default;
+    ~RotationBase() = default;
+
+    /*!
+     * \brief Copy assignment operator
+     */
+    constexpr auto operator=(const RotationBase &) -> RotationBase & = default;
 
     /*!
      * \brief Move assignment operator
      */
-    constexpr auto operator=(const OrientationBase &) -> OrientationBase & = default;
-
-    /*!
-     * \brief Move assignment operator
-     */
-    constexpr auto operator=(OrientationBase &&) noexcept -> OrientationBase & = default;
+    constexpr auto operator=(RotationBase &&) noexcept -> RotationBase & = default;
 
     /*!
      * \brief Conversion operator to another orientation type
      *
      * Converts this orientation to a different derived orientation type.
      *
-     * \tparam OrientationDerived2 The target derived orientation class to convert to.
+     * \tparam Target The target derived orientation class to convert to.
      * \return The converted orientation object.
      */
-    template<
-        template<typename>
-        class OrientationDerived2>
+    template<typename Target>
     [[nodiscard]] 
-    operator OrientationDerived2<T>() const
+    operator Target() const
+        requires (OrientationConvertible<Derived, Target>)
     {
-        if constexpr (std::same_as<OrientationDerived<T, P...>, OrientationDerived2<T>>) {
+        if constexpr (std::same_as<Derived, Target>) {
             return derived();
         } else {
-            OrientationDerived2<T> orientation;
-            RotationConverter<T, P...>::convert(this->derived(), orientation);
-            return orientation;
-        }
-    }
-
-    /*!
-     * \brief Conversion operator to another orientation type with additional template parameters
-     *
-     * Converts this orientation to a different derived orientation type with additional template parameters.
-     *
-     * \tparam OrientationDerived2 The target derived orientation class to convert to.
-     * \tparam Q Additional template parameters for the target orientation class.
-     * \return The converted orientation object.
-     */
-    template<
-        template<typename, int... Q>
-        class OrientationDerived2, int...Q>
-    [[nodiscard]] operator OrientationDerived2<T, Q...>() const
-    {
-        if constexpr (std::same_as<OrientationDerived<T, P...>, OrientationDerived2<T, Q...>>) {
-            return derived();
-        } else {
-            OrientationDerived2<T, Q...> orientation;
-            RotationConverter<T, Q...>::convert(this->derived(), orientation);
-            return orientation;
+            Target target;
+            detail::convert(this->derived(), target);
+            return target;
         }
     }
 
@@ -145,9 +111,9 @@ private:
      * \return A reference to the derived orientation object.
      */
     [[nodiscard]] 
-    constexpr auto derived() -> OrientationDerived<T, P...> &
+    constexpr auto derived() -> Derived &
     {
-        return *static_cast<OrientationDerived<T, P...> *>(this);
+        return *static_cast<Derived *>(this);
     }
 
     /*!
@@ -158,9 +124,9 @@ private:
      * \return A reference to the derived orientation object (const version).
      */
     [[nodiscard]] 
-    constexpr auto derived() const -> const OrientationDerived<T, P...> &
+    constexpr auto derived() const -> const Derived &
     {
-        return *static_cast<const OrientationDerived<T, P...> *>(this);
+        return *static_cast<const Derived *>(this);
     }
 };
 

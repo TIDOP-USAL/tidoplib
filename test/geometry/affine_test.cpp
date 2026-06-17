@@ -557,9 +557,9 @@ BOOST_FIXTURE_TEST_CASE(helmert3d_estimate_points, AffineTest)
 
     auto rotation = affine.rotation();
     auto euler_angles = rotation.toEulerAngles();
-    BOOST_CHECK_CLOSE(4.1218e-06, euler_angles.x, 0.01);
-    BOOST_CHECK_CLOSE(8.7949e-06, euler_angles.y, 0.01);
-    BOOST_CHECK_CLOSE(-3.8075e-05, euler_angles.z, 0.01);
+    BOOST_CHECK_CLOSE(4.1218e-06, euler_angles.x(), 0.01);
+    BOOST_CHECK_CLOSE(8.7949e-06, euler_angles.y(), 0.01);
+    BOOST_CHECK_CLOSE(-3.8075e-05, euler_angles.z(), 0.01);
 
 }
 

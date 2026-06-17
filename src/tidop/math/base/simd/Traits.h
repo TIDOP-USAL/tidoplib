@@ -218,6 +218,14 @@ struct PackedTraits<Packed<uint64_t>>
     static constexpr size_t alignment = sizeof(simd_type);
 };
 
+
+template<typename T>
+struct is_packed : std::false_type {};
+
+template<typename T>
+struct is_packed<Packed<T>> : std::true_type {};
+
+
 /*! \} */
 
 } // End namespace tl

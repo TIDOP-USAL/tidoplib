@@ -47,24 +47,31 @@ namespace tl
  * The `EulerAngles` class represents the orientation of an object using
  * Euler angles, which are defined by three angles corresponding to rotations
  * about the axes. The class allows different conventions (or axis orders)
- * to be used, specified by the template parameter `_axes`.
+ * to be used, specified by the template parameter `Order`.
  *
  * \tparam T The data type of the Euler angles (e.g., `float`, `double`).
- * \tparam _axes The specific rotation sequence (default is `Axes::xyz`).
+ * \tparam Order The specific rotation sequence (default is `Axes::xyz`).
  */
-template<typename T, int _axes = Axes::xyz>
+template<typename T, Axes Order = Axes::xyz>
 class EulerAngles
-    : public OrientationBase<EulerAngles<T, _axes>>
+    : public RotationBase<EulerAngles<T, Order>>
 {
 
     static_assert(Floating<T>, "Integral type not supported");
 
 public:
 
-    T x;  /*!< The first Euler angle (corresponding to the first axis in the rotation sequence). */
-    T y;  /*!< The second Euler angle (corresponding to the second axis in the rotation sequence). */
-    T z;  /*!< The third Euler angle (corresponding to the third axis in the rotation sequence). */
-    Axes axes; /*!< The rotation axes convention being used (e.g., `Axes::xyz`). */
+    using value_type = T;
+    using reference = T &;
+    using const_reference = const T &;
+
+private:
+
+    Vector<T, 3> mAngles; /*!< The vector containing the three Euler angles. */
+
+public:
+
+    static constexpr Axes axes = Order; /*!< The rotation axes convention being used. */
 
 public:
 
@@ -72,7 +79,7 @@ public:
      * \brief Default constructor.
      * Initializes the Euler angles to zero.
      */
-    EulerAngles();
+    constexpr EulerAngles();
 
     /*!
      * \brief Constructor with specific Euler angles.
@@ -80,25 +87,25 @@ public:
      * \param[in] y The second Euler angle.
      * \param[in] z The third Euler angle.
      */
-    EulerAngles(T x, T y, T z);
+    constexpr EulerAngles(T x, T y, T z);
 
     /*!
      * \brief Constructor with a vector of Euler angles.
      * \param[in] angles A vector containing the three Euler angles.
      */
-    EulerAngles(const Vector<T, 3> &angles);
+    constexpr EulerAngles(Vector<T, 3> angles);
 
     /*!
      * \brief Copy constructor.
      * \param[in] eulerAngles The `EulerAngles` instance to copy.
      */
-    EulerAngles(const EulerAngles<T, _axes> &eulerAngles);
+    constexpr EulerAngles(const EulerAngles<T, Order> &eulerAngles) = default;
 
     /*!
      * \brief Move constructor.
      * \param[in] eulerAngles The `EulerAngles` instance to move.
      */
-    EulerAngles(EulerAngles<T, _axes> &&eulerAngles) noexcept;
+    constexpr EulerAngles(EulerAngles<T, Order> &&eulerAngles) noexcept = default;
 
     ~EulerAngles() = default;
 
@@ -107,14 +114,70 @@ public:
      * \param[in] eulerAngles The `EulerAngles` instance to copy.
      * \return A reference to the current instance.
      */
-    auto operator=(const EulerAngles<T, _axes> &eulerAngles) -> EulerAngles&;
+    constexpr auto operator=(const EulerAngles<T, Order> &eulerAngles) -> EulerAngles& = default;
 
     /*!
      * \brief Move assignment operator.
      * \param[in] eulerAngles The `EulerAngles` instance to move.
      * \return A reference to the current instance.
      */
-    auto operator=(EulerAngles<T, _axes> &&eulerAngles) noexcept -> EulerAngles&;
+    constexpr auto operator=(EulerAngles<T, Order> &&eulerAngles) noexcept -> EulerAngles& = default;
+
+    /*!
+     * \brief Access the first Euler angle (corresponding to the first axis in the rotation sequence).
+     * \return A reference to the angle.
+     */
+    [[nodiscard]]
+    constexpr auto x() const noexcept -> const_reference { return mAngles[0]; }
+
+    /*!
+     * \brief Access the first Euler angle (non-const version).
+     * \return A reference to the angle.
+     */
+    [[nodiscard]]
+    constexpr auto x() noexcept -> reference { return mAngles[0]; }
+
+    /*!
+     * \brief Access the second Euler angle (corresponding to the second axis in the rotation sequence).
+     * \return A reference to the angle.
+     */
+    [[nodiscard]]
+    constexpr auto y() const noexcept -> const_reference { return mAngles[1]; }
+
+    /*!
+     * \brief Access the second Euler angle (non-const version).
+     * \return A reference to the angle.
+     */
+    [[nodiscard]]
+    constexpr auto y() noexcept -> reference { return mAngles[1]; }
+
+    /*!
+     * \brief Access the third Euler angle (corresponding to the third axis in the rotation sequence).
+     * \return A reference to the angle.
+     */
+    [[nodiscard]]
+    constexpr auto z() const noexcept -> const_reference { return mAngles[2]; }
+
+    /*!
+     * \brief Access the third Euler angle (non-const version).
+     * \return A reference to the angle.
+     */
+    [[nodiscard]]
+    constexpr auto z() noexcept -> reference { return mAngles[2]; }
+
+    /*!
+     * \brief Gets the underlying vector of angles.
+     * \return Reference to the vector of angles.
+     */
+    [[nodiscard]]
+    constexpr auto vector() const noexcept -> const Vector<T, 3>& { return mAngles; }
+
+    /*!
+     * \brief Gets the underlying vector of angles (non-const version).
+     * \return Reference to the vector of angles.
+     */
+    [[nodiscard]]
+    constexpr auto vector() noexcept -> Vector<T, 3>& { return mAngles; }
 
     /*!
      * \brief Unary plus operator.
@@ -122,7 +185,7 @@ public:
      * \return A copy of the current `EulerAngles` instance.
      */
     [[nodiscard]] 
-    auto operator+() const -> EulerAngles<T, _axes>;
+    auto operator+() const -> EulerAngles<T, Order>;
 
     /*!
      * \brief Unary minus operator.
@@ -130,94 +193,59 @@ public:
      * \return A new `EulerAngles` instance with negated angles.
      */
     [[nodiscard]] 
-    auto operator-() const -> EulerAngles<T, _axes>;
+    auto operator-() const -> EulerAngles<T, Order>;
 };
 
 
-template<typename T, int _axes>
-EulerAngles<T, _axes>::EulerAngles()
-  : x{0},
-    y{0},
-    z{0},
-    axes(static_cast<Axes>(_axes))
+template<typename T, Axes Order>
+constexpr EulerAngles<T, Order>::EulerAngles()
+  : mAngles{0, 0, 0}
 {
 }
 
-template<typename T, int _axes>
-EulerAngles<T, _axes>::EulerAngles(T x, T y, T z)
-  : x(x),
-    y(y),
-    z(z),
-    axes(static_cast<Axes>(_axes))
+template<typename T, Axes Order>
+constexpr EulerAngles<T, Order>::EulerAngles(T x, T y, T z)
+  : mAngles{x, y, z}
 {
 }
 
-template<typename T, int _axes>
-EulerAngles<T, _axes>::EulerAngles(const Vector<T, 3> &angles)
-  : x(angles[0]),
-    y(angles[1]),
-    z(angles[2]),
-    axes(static_cast<Axes>(_axes))
+template<typename T, Axes Order>
+constexpr EulerAngles<T, Order>::EulerAngles(Vector<T, 3> angles)
+  : mAngles(std::move(angles))
 {
-}
-
-template<typename T, int _axes>
-EulerAngles<T, _axes>::EulerAngles(const EulerAngles<T, _axes> &eulerAngles)
-  : x(eulerAngles.x),
-    y(eulerAngles.y),
-    z(eulerAngles.z),
-    axes(static_cast<Axes>(_axes))
-{
-}
-
-template<typename T, int _axes>
-EulerAngles<T, _axes>::EulerAngles(EulerAngles<T, _axes> &&eulerAngles) noexcept
-  : x(std::exchange(eulerAngles.x, 0)),
-    y(std::exchange(eulerAngles.y, 0)),
-    z(std::exchange(eulerAngles.z, 0)),
-    axes(static_cast<Axes>(_axes))
-{
-}
-
-template<typename T, int _axes>
-auto EulerAngles<T, _axes>::operator = (const EulerAngles<T, _axes> &eulerAngles) -> EulerAngles<T, _axes>&
-{
-    if (this != &eulerAngles) {
-        x = eulerAngles.x;
-        y = eulerAngles.y;
-        z = eulerAngles.z;
-    }
-    return *this;
-}
-
-template<typename T, int _axes>
-auto EulerAngles<T, _axes>::operator = (EulerAngles<T, _axes> &&eulerAngles) noexcept -> EulerAngles<T, _axes>&
-{
-    if (this != &eulerAngles) {
-        x = std::exchange(eulerAngles.x, 0);
-        y = std::exchange(eulerAngles.y, 0);
-        z = std::exchange(eulerAngles.z, 0);
-    }
-
-    return *this;
 }
 
 /* Operaciones unarias */
 
-template<typename T, int _axes>
-auto EulerAngles<T, _axes>::operator+() const -> EulerAngles<T, _axes>
+template<typename T, Axes Order>
+auto EulerAngles<T, Order>::operator+() const -> EulerAngles<T, Order>
 {
     return *this;
 }
 
-template <typename T, int _axes>
-auto EulerAngles<T, _axes>::operator-() const -> EulerAngles<T, _axes>
+template <typename T, Axes Order>
+auto EulerAngles<T, Order>::operator-() const -> EulerAngles<T, Order>
 {
-    return EulerAngles<T, _axes>(-this->x,-this->y,-this->z);
+    return EulerAngles<T, Order>(-this->x(), -this->y(), -this->z());
 }
 
+
+template<typename T, Axes OrderL, Axes OrderR>
+[[nodiscard]]
+constexpr auto operator == (const EulerAngles<T, OrderL> &lhs,
+                            const EulerAngles<T, OrderR> &rhs) -> bool
+{
+    return OrderL == OrderR && lhs.vector() == rhs.vector();
+}
+
+template<typename T, Axes OrderL, Axes OrderR>
+[[nodiscard]]
+constexpr auto operator != (const EulerAngles<T, OrderL> &lhs,
+                            const EulerAngles<T, OrderR> &rhs) -> bool
+{
+    return !(lhs == rhs);
+}
 
 /*! \} */
 
 } // End namespace tl
-

@@ -160,9 +160,9 @@ public:
 
     void rotate(const tl::AxisAngle<float>& axisAngle) {
         modelMatrix = modelMatrix * 
-        Matrices::rotationX(axisAngle.angle() * axisAngle.axis()[0]) *
-        Matrices::rotationY(axisAngle.angle() * axisAngle.axis()[1]) *
-        Matrices::rotationZ(axisAngle.angle() * axisAngle.axis()[2]);
+        Matrices::rotationX(axisAngle.angle() * axisAngle.x()) *
+        Matrices::rotationY(axisAngle.angle() * axisAngle.y()) *
+        Matrices::rotationZ(axisAngle.angle() * axisAngle.z());
     }
 
     void scale(float sx, float sy, float sz)

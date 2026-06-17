@@ -28,6 +28,7 @@
 #include <cstddef>
 
 #include "tidop/config.h"
+#include "tidop/math/base/simd/Traits.h" 
 
 namespace tl
 {
@@ -59,9 +60,6 @@ template<typename Expr> class TransposeExpr;
 template<typename Expr> class VecUnaryMinusExpr;
 template<typename Mat, typename Vec> class MatVecMulExpr;
 template<typename Expr> class DiagonalMatrixExpr;
-
-template<typename P> struct PackedTraits;
-template<typename T> class Packed;
 
 
 template<typename T>
@@ -412,12 +410,5 @@ struct is_cublas_compatible<Matrix<T, R, C>>
 
 template<typename T>
 inline constexpr bool is_cublas_compatible_v = is_cublas_compatible<std::remove_cvref_t<T>>::value;
-
-
-template<typename T>
-struct is_packed : std::false_type {};
-
-template<typename T>
-struct is_packed<Packed<T>> : std::true_type {};
 
 }

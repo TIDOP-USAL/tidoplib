@@ -925,9 +925,9 @@ constexpr void Vector<T, Size>::fill(T value)
 
 /* Scalar-vector multiplication */
 
-template<typename Scalar, VectorExpr Expr>
+template<Arithmetic Scalar, VectorExpr Expr>
     requires std::is_convertible_v<Scalar, typename vector_traits<Expr>::value_type>
-auto operator*(const Scalar &scalar, const Expr &expr)
+auto operator*(Scalar scalar, const Expr &expr)
 {
     return expr * scalar;
 }

@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de OÃ±a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -24,6 +24,10 @@
 
 #pragma once
 
+#include <type_traits>
+
+#include "tidop/math/algebra/rotations/EulerAnglesAxis.h"
+
 namespace tl
 {
 
@@ -31,29 +35,41 @@ namespace tl
  *  \{
  */
 
- /*!
-  * \brief Enum representing different rotation conventions for Euler angles.
-  */
-enum class Axes
-{
-    // Euler angles
-    zxz, /*!< Rotation around the Z axis, then X, then Z again. */
-    xyx, /*!< Rotation around the X axis, then Y, then X again. */
-    yzy, /*!< Rotation around the Y axis, then Z, then Y again. */
-    zyz, /*!< Rotation around the Z axis, then Y, then Z again. */
-    xzx, /*!< Rotation around the X axis, then Z, then X again. */
-    yxy, /*!< Rotation around the Y axis, then X, then Y again. */
+template<typename T> class Quaternion;
+template<typename T> class RotationMatrix;
+template<typename T> class AxisAngle;
+template<typename T, Axes Order> class EulerAngles;
 
-    // Tait-Bryan angles
-    xyz, /*!< Rotation around X, then Y, then Z. */
-    yzx, /*!< Rotation around Y, then Z, then X. */
-    zxy, /*!< Rotation around Z, then X, then Y. */
-    xzy, /*!< Rotation around X, then Z, then Y. */
-    zyx, /*!< Rotation around Z, then Y, then X. */
-    yxz  /*!< Rotation around Y, then X, then Z. */
+template<typename T>
+struct orientation_traits;
+
+template<typename T>
+struct orientation_traits<Quaternion<T>>
+{
+    using value_type = T;
 };
+
+template<typename T>
+struct orientation_traits<RotationMatrix<T>>
+{
+    using value_type = T;
+};
+
+template<typename T>
+struct orientation_traits<AxisAngle<T>>
+{
+    using value_type = T;
+};
+
+template<typename T, Axes Order>
+struct orientation_traits<EulerAngles<T, Order>>
+{
+    using value_type = T;
+};
+
 
 /*! \} */
 
 } // End namespace tl
+
 

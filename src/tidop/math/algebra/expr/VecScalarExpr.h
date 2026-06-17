@@ -97,7 +97,7 @@ public:
     static_assert(std::is_same_v<typename vector_traits<LHS>::value_type,
                   Scalar>, "Mixed types not supported");
 
-    using value_type = Scalar;
+    using value_type = typename vector_traits<LHS>::value_type;
 
 public:
 

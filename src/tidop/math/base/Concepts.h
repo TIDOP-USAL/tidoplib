@@ -77,7 +77,6 @@ concept IsAngle = requires(D a)
 {
     typename D::value_type;
     { a.value() } -> std::convertible_to<typename D::value_type>;
-    //{ a.unit() }  -> std::same_as<AngleUnit>;
     { a.normalize() };
     { a.normalizePositive() };
 };

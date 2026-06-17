@@ -49,10 +49,16 @@ namespace tl
  */
 template<typename T>
 class AxisAngle
-  : public OrientationBase<AxisAngle<T>>
+  : public RotationBase<AxisAngle<T>>
 {
 
     static_assert(Floating<T>, "Integral type not supported");
+
+public:
+
+    using value_type = T;
+    using reference = T &;
+    using const_reference = const T &;
 
 private:
 
@@ -64,26 +70,26 @@ public:
     /*!
      * \brief Default constructor.
      */
-    AxisAngle();
+    constexpr AxisAngle();
 
     /*!
      * \brief Copy constructor.
      * \param[in] axisAngle The `AxisAngle` instance to copy.
      */
-    AxisAngle(const AxisAngle &axisAngle);
+    constexpr AxisAngle(const AxisAngle &axisAngle) = default;
 
     /*!
      * \brief Move constructor.
      * \param[in] axisAngle The `AxisAngle` instance to move.
      */
-    AxisAngle(AxisAngle &&axisAngle) noexcept;
+    constexpr AxisAngle(AxisAngle &&axisAngle) noexcept = default;
 
     /*!
      * \brief Constructor with angle and axis.
      * \param[in] angle The rotation angle in radians.
      * \param[in] axis The axis of rotation as a 3D vector.
      */
-    AxisAngle(T angle, const Vector<T, 3> &axis);
+    constexpr AxisAngle(T angle, Vector<T, 3> axis);
 
     ~AxisAngle() = default;
 
@@ -92,21 +98,21 @@ public:
      * \param[in] axisAngle The `AxisAngle` instance to copy.
      * \return A reference to the current instance.
      */
-    auto operator = (const AxisAngle &axisAngle) -> AxisAngle &;
+    constexpr auto operator = (const AxisAngle &axisAngle) -> AxisAngle & = default;
 
     /*!
      * \brief Move assignment operator.
      * \param[in] axisAngle The `AxisAngle` instance to move.
      * \return A reference to the current instance.
      */
-    auto operator = (AxisAngle &&axisAngle) noexcept -> AxisAngle &;
+    constexpr auto operator = (AxisAngle &&axisAngle) noexcept -> AxisAngle & = default;
 
     /*!
      * \brief Gets the rotation angle.
      * \return The rotation angle in radians.
      */
-    [[nodiscard]] 
-    auto angle() const -> T;
+    [[nodiscard]]
+    constexpr auto angle() const noexcept -> T;
 
     /*!
      * \brief Sets the rotation angle.
@@ -115,25 +121,68 @@ public:
     void setAngle(T angle);
 
     /*!
-     * \brief Gets the rotation axis.
-     * \return The axis of rotation as a 3D vector.
-     */
-    [[nodiscard]] 
-    auto axis() const -> Vector<T, 3>;
-
-    /*!
-     * \brief Gets a specific component of the rotation axis.
-     * \param[in] i The index of the component (0, 1, or 2).
-     * \return The value of the specified axis component.
+     * \brief Gets the x-component of the rotation axis.
+     * \return A const reference to the x-component.
      */
     [[nodiscard]]
-    auto axis(size_t i) const -> T;
+    constexpr auto x() const noexcept -> const_reference { return mAxis[0]; }
+
+    /*!
+     * \brief Gets the x-component of the rotation axis (non-const version).
+     * \return A reference to the x-component.
+     */
+    [[nodiscard]]
+    constexpr auto x() noexcept -> reference { return mAxis[0]; }
+
+    /*!
+     * \brief Gets the y-component of the rotation axis.
+     * \return A const reference to the y-component.
+     */
+    [[nodiscard]]
+    constexpr auto y() const noexcept -> const_reference { return mAxis[1]; }
+
+    /*!
+     * \brief Gets the y-component of the rotation axis (non-const version).
+     * \return A reference to the y-component.
+     */
+    [[nodiscard]]
+    constexpr auto y() noexcept -> reference { return mAxis[1]; }
+
+    /*!
+     * \brief Gets the z-component of the rotation axis.
+     * \return A const reference to the z-component.
+     */
+    [[nodiscard]]
+    constexpr auto z() const noexcept -> const_reference { return mAxis[2]; }
+
+    /*!
+     * \brief Gets the z-component of the rotation axis (non-const version).
+     * \return A reference to the z-component.
+     */
+    [[nodiscard]]
+    constexpr auto z() noexcept -> reference { return mAxis[2]; }
+
+    /*!
+     * \brief Gets the rotation axis as a 3D vector.
+     * \return A const reference to the axis vector.
+     */
+    [[nodiscard]]
+    constexpr auto vector() const noexcept -> const Vector<T, 3> & { return mAxis; }
+
+    /*!
+     * \brief Gets the rotation axis as a 3D vector (non-const version).
+     * \return A reference to the axis vector.
+     */
+    [[nodiscard]]
+    constexpr auto vector() noexcept -> Vector<T, 3> & { return mAxis; }
 
     /*!
      * \brief Sets the rotation axis.
+     *
+     * The provided vector is normalized before being stored.
      * \param[in] axis The new axis of rotation as a 3D vector.
      */
-    auto setAxis(const Vector<T, 3> &axis) -> void;
+    void setVector(Vector<T, 3> axis);
 
 };
 
@@ -141,58 +190,22 @@ public:
 /* AxisAngle implementation */
 
 template<typename T>
-AxisAngle<T>::AxisAngle()
+constexpr AxisAngle<T>::AxisAngle()
   : mAngle(0),
     mAxis{1,0,0}
 {
 }
 
 template<typename T>
-AxisAngle<T>::AxisAngle(const AxisAngle &axisAngle)
-  : mAngle(axisAngle.mAngle),
-    mAxis(axisAngle.mAxis)
-{
-}
-
-template<typename T>
-AxisAngle<T>::AxisAngle(AxisAngle &&axisAngle) noexcept
-  : mAngle(axisAngle.mAngle),
-    mAxis(std::move(axisAngle.mAxis))
-{
-}
-
-template<typename T>
-AxisAngle<T>::AxisAngle(T angle, const Vector<T, 3> &axis)
+constexpr AxisAngle<T>::AxisAngle(T angle, Vector<T, 3> axis)
   : mAngle(angle),
-    mAxis(axis)
+    mAxis(std::move(axis))
 {
     mAxis.normalize();
 }
 
-template <typename T>
-auto AxisAngle<T>::operator = (const AxisAngle<T> &axisAngle) -> AxisAngle &
-{
-    if (this != &axisAngle) {
-        mAngle = axisAngle.mAngle;
-        mAxis = axisAngle.mAxis;
-    }
-
-    return *this;
-}
-
-template <typename T>
-auto AxisAngle<T>::operator = (AxisAngle &&axisAngle) noexcept -> AxisAngle &
-{
-    if (this != &axisAngle) {
-        mAngle = axisAngle.mAngle;
-        mAxis = std::move(axisAngle.mAxis);
-    }
-
-    return *this;
-}
-
 template<typename T>
-auto AxisAngle<T>::angle() const -> T
+constexpr auto AxisAngle<T>::angle() const noexcept -> T
 {
     return mAngle;
 }
@@ -204,38 +217,27 @@ auto AxisAngle<T>::setAngle(T angle) -> void
 }
 
 template<typename T>
-auto AxisAngle<T>::axis() const -> Vector<T, 3>
+void AxisAngle<T>::setVector(Vector<T, 3> axis)
 {
-    return mAxis;
-}
-
-template<typename T>
-auto AxisAngle<T>::axis(size_t i) const -> T
-{
-    TL_ASSERT(i < 3, "");
-    return mAxis.at(i);
-}
-
-template<typename T>
-void AxisAngle<T>::setAxis(const Vector<T, 3> &axis)
-{
-    mAxis = axis;
+    mAxis = std::move(axis);
     mAxis.normalize();
 }
 
 template<typename T>
-inline auto operator == (const AxisAngle<T> &axisAngle1,
-                         const AxisAngle<T> &axisAngle2) -> bool
+[[nodiscard]]
+constexpr auto operator == (const AxisAngle<T> &lhs,
+                            const AxisAngle<T> &rhs) -> bool
 {
-    return axisAngle1.axis() == axisAngle2.axis() &&
-           axisAngle1.angle() == axisAngle2.angle();
+    return lhs.vector() == rhs.vector() &&
+           lhs.angle() == rhs.angle();
 }
 
 template<typename T>
-inline auto operator != (const AxisAngle<T> &axisAngle1,
-                         const AxisAngle<T> &axisAngle2) -> bool
+[[nodiscard]]
+constexpr auto operator != (const AxisAngle<T> &lhs,
+                            const AxisAngle<T> &rhs) -> bool
 {
-    return !(axisAngle1 == axisAngle2);
+    return !(lhs == rhs);
 }
 
 /*! \} */

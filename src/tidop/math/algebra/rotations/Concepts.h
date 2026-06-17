@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
+ * Copyright (C) 2021 by Esteban Ruiz de OÃ±a Crespo                       *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -24,6 +24,11 @@
 
 #pragma once
 
+#include <concepts>
+
+#include "tidop/math/algebra/rotations/Traits.h" 
+#include "tidop/math/algebra/rotations/detail/RotationConverter.h"
+
 namespace tl
 {
 
@@ -31,29 +36,22 @@ namespace tl
  *  \{
  */
 
- /*!
-  * \brief Enum representing different rotation conventions for Euler angles.
-  */
-enum class Axes
+template<typename T>
+concept OrientationConcept = requires 
 {
-    // Euler angles
-    zxz, /*!< Rotation around the Z axis, then X, then Z again. */
-    xyx, /*!< Rotation around the X axis, then Y, then X again. */
-    yzy, /*!< Rotation around the Y axis, then Z, then Y again. */
-    zyz, /*!< Rotation around the Z axis, then Y, then Z again. */
-    xzx, /*!< Rotation around the X axis, then Z, then X again. */
-    yxy, /*!< Rotation around the Y axis, then X, then Y again. */
+    typename orientation_traits<std::remove_cvref_t<T>>::value_type;
+};
 
-    // Tait-Bryan angles
-    xyz, /*!< Rotation around X, then Y, then Z. */
-    yzx, /*!< Rotation around Y, then Z, then X. */
-    zxy, /*!< Rotation around Z, then X, then Y. */
-    xzy, /*!< Rotation around X, then Z, then Y. */
-    zyx, /*!< Rotation around Z, then Y, then X. */
-    yxz  /*!< Rotation around Y, then X, then Z. */
+template<typename Source, typename Target>
+concept OrientationConvertible = OrientationConcept<Source> &&
+                                 OrientationConcept<Target> &&
+                                 requires(const Source &src, Target &dst)
+{
+    detail::convert(src, dst);
 };
 
 /*! \} */
 
 } // End namespace tl
+
 

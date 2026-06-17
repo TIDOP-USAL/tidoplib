@@ -130,7 +130,7 @@ template<typename T>
 template<VectorExpr Expr>
 constexpr auto VectorView<T>::operator=(const Expr &expr) -> VectorView &
 {
-    detail::assign_vector_view(*this, expr); // TODO: implementar
+    detail::assign_vector_view(*this, expr);
     return *this;
 }
 

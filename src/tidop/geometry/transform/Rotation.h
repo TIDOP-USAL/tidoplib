@@ -171,7 +171,7 @@ public:
      * \return The Euler angles representing the rotation.
      */
     [[nodiscard]]
-    auto toEulerAngles() const -> EulerAngles<T, xyz>;
+    auto toEulerAngles() const -> EulerAngles<T, Axes::xyz>;
 
     /*!
      * \brief Convert the rotation to a quaternion.

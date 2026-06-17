@@ -47,7 +47,7 @@ namespace tl
  */
 template <typename T>
 class RotationMatrix
-  : public OrientationBase<RotationMatrix<T>>,
+  : public RotationBase<RotationMatrix<T>>,
     public Matrix<T, 3, 3>
 {
 
@@ -63,25 +63,25 @@ public:
      * \brief Default constructor
      * Initializes the rotation matrix to the identity matrix.
      */
-    RotationMatrix();
+    constexpr RotationMatrix();
 
     /*!
      * \brief Copy constructor
      * \param[in] rot The rotation matrix object to copy.
      */
-    RotationMatrix(const RotationMatrix<T> &rot);
+    constexpr RotationMatrix(const RotationMatrix<T> &rot) = default;
 
     /*!
      * \brief Move constructor
      * \param[in] rot The rotation matrix object to move.
      */
-    RotationMatrix(RotationMatrix<T> &&rot) noexcept;
+    constexpr RotationMatrix(RotationMatrix<T> &&rot) noexcept = default;
 
     /*!
      * \brief Constructor from a matrix
      * \param[in] rot A 3x3 matrix to initialize the rotation matrix.
      */
-    RotationMatrix(const Matrix<T, 3, 3> &rot);
+    RotationMatrix(Matrix<T, 3, 3> rot);
 
     /*!
      * \brief Destructor
@@ -93,62 +93,31 @@ public:
      * \param[in] rot The rotation matrix object to copy.
      * \return A reference to the current rotation matrix.
      */
-    auto operator=(const RotationMatrix<T> &rot) -> RotationMatrix &;
+    constexpr auto operator=(const RotationMatrix<T> &rot) -> RotationMatrix & = default;
 
     /*!
      * \brief Move assignment operator
      * \param[in] rot The rotation matrix object to move.
      * \return A reference to the current rotation matrix.
      */
-    auto operator=(RotationMatrix &&rot) noexcept -> RotationMatrix &;
+    constexpr auto operator=(RotationMatrix &&rot) noexcept -> RotationMatrix & = default;
 
 };
 
 
 template <typename T>
-RotationMatrix<T>::RotationMatrix()
+constexpr RotationMatrix<T>::RotationMatrix()
   : Matrix<T, 3, 3>()
 {
 }
 
 template <typename T>
-RotationMatrix<T>::RotationMatrix(const RotationMatrix<T> &rot)
-  : Matrix<T, 3, 3>(rot)
-{
-}
-
-template <typename T>
-RotationMatrix<T>::RotationMatrix(RotationMatrix<T> &&rot) noexcept
+RotationMatrix<T>::RotationMatrix(Matrix<T, 3, 3> rot)
   : Matrix<T, 3, 3>(std::move(rot))
 {
-}
-
-template <typename T>
-RotationMatrix<T>::RotationMatrix(const Matrix<T, 3, 3> &rot)
-  : Matrix<T, 3, 3>(rot)
-{
 
 }
 
-template <typename T>
-auto RotationMatrix<T>::operator = (const RotationMatrix<T> &rot) -> RotationMatrix<T> &
-{
-    if (this != &rot) {
-        Matrix<T, 3, 3>::operator = (rot);
-    }
-
-    return *this;
-}
-
-template <typename T>
-auto RotationMatrix<T>::operator = (RotationMatrix &&rot) noexcept -> RotationMatrix<T> &
-{
-    if (this != &rot) {
-        Matrix<T, 3, 3>::operator = (std::move(rot));
-    }
-
-    return *this;
-}
 
 /*! \} */
 
