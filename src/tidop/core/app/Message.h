@@ -37,7 +37,7 @@
 #include <set> 
 #include <mutex>
 
-#include "tidop/core/base/format.h"
+#include "tidop/core/base/Format.h"
 #include "tidop/core/app/MessageHandler.h"
 
 namespace tl
@@ -112,12 +112,6 @@ namespace tl
  */
 class TL_EXPORT Message
 {
-
-#if TL_CPP_VERSION>= 17
-    using String = std::string_view;
-#else
-    using String = const std::string &;
-#endif
 
 private:
 
@@ -220,35 +214,35 @@ public:
      * \note Thread-safe.
      * \see info(), success(), warning(), error()
      */
-    static void debug(String message);
+    static void debug(std::string_view message);
 
     /*!
      * \brief Emit an informational message.
      * \param[in] message The message content
      * \see debug(), success(), warning(), error()
      */
-    static void info(String message);
+    static void info(std::string_view message);
 
     /*!
      * \brief Emit a success message.
      * \param[in] message The message content
      * \see debug(), info(), warning(), error()
      */
-    static void success(String message);
+    static void success(std::string_view message);
 
     /*!
      * \brief Emit a warning message.
      * \param[in] message The message content
      * \see debug(), info(), success(), error()
      */
-    static void warning(String message);
+    static void warning(std::string_view message);
 
     /*!
      * \brief Emit an error message.
      * \param[in] message The message content
      * \see debug(), info(), success(), warning()
      */
-    static void error(String message);
+    static void error(std::string_view message);
 
     /*!
      * \brief Emit a formatted debug message.
@@ -267,8 +261,7 @@ public:
     template<typename... Args>
     static void debug(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        auto message = tl::format(s, std::forward<Args>(args)...);
-        Message::debug(message);
+        dispatch_format(MessageLevel::debug, s, std::forward<Args>(args)...);
     }
 
     /*!
@@ -280,8 +273,7 @@ public:
     template<typename... Args>
     static void info(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        auto message = tl::format(s, std::forward<Args>(args)...);
-        Message::info(message);
+        dispatch_format(MessageLevel::info, s, std::forward<Args>(args)...);
     }
 
     /*!
@@ -293,8 +285,7 @@ public:
     template<typename... Args>
     static void success(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        auto message = tl::format(s, std::forward<Args>(args)...);
-        Message::success(message);
+        dispatch_format(MessageLevel::success, s, std::forward<Args>(args)...);
     }
 
     /*!
@@ -306,8 +297,7 @@ public:
     template<typename... Args>
     static void warning(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        auto message = tl::format(s, std::forward<Args>(args)...);
-        Message::warning(message);
+        dispatch_format(MessageLevel::warning, s, std::forward<Args>(args)...);
     }
 
     /*!
@@ -319,29 +309,89 @@ public:
     template<typename... Args>
     static void error(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        auto message = tl::format(s, std::forward<Args>(args)...);
-        Message::error(message);
+        dispatch_format(MessageLevel::error, s, std::forward<Args>(args)...);
     }
 	
 private:
 
-    template<typename Func>
-    static void dispatch(String message, Func&& handler_func)
+    static void dispatch(MessageLevel level, std::string_view message)
     {
         {
-            std::lock_guard<std::mutex> lck(stopHandlerMutex);
-            if (stopHandler)
-                return;
+            std::scoped_lock lck(stopHandlerMutex);
+            if (stopHandler) return;
         }
 
         std::set<MessageHandler *> handlers_snapshot;
         {
-            std::lock_guard<std::mutex> lck(messageHandlersMutex);
+            std::scoped_lock lck(messageHandlersMutex);
             handlers_snapshot = messageHandlers;
         }
 
+        if (handlers_snapshot.empty()) return;
+
+        bool any_enabled = false;
         for (MessageHandler *handler : handlers_snapshot) {
-            handler_func(handler);
+            if (handler->isEnabled(level)) {
+                any_enabled = true;
+                break;
+            }
+        }
+
+        if (!any_enabled) return;
+
+        for (MessageHandler *handler : handlers_snapshot) {
+            if (handler->isEnabled(level)) {
+                switch (level) {
+                    case MessageLevel::debug:   handler->debug(message);   break;
+                    case MessageLevel::info:    handler->info(message);    break;
+                    case MessageLevel::success: handler->success(message); break;
+                    case MessageLevel::warning: handler->warning(message); break;
+                    case MessageLevel::error:   handler->error(message);   break;
+                    default: break;
+                }
+            }
+        }
+    }
+
+    template<typename... Args>
+    static void dispatch_format(MessageLevel level, FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
+    {
+        {
+            std::scoped_lock lck(stopHandlerMutex);
+            if (stopHandler) return;
+        }
+
+        std::set<MessageHandler *> handlers_snapshot;
+        {
+            std::scoped_lock lck(messageHandlersMutex);
+            handlers_snapshot = messageHandlers;
+        }
+
+        if (handlers_snapshot.empty()) return;
+
+        bool any_enabled = false;
+        for (MessageHandler *handler : handlers_snapshot) {
+            if (handler->isEnabled(level)) {
+                any_enabled = true;
+                break;
+            }
+        }
+
+        if (!any_enabled) return;
+
+        std::string formatted_message = tl::format(s, std::forward<Args>(args)...);
+
+        for (MessageHandler *handler : handlers_snapshot) {
+            if (handler->isEnabled(level)) {
+                switch (level) {
+                    case MessageLevel::debug:   handler->debug(formatted_message);   break;
+                    case MessageLevel::info:    handler->info(formatted_message);    break;
+                    case MessageLevel::success: handler->success(formatted_message); break;
+                    case MessageLevel::warning: handler->warning(formatted_message); break;
+                    case MessageLevel::error:   handler->error(formatted_message);   break;
+                    default: break;
+                }
+            }
         }
     }
 };

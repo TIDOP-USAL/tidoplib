@@ -40,7 +40,7 @@ void Message::addMessageHandler(MessageHandler *messageHandler)
     if (messageHandler == nullptr)
         return;
 
-    std::lock_guard<std::mutex> lck(messageHandlersMutex);
+    std::scoped_lock lck(messageHandlersMutex);
     messageHandlers.insert(messageHandler);
 }
 
@@ -49,39 +49,39 @@ void Message::removeMessageHandler(MessageHandler *messageHandler)
     if (messageHandler == nullptr)
         return;
 
-    std::lock_guard<std::mutex> lck(messageHandlersMutex);
+    std::scoped_lock lck(messageHandlersMutex);
     messageHandlers.erase(messageHandler);
 }
 
 void Message::clearMessageHandlers()
 {
-    std::lock_guard<std::mutex> lck(messageHandlersMutex);
+    std::scoped_lock lck(messageHandlersMutex);
     messageHandlers.clear();
 }
 
-void Message::debug(String message)
+void Message::debug(std::string_view message)
 {
-    dispatch(message, [message](MessageHandler *h) { h->debug(message); });
+    dispatch(MessageLevel::debug, message);
 }
 
-void Message::info(String message)
+void Message::info(std::string_view message)
 {
-    dispatch(message, [message](MessageHandler *h) { h->info(message); });
+    dispatch(MessageLevel::info, message);
 }
 
-void Message::success(String message)
+void Message::success(std::string_view message)
 {
-    dispatch(message, [message](MessageHandler *h) { h->success(message); });
+    dispatch(MessageLevel::success, message);
 }
 
-void Message::warning(String message)
+void Message::warning(std::string_view message)
 {
-    dispatch(message, [message](MessageHandler *h) { h->warning(message); });
+    dispatch(MessageLevel::warning, message);
 }
 
-void Message::error(String message)
+void Message::error(std::string_view message)
 {
-    dispatch(message, [message](MessageHandler *h) { h->error(message); });
+    dispatch(MessageLevel::error, message);
 }
 
 } // End namespace tl

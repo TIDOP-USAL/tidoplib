@@ -188,10 +188,10 @@ int main(int argc, char **argv)
 
     Console &console = App::console();
     console.setTitle("Image Metadata");
-    console.setMessageLevel(MessageLevel::all);
+    console.setMessageLevel(MessageLevel::warning | MessageLevel::info | MessageLevel::error);
     console.setConsoleUnicode();
     Message::addMessageHandler(&console);
-
+    Message::debug("Number of bands");
 
     auto img_arg = Argument::make<Path>("img", 'i', "Image");
 

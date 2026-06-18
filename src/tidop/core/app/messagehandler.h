@@ -120,6 +120,9 @@ public:
      */
     MessageHandler() = default;
 
+    [[nodiscard]] 
+    virtual bool isEnabled(MessageLevel level) const = 0;
+
     /*!
      * \brief Destructor.
      */

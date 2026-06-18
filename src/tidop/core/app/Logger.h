@@ -36,15 +36,16 @@
 #include <mutex>
 #include <fstream>
 
-#ifdef TL_HAVE_FMT
-#include <fmt/format.h>
-#else
-#include <format>
-#endif
+//#ifdef TL_HAVE_FMT
+//#include <fmt/format.h>
+//#else
+//#include <format>
+//#endif
 
 #include "tidop/core/base/flags.h"
 #include "tidop/core/base/Path.h"
 #include "tidop/core/app/MessageHandler.h"
+#include "tidop/core/base/Format.h"
 
 namespace tl
 {
@@ -259,9 +260,11 @@ public:
      * \param[in] level Message level(s) to enable
      * \see messageLevel(), MessageLevel
      */
-    [[nodiscard]]
     void setMessageLevel(MessageLevel level);
 	
+    [[nodiscard]]
+    auto isEnabled(MessageLevel level) const -> bool override;
+
     // ========================================================================
     // Static Formatted Logging Methods
     // ========================================================================
@@ -286,9 +289,6 @@ public:
     template<typename... Args>
     static void debug(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        //auto &log = Logger::instance();
-        //if (log.isOpen())
-        //    Logger::instance().debug(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
         logMessageFormat(MessageLevel::debug, s, std::forward<Args>(args)...);
     }
 
@@ -304,8 +304,6 @@ public:
     static void info(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
         logMessageFormat(MessageLevel::info, s, std::forward<Args>(args)...);
-        //if (Logger::instance().isOpen())
-        //    Logger::instance().info(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
     }
 
     /*!
@@ -320,8 +318,6 @@ public:
     static void success(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
         logMessageFormat(MessageLevel::success, s, std::forward<Args>(args)...);
-        //if (Logger::instance().isOpen())
-        //    Logger::instance().success(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
     }
 
     /*!
@@ -336,8 +332,6 @@ public:
     static void warning(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
         logMessageFormat(MessageLevel::warning, s, std::forward<Args>(args)...);
-        //if (Logger::instance().isOpen())
-        //    Logger::instance().warning(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
     }
 
     /*!
@@ -352,8 +346,6 @@ public:
     static void error(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
         logMessageFormat(MessageLevel::error, s, std::forward<Args>(args)...);
-        //if (Logger::instance().isOpen())
-        //    Logger::instance().error(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
     }
 
     // ========================================================================
@@ -428,11 +420,11 @@ private:
     {
         auto &log = Logger::instance();
         if (log.isOpen() && log.messageLevel().isEnabled(level)) {
-            log.logMessage(level, FORMAT_NAMESPACE format(fmt, std::forward<Args>(args)...));
+            log.dispatch(level, tl::format(fmt, std::forward<Args>(args)...));
         }
     }
 
-    void logMessage(MessageLevel level, std::string_view message);
+    void dispatch(MessageLevel level, std::string_view message);
 
     static constexpr auto levelToString(MessageLevel level) -> std::string_view;
 };

@@ -54,12 +54,13 @@
 #include "tidop/config.h"
 
 #include "tidop/core/app/MessageHandler.h"
+#include "tidop/core/base/Format.h"
 
-#ifdef TL_HAVE_FMT
-#include <fmt/format.h>
-#else
-#include <format>
-#endif
+//#ifdef TL_HAVE_FMT
+//#include <fmt/format.h>
+//#else
+//#include <format>
+//#endif
 #include <mutex>
 #include <iostream>
 #include <functional>
@@ -144,7 +145,7 @@ public:
 private:
 
     std::ostream &outputStream;
-    static std::mutex mtx;
+    mutable std::mutex mtx;
     EnumFlags<MessageLevel> messageLevelFlags;
     int foregroundColor;
     int backgroundColor;
@@ -385,7 +386,7 @@ public:
     template<typename T>
     Console &operator <<(T value)
     {
-		std::lock_guard<std::mutex> lck(mtx);
+		std::scoped_lock lck(mtx);
 	    outputStream << value;
 	    return *this;
     }
@@ -418,6 +419,9 @@ public:
 	 * \note Thread-safe. Internally synchronized.
      */
     void setMessageLevel(MessageLevel level);
+
+    [[nodiscard]] 
+    auto isEnabled(MessageLevel level) const -> bool override;
 
     // ========================================================================
     // Manipulator Functions
@@ -955,7 +959,7 @@ public:
     template<typename... Args>
     static void debug(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        Console::instance().debug(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+        logMessageFormat(MessageLevel::debug, s, std::forward<Args>(args)...);
     }
 
     /*!
@@ -982,7 +986,7 @@ public:
     template<typename... Args>
     static void info(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        Console::instance().info(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+        logMessageFormat(MessageLevel::info, s, std::forward<Args>(args)...);
     }
 
     /*!
@@ -1010,7 +1014,7 @@ public:
     template<typename... Args>
     static void success(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        Console::instance().success(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+        logMessageFormat(MessageLevel::success, s, std::forward<Args>(args)...);
     }
 
     /*!
@@ -1038,7 +1042,7 @@ public:
     template<typename... Args>
     static void warning(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        Console::instance().warning(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+        logMessageFormat(MessageLevel::warning, s, std::forward<Args>(args)...);
     }
 
     /*!
@@ -1066,7 +1070,7 @@ public:
     template<typename... Args>
     static void error(FORMAT_NAMESPACE format_string<Args...> s, Args&&... args)
     {
-        Console::instance().error(FORMAT_NAMESPACE vformat(s.get(), FORMAT_NAMESPACE make_format_args(args...)));
+        logMessageFormat(MessageLevel::error, s, std::forward<Args>(args)...);
     }
 
     // ========================================================================
@@ -1109,6 +1113,20 @@ private:
     void update();
     void reset();
     bool enableVTMode();
+
+    void setBackgroundColorImpl(Color backgroundColor, Intensity intensity);
+    void setForegroundColorImpl(Color foregroundColor, Intensity intensity);
+
+    template<typename... Args>
+    static void logMessageFormat(MessageLevel level, FORMAT_NAMESPACE format_string<Args...> fmt, Args&&... args)
+    {
+        auto &console = Console::instance();
+        if (console.messageLevel().isEnabled(level)) {
+            console.dispatch(level, tl::format(fmt, std::forward<Args>(args)...));
+        }
+    }
+
+    void dispatch(MessageLevel level, std::string_view formatted_msg);
 
 // MessageHandler interface
 

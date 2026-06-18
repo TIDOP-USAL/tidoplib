@@ -31,8 +31,6 @@
 namespace tl
 {
 
-//std::mutex Logger::mtx;
-
 Logger::Logger()
   : messageLevelFlags(MessageLevel::all)
 {
@@ -51,17 +49,10 @@ void Logger::open(const tl::Path &file)
         _stream.close();
     }
     _stream.open(file.toString(), std::ofstream::app);
-
-    //std::lock_guard<std::mutex> lck(Logger::mtx);
-
-    //if (isOpen()) close();
-    //_stream.open(file.toString(), std::ofstream::app);
 }
 
 void Logger::close()
 {
-    //std::lock_guard<std::mutex> lck(Logger::mtx);
-    //_stream.close();
     std::scoped_lock lck(mtx);
     if (_stream.is_open()) {
         _stream.close();
@@ -84,54 +75,43 @@ void Logger::setMessageLevel(MessageLevel level)
     messageLevelFlags = level;
 }
 
-//static const char *getPadding(size_t level_len)
-//{
-//    static const char *padding[] = {"", " ", "  ", "   ", "    ", "    ", "    ", ""};
-//    return padding[level_len < 8 ? level_len : 7];
-//}
-
-
+auto Logger::isEnabled(MessageLevel level) const -> bool
+{
+    return messageLevelFlags.isEnabled(level);
+}
 
 void Logger::debug(std::string_view message)
 {
-    logMessage(MessageLevel::debug, message);
+    dispatch(MessageLevel::debug, message);
 }
 
 void Logger::info(std::string_view message)
 {
-    logMessage(MessageLevel::info, message);
+    dispatch(MessageLevel::info, message);
 }
 
 void Logger::success(std::string_view message)
 {
-    logMessage(MessageLevel::success, message);
+    dispatch(MessageLevel::success, message);
 }
 
 void Logger::warning(std::string_view message)
 {
-    logMessage(MessageLevel::warning, message);
+    dispatch(MessageLevel::warning, message);
 }                          
 
 void Logger::error(std::string_view message)
 {
-    logMessage(MessageLevel::error, message);
+    dispatch(MessageLevel::error, message);
 }
 
-void Logger::logMessage(MessageLevel level, std::string_view message)
+void Logger::dispatch(MessageLevel level, std::string_view message)
 {
-    //std::lock_guard<std::mutex> lck(Logger::mtx);
     std::scoped_lock lck(mtx);
 
-    if (!isOpen() || !messageLevelFlags.isEnabled(level))
+    if (!_stream.is_open() || !messageLevelFlags.isEnabled(level))
         return;
 
-    //auto level_name = levelToString(level);
-    auto date = formatTimeToString("%d/%b/%Y %H:%M:%S");
-
-    //constexpr std::string_view padding[] = {"", " ", "  ", "   "};
-    //size_t level_len = level_name.length();
-    //std::string_view pad = (level_len < 7) ? padding[7 - level_len] : "";
-    //_stream << date << " - " << level_name << ":" << pad << " " << message << std::endl;
     auto now = std::chrono::system_clock::now();
 
     _stream << std::format("{:%d/%b/%Y %H:%M:%S} - {:<7}: {}\n", now, levelToString(level), message);

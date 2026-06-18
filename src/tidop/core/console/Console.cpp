@@ -32,8 +32,6 @@
 namespace tl
 {
 
-std::mutex Console::mtx;
-
 Console::Console()
   : outputStream(std::cout) 
 {
@@ -59,28 +57,22 @@ void Console::setTitle(const std::string &title)
 void Console::setBackgroundColor(Color backgroundColor,
                                  Intensity intensity)
 {
-    std::lock_guard<std::mutex> lck(mtx); 
-
-    this->backgroundColor = static_cast<int>(backgroundColor) + 40 + static_cast<int>(intensity);
-
-    update();
+    std::scoped_lock lck(mtx);
+    setBackgroundColorImpl(backgroundColor, intensity);
 }
 
 
 void Console::setForegroundColor(Color foregroundColor,
                                  Intensity intensity)
 {
-    std::lock_guard<std::mutex> lck(mtx); 
-
-    this->foregroundColor = static_cast<int>(foregroundColor) + 30 + static_cast<int>(intensity);
-
-    update();
+    std::scoped_lock lck(mtx);
+    setForegroundColorImpl(foregroundColor, intensity);
 }
 
 void Console::setConsoleUnicode()
 {
 #ifdef TL_OS_WINDOWS
-    std::lock_guard<std::mutex> lck(mtx); 
+    std::scoped_lock lck(mtx);
 
     //SetConsoleOutputCP(1252);
     //SetConsoleCP(1252);
@@ -92,7 +84,7 @@ void Console::setConsoleUnicode()
 
 void Console::setFontBold(bool bold)
 {
-    std::lock_guard<std::mutex> lck(mtx); 
+    std::scoped_lock lck(mtx);
 
     fontBold = bold ? 1 : 21;
     update();
@@ -100,7 +92,7 @@ void Console::setFontBold(bool bold)
 
 void Console::setFontFaint(bool faint)
 {
-    std::lock_guard<std::mutex> lck(mtx); 
+    std::scoped_lock lck(mtx); 
 
     fontFaint = faint ? 2 : 22;
     update();
@@ -108,7 +100,7 @@ void Console::setFontFaint(bool faint)
 
 void Console::setFontItalic(bool italic)
 {
-    std::lock_guard<std::mutex> lck(mtx); 
+    std::scoped_lock lck(mtx); 
 
     fontItalic = italic ? 3 : 23;
     update();
@@ -116,7 +108,7 @@ void Console::setFontItalic(bool italic)
 
 void Console::setFontUnderline(bool underline)
 {
-    std::lock_guard<std::mutex> lck(mtx); 
+    std::scoped_lock lck(mtx); 
 
     fontUnderline = underline ? 4 : 24;
     update();
@@ -124,7 +116,7 @@ void Console::setFontUnderline(bool underline)
 
 void Console::setFontReverse(bool reverse)
 {
-    std::lock_guard<std::mutex> lck(mtx); 
+    std::scoped_lock lck(mtx); 
 
     fontReverse = reverse ? 7 : 27;
     update();
@@ -132,7 +124,7 @@ void Console::setFontReverse(bool reverse)
 
 void Console::setFontStrikethrough(bool strikethrough)
 {
-    std::lock_guard<std::mutex> lck(mtx); 
+    std::scoped_lock lck(mtx); 
 
     fontStrikethrough = strikethrough ? 9 : 29;
     update();
@@ -140,15 +132,15 @@ void Console::setFontStrikethrough(bool strikethrough)
 
 void Console::clear()
 {
-    std::lock_guard<std::mutex> lck(mtx); 
-
+    std::scoped_lock lck(mtx); 
+    messageLevelFlags = MessageLevel::all;
     reset();
     update();
 }
 
 Console &Console::operator <<(decltype(std::endl<char, std::char_traits<char>>) _endl)
 {
-    std::lock_guard<std::mutex> lck(mtx); 
+    std::scoped_lock lck(mtx); 
 
     outputStream << _endl;
 
@@ -157,16 +149,21 @@ Console &Console::operator <<(decltype(std::endl<char, std::char_traits<char>>) 
 
 auto Console::messageLevel() -> EnumFlags<MessageLevel>
 {
-    std::lock_guard<std::mutex> lck(mtx); 
+    std::scoped_lock lck(mtx); 
 
     return messageLevelFlags;
 }
 
 void Console::setMessageLevel(MessageLevel level)
 {
-    std::lock_guard<std::mutex> lck(mtx); 
+    std::scoped_lock lck(mtx); 
 
     messageLevelFlags = level;
+}
+
+auto Console::isEnabled(MessageLevel level) const -> bool
+{
+    return messageLevelFlags.isEnabled(level);
 }
 
 auto Console::red(std::ostream &os) -> std::ostream &
@@ -307,32 +304,9 @@ std::ostream& Console::clear(std::ostream &os)
     return os;
 }
 
-//https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences#example-of-enabling-virtual-terminal-processing
-bool Console::enableVTMode()
-{
-#ifdef TL_OS_WINDOWS
-    // Set output mode to handle virtual terminal sequences
-    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    if (hOut == INVALID_HANDLE_VALUE) {
-        return false;
-    }
-
-    DWORD dwMode = 0;
-    if (!GetConsoleMode(hOut, &dwMode)) {
-        return false;
-    }
-
-    dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-    if (!SetConsoleMode(hOut, dwMode)) {
-        return false;
-    }
-#endif
-    return true;
-}
-
 void Console::debug(std::string_view message)
 {
-    std::lock_guard<std::mutex> lck(Console::mtx);
+    std::scoped_lock lck(Console::mtx);
 
     if (messageLevelFlags.isEnabled(MessageLevel::debug)) {
         Progress::cleanConsole();
@@ -342,7 +316,7 @@ void Console::debug(std::string_view message)
 
 void Console::info(std::string_view message)
 {
-    std::lock_guard<std::mutex> lck(Console::mtx);
+    std::scoped_lock lck(Console::mtx);
 
     if (messageLevelFlags.isEnabled(MessageLevel::info)) {
         Progress::cleanConsole();
@@ -352,11 +326,11 @@ void Console::info(std::string_view message)
 
 void Console::success(std::string_view message)
 {
-    std::lock_guard<std::mutex> lck(Console::mtx);
+    std::scoped_lock lck(Console::mtx);
 
     if (messageLevelFlags.isEnabled(MessageLevel::success)) {
         Progress::cleanConsole();
-        setForegroundColor(Color::green, Intensity::normal);
+        setForegroundColorImpl(Color::green, Intensity::normal);
         outputStream << "Success: " << message << std::endl;
         reset();
     }
@@ -364,11 +338,11 @@ void Console::success(std::string_view message)
 
 void Console::warning(std::string_view message)
 {
-    std::lock_guard<std::mutex> lck(Console::mtx);
+    std::scoped_lock lck(Console::mtx);
 
     if (messageLevelFlags.isEnabled(MessageLevel::warning)) {
         Progress::cleanConsole();
-        setForegroundColor(Color::magenta, Intensity::normal);
+        setForegroundColorImpl(Color::magenta, Intensity::normal);
         outputStream << "Warning: " << message << std::endl;
         reset();
     }
@@ -376,11 +350,11 @@ void Console::warning(std::string_view message)
 
 void Console::error(std::string_view message)
 {
-    std::lock_guard<std::mutex> lck(Console::mtx);
+    std::scoped_lock lck(Console::mtx);
 
     if (messageLevelFlags.isEnabled(MessageLevel::error)) {
         Progress::cleanConsole();
-        setForegroundColor(Color::red, Intensity::normal);
+        setForegroundColorImpl(Color::red, Intensity::normal);
         outputStream << "Error:   " << message << std::endl;
         reset();
     }
@@ -407,7 +381,6 @@ void Console::update()
 
 void Console::reset()
 {
-    messageLevelFlags = MessageLevel::all;
     foregroundColor = 39;
     backgroundColor = 49;
     fontBold = 21;
@@ -417,7 +390,64 @@ void Console::reset()
     fontReverse = 27;
     fontStrikethrough = 29;
 }
-	
+
+//https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences#example-of-enabling-virtual-terminal-processing
+bool Console::enableVTMode()
+{
+#ifdef TL_OS_WINDOWS
+    // Set output mode to handle virtual terminal sequences
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (hOut == INVALID_HANDLE_VALUE) {
+        return false;
+    }
+
+    DWORD dwMode = 0;
+    if (!GetConsoleMode(hOut, &dwMode)) {
+        return false;
+    }
+
+    dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    if (!SetConsoleMode(hOut, dwMode)) {
+        return false;
+    }
+#endif
+    return true;
+}
+
+void Console::setBackgroundColorImpl(Color backgroundColor, Intensity intensity)
+{
+    this->backgroundColor = static_cast<int>(backgroundColor) + 40 + static_cast<int>(intensity);
+    update();
+}
+
+void Console::setForegroundColorImpl(Color foregroundColor, Intensity intensity)
+{
+    this->foregroundColor = static_cast<int>(foregroundColor) + 30 + static_cast<int>(intensity);
+    update();
+}
+
+void Console::dispatch(MessageLevel level, std::string_view formatted_msg)
+{
+    switch (level) {
+        case MessageLevel::debug: 
+            debug(formatted_msg);  
+            break;
+        case MessageLevel::info:  
+            info(formatted_msg);
+            break;
+        case MessageLevel::success: 
+            success(formatted_msg); 
+            break;
+        case MessageLevel::warning: 
+            warning(formatted_msg); 
+            break;
+        case MessageLevel::error:   
+            error(formatted_msg); 
+            break;
+        default: break;
+    }
+}
+
 } // End namespace tl
 
 

@@ -58,6 +58,11 @@ public:
 
 
 // Heredado vía MessageHandler
+    [[nodiscard]]
+    virtual bool isEnabled(MessageLevel level) const override
+    {
+        return true;
+    }
 
     virtual void debug(std::string_view message) override
     {
