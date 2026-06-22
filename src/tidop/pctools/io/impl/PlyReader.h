@@ -27,7 +27,7 @@
 #include "tidop/config.h"
 #include "tidop/core/base/Path.h"
 #include "tidop/core/base/macros/SmartPtr.h"
-#include "tidop/pctools/PointCloudReader.h"
+#include "tidop/pctools/io/impl/PointCloudReader.h"
 
 TL_DISABLE_WARNINGS
 #include <pdal/io/PlyReader.hpp>
@@ -47,14 +47,14 @@ namespace tl
 
 class Ply;
 
-class PlyReader 
-  : public PointCloudReader 
+class PlyReader final
+  : public PointCloudReaderBase
 {
     GENERATE_UNIQUE_PTR(PlyReader)
 
 public:
 
-    PlyReader(tl::Path file);
+    PlyReader(Path file);
 
     void open() override;
     bool isOpen() const override;

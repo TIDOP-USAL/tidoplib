@@ -419,14 +419,14 @@ struct topology_traits<GeometryCollection<Point_t>>
  * \tparam G Type to check.
  */
 template<typename G>
-inline constexpr bool is_geometry_v = geometry_traits<G>::is_geometry;
+constexpr bool is_geometry_v = geometry_traits<G>::is_geometry;
 
 /*!
  * \brief Variable template to get the dimension of a geometry.
  * \tparam G Geometry type.
  */
 template<typename G>
-inline constexpr Dimension dimension_of_v = geometry_traits<G>::dimension;
+constexpr Dimension dimension_of_v = geometry_traits<G>::dimension;
 
 /*!
  * \brief Alias template to get the value type (coordinate type) of a geometry.
@@ -440,7 +440,7 @@ using value_type_t = typename geometry_traits<G>::value_type;
  * \tparam G Geometry type.
  */
 template<typename G>
-inline constexpr GeometryType geometry_type_v = geometry_traits<G>::type;
+constexpr GeometryType geometry_type_v = geometry_traits<G>::type;
 
 /*!
  * \brief Variable template to check if a geometry has a specific dimension.
@@ -448,41 +448,41 @@ inline constexpr GeometryType geometry_type_v = geometry_traits<G>::type;
  * \tparam D Dimension to check.
  */
 template<typename G, Dimension D>
-inline constexpr bool has_dimension_v = (dimension_of_v<G> == D);
+constexpr bool has_dimension_v = (dimension_of_v<G> == D);
 
 template<typename G>
-inline constexpr bool has_m_v = geometry_traits<G>::has_m;
+constexpr bool has_m_v = geometry_traits<G>::has_m;
 
 /*!
  * \brief Variable template to check if a geometry is 2D.
  * \tparam G Geometry type.
  */
 template<typename G>
-inline constexpr bool is_2d_v = has_dimension_v<G, Dimension::dim2>;
+constexpr bool is_2d_v = has_dimension_v<G, Dimension::dim2>;
 
 /*!
  * \brief Variable template to check if a geometry is 3D.
  * \tparam G Geometry type.
  */
 template<typename G>
-inline constexpr bool is_3d_v = has_dimension_v<G, Dimension::dim3>;
+constexpr bool is_3d_v = has_dimension_v<G, Dimension::dim3>;
 
 /*!
  * \brief Variable template to check if a geometry is 4D.
  * \tparam G Geometry type.
  */
 template<typename G>
-inline constexpr bool is_4d_v = has_dimension_v<G, Dimension::dim4>;
+constexpr bool is_4d_v = has_dimension_v<G, Dimension::dim4>;
 
 /*!
  * \brief Variable template for multi-geometry check.
  * \tparam G Type to check.
  */
 template<typename G>
-inline constexpr bool is_multi_geometry_v = geometry_traits<G>::is_multi;
+constexpr bool is_multi_geometry_v = geometry_traits<G>::is_multi;
 
 template<typename G>
-inline constexpr bool is_geometry_collection_v = std::is_same_v<geometry_traits<G>::geometry_tag, collection_tag>;
+constexpr bool is_geometry_collection_v = std::is_same_v<typename geometry_traits<G>::geometry_tag, collection_tag>;
 
 
 template<size_t Dim>

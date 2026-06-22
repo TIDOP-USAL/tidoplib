@@ -36,7 +36,7 @@
 #include <proj.h>
 
 #include "tidop/geotools/GeoTools.h"
-#include "tidop/pctools/PointCloudReader.h"
+#include "tidop/pctools/io/impl/PointCloudReader.h"
 
 TL_DISABLE_WARNINGS
 #include <pdal/Dimension.hpp>
@@ -66,14 +66,15 @@ namespace pdal
 
 namespace tl
 {
+
 class PointCloudReaderPDAL final
-    : public PointCloudReader
+  : public PointCloudReaderBase 
 {
     GENERATE_UNIQUE_PTR(PointCloudReaderPDAL)
 
 public:
 
-    PointCloudReaderPDAL(tl::Path file);
+    PointCloudReaderPDAL(Path file);
     ~PointCloudReaderPDAL() override;
     auto isOpen() const -> bool override
     {

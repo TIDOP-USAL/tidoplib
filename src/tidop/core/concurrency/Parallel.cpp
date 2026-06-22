@@ -24,16 +24,6 @@
 
 #include "tidop/core/concurrency/Parallel.h"
 
-#if defined TL_HAVE_OPENMP
-#include <omp.h>  // OpenMP
-#endif
-
-#if defined (TL_HAVE_PPL) && ( defined (_MSC_VER) && _MSC_VER >= 1600)
-#  define TL_MSVS_CONCURRENCY
-#  include <ppl.h>  // Parallel Patterns Library (PPL)
-#endif
-
-
 namespace tl
 {
 
@@ -43,8 +33,6 @@ uint32_t optimalNumberOfThreads()
 
 #ifdef TL_HAVE_OPENMP
     n_threads = omp_get_max_threads();
-    //#elif defined TL_MSVS_CONCURRENCY
-    //  return Concurrency::CurrentScheduler::Get()->GetNumberOfVirtualProcessors();
 #else
     n_threads = std::thread::hardware_concurrency();
 #endif

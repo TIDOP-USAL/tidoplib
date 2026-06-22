@@ -24,30 +24,42 @@
 
 
 ##########################################################################
-#  TidopLib pctools module                                              #
+#  TidopLib pctools module                                               #
 ##########################################################################
 
 include(TidopUtils)
 
-if (BUILD_TL_PCTOOLS)
+if (BUILD_TL_PCTOOLS AND TL_HAVE_GEOTOOLS)
 
     project(PointCloudTools)
     
     add_files_to_project(${PROJECT_NAME}
                          SOURCE_FILES
 						     PointCloudTools.cpp
-							 impl/PointCloudReader.cpp
-							 impl/PointCloudReaderPDAL.cpp
-							 impl/PointCloudReaderFactory.cpp
-							 impl/PlyReader.cpp
-							 impl/ply/ply.cpp
+                             io/Reader.cpp
+                             io/impl/PlyReader.cpp
+                             io/impl/PointCloudReader.cpp
+                             io/impl/PointCloudReaderFactory.cpp
+                             io/impl/PointCloudReaderPDAL.cpp
+                             io/impl/ply/ply.cpp
+							 #impl/PointCloudReader.cpp
+							 #impl/PointCloudReaderPDAL.cpp
+							 #impl/PointCloudReaderFactory.cpp
+							 #impl/PlyReader.cpp
+							 #impl/ply/ply.cpp
                          HEADER_FILES
 						     PointCloudToolsDefinitions.h
 						     PointCloudTools.h
-                             PointCloudReader.h
-                             impl/PlyReader.h
-							 impl/PointCloudReaderPDAL.h
-							 impl/ply/ply.h)
+                             io/Reader.h
+                             io/impl/PlyReader.h
+                             io/impl/PointCloudReader.h
+                             io/impl/PointCloudReaderFactory.h
+                             io/impl/PointCloudReaderPDAL.h
+                             io/impl/ply/ply.h)
+                             #PointCloudReader.h
+                             #impl/PlyReader.h
+							 #impl/PointCloudReaderPDAL.h
+							 #impl/ply/ply.h)
 
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 ${PROJECT_SOURCE_FILES}

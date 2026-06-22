@@ -1,7 +1,7 @@
 /**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
- * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
+ * Copyright (C) 2021 by David Hernandez Lopez                            *
  *                                                                        *
  * This file is part of TidopLib                                          *
  *                                                                        *
@@ -22,67 +22,42 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
-
-#include <concepts>
-#include <cstddef>
-
-#include "tidop/math/base/Traits.h"
-#include "tidop/core/base/Concepts.h"
+ #include "tidop/pctools/io/impl/PointCloudReader.h"
+ 
+//#include <fstream>
+//#include <iostream>
+//#include <algorithm>
+//#include <string>
+//
+//#include "tidop/core/base/Exception.h"
+//
+//#include "tidop/geotools/GeoTools.h"
+//#include "tidop/geotools/CRSsTools.h"
+//
+//#include "tidop/pctools/PointCloudReader.h"
+//
+//TL_DISABLE_WARNINGS
+//#include <proj.h>
+//
+//#include <copc-lib/las/header.hpp>
+//#include <lazperf/readers.hpp>
+//#include <copc-lib/io/copc_reader.hpp>
+//#include <copc-lib/laz/decompressor.hpp>
+//TL_DEFAULT_WARNINGS
 
 namespace tl
 {
 
-template<typename T>
-concept LinearExpr = requires(const T & a) 
+PointCloudReaderBase::PointCloudReaderBase(Path file)
+  : mPtrGeoTools(nullptr),
+    mFile(std::move(file))
 {
-    typename T::value_type;
-};
+}
 
-template<typename T>
-concept MatrixExpr = LinearExpr<T> && 
-                     requires(const T &a, size_t i, size_t j) 
+auto PointCloudReaderBase::file() const -> Path
 {
-    { a.rows() } noexcept -> std::same_as<size_t>;
-    { a.cols() } noexcept -> std::same_as<size_t>;
-    //{ a(i, j) } -> std::convertible_to<typename T::value_type>;
-};
-
-template<typename T>
-concept VectorExpr = LinearExpr<T> && 
-                     requires(const T & a, size_t i) 
-{
-    { a.size() } noexcept -> std::same_as<size_t>;
-    //{ a[i] } -> std::convertible_to<typename T::value_type>;
-    typename T::is_vector_expr_tag;
-};
-
-template<typename T>
-concept DenseMatrix = MatrixExpr<T> && requires(T a)
-{
-    { a.data() };
-};
-
-template<typename T>
-concept DenseVector = VectorExpr<T> && requires(T a)
-{
-    { a.data() };
-};
+    return mFile;
+}
 
 
-template<typename D>
-concept IsAngle = requires(D a)
-{
-    typename D::value_type;
-    { a.value() } -> std::convertible_to<typename D::value_type>;
-    { a.normalize() };
-    { a.normalizePositive() };
-};
-
-
-template<typename T>
-concept PackedConcept = is_packed<std::remove_cvref_t<T>>::value &&
-                        Arithmetic<typename std::remove_cvref_t<T>::value_type>;
-
-
-} // namespace tl
+}

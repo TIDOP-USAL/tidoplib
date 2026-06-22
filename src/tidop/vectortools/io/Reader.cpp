@@ -46,8 +46,14 @@ VectorReader::~VectorReader()
 
 void VectorReader::open(const tl::Path &file)
 {
-    mReader = VectorReaderFactory::create(file);
-    mReader->open();
+    try {
+        mReader = VectorReaderFactory::create(file);
+        if (mReader) {
+            mReader->open();
+        }
+    } catch (...) {
+        close();
+    }
 }
 
 auto VectorReader::isOpen() const -> bool

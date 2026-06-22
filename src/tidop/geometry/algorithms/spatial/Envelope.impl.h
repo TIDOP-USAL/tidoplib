@@ -42,7 +42,7 @@ template<SegmentConcept Segment>
 auto envelope_impl(const Segment &segment,
                    segment_tag)
 {
-    using P = remove_measure_t<geometry_traits<Segment>::point_type>;
+    using P = remove_measure_t<typename geometry_traits<Segment>::point_type>;
     return BoundingBox<P>(static_cast<P>(segment.pt1()), 
                           static_cast<P>(segment.pt2()));
 }
@@ -121,7 +121,7 @@ template<GeometryCollectionConcept GeometryCollection>
 auto envelope_impl(const GeometryCollection &geometryCollection, 
                    collection_tag)
 {
-    using P = remove_measure_t<geometry_traits<GeometryCollection>::point_type>;
+    using P = remove_measure_t<typename geometry_traits<GeometryCollection>::point_type>;
 
     BoundingBox<P> bbox;
 

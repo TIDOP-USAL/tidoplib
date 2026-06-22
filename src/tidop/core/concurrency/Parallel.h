@@ -58,8 +58,13 @@
 #include <mutex>
 #include <queue>
 #include <condition_variable>
+#include <stop_token>
 #include <future>
 #include <algorithm>
+
+#if defined TL_HAVE_OPENMP
+#include <omp.h>  // OpenMP
+#endif
 
 namespace tl
 {
@@ -117,33 +122,73 @@ TL_EXPORT uint32_t optimalNumberOfThreads();
  */
 template<typename Function>
 void parallel_for(size_t ini,
-                  size_t end, 
-                  Function &&f)
+    size_t end,
+    Function &&f,
+    std::stop_token stopToken = {})
 {
     size_t size = end - ini;
     if (size == 0) return;
 
+    bool check_cancellation = stopToken.stop_possible();
+
 #ifdef TL_HAVE_OPENMP
-#pragma omp parallel for
-    for (long long i = static_cast<long long>(ini); i < static_cast<long long>(end); i++) {
-        f(i);
+
+    if (check_cancellation) {
+
+        if (stopToken.stop_requested()) return;
+
+        bool thread_stopped = false;
+
+#pragma omp parallel for firstprivate(thread_stopped) shared(stopToken, f)
+
+        for (long long i = static_cast<long long>(ini); i < static_cast<long long>(end); i++) {
+
+            if (!thread_stopped && (i & 127) == 0 && stopToken.stop_requested()) {
+                thread_stopped = true;
+            }
+
+            if (!thread_stopped)
+                f(static_cast<size_t>(i));
+        }
+
+    } else {
+
+#pragma omp parallel for shared(f)
+        for (long long i = static_cast<long long>(ini); i < static_cast<long long>(end); i++) {
+            f(static_cast<size_t>(i));
+        }
     }
-#elif defined TL_MSVS_CONCURRENCY
-    //Concurrency::cancellation_token_source cts;
-    //Concurrency::run_with_cancellation_token([ini, end, f]() {
-    //  Concurrency::parallel_for(ini, end, f);
-    //},cts.get_token());
-    Concurrency::parallel_for(ini, end, f);
+
 #else
 
+    auto func = std::forward<Function>(f);
+
     auto f_aux = [&](size_t ini, size_t end) {
-        for (size_t r = ini; r < end; r++) {
-            f(r);
+
+        if (check_cancellation) {
+
+            for (size_t r = ini; r < end; ++r) {
+
+                if ((r & 127) == 0 && stopToken.stop_requested()) break;
+
+                func(r);
+            }
+
+        } else {
+
+            for (size_t r = ini; r < end; ++r) {
+                func(r);
+            }
         }
     };
 
-    size_t num_threads = optimalNumberOfThreads();
-    std::vector<std::thread> threads(num_threads);
+    size_t min_per_thread = 25;
+    size_t max_threads = (size + min_per_thread - 1) / min_per_thread;
+    size_t hardware_threads = static_cast<size_t>(optimalNumberOfThreads());
+    size_t num_threads = std::min(hardware_threads, max_threads);
+
+    std::vector<std::jthread> threads;
+    threads.reserve(num_threads);
 
     size_t block_size = size / num_threads;
 
@@ -155,13 +200,10 @@ void parallel_for(size_t ini,
         if (i == num_threads - 1) block_end = end;
         else block_end = block_ini + block_size;
 
-        threads[i] = std::thread(f_aux, block_ini, block_end);
+        threads.emplace_back(f_aux, block_ini, block_end);
 
         block_ini = block_end;
     }
-
-    for (auto &_thread : threads)
-        _thread.join();
 
 #endif
 
@@ -217,13 +259,19 @@ void parallel_for(size_t ini,
 template<typename Iter, typename Function>
 auto parallel_reduce(Iter first,
                      Iter last,
-                     Function &&f) -> std::decay_t<Function>
+                     Function &&f,
+                     std::stop_token stopToken = {}) -> std::decay_t<Function>
 {
-    auto size = std::distance(first, last);
+    size_t size = std::distance(first, last);
     if (size == 0) return f;
 
-    size_t num_threads = optimalNumberOfThreads();
-    std::vector<std::thread> threads(num_threads);
+    size_t min_per_thread = 25;
+    size_t max_threads = (size + min_per_thread - 1) / min_per_thread;
+    size_t hardware_threads = static_cast<size_t>(optimalNumberOfThreads());
+    size_t num_threads = std::min(hardware_threads, max_threads);
+
+    std::vector<std::jthread> threads;
+    threads.reserve(num_threads);
 
     std::vector<Function> thread_functors(num_threads, f);
 
@@ -231,8 +279,8 @@ auto parallel_reduce(Iter first,
     Iter block_ini = first;
     Iter block_end = block_ini;
 
-    auto f_aux = [](Iter ini, Iter end, Function &local_f) {
-        while (ini != end) {
+    auto f_aux = [&](Iter ini, Iter end, Function &local_f) {
+        while (ini != end && !stopToken.stop_requested()) {
             local_f(*ini++);
         }
     };
@@ -245,13 +293,12 @@ auto parallel_reduce(Iter first,
             std::advance(block_end, block_size);
         }
 
-        threads[i] = std::thread(f_aux, block_ini, block_end, std::ref(thread_functors[i]));
+        threads.emplace_back(f_aux, block_ini, block_end, std::ref(thread_functors[i]));
 
         block_ini = block_end;
     }
 
-    for (auto &_thread : threads)
-        _thread.join();
+    threads.clear(); // Ensure threads are joined before aggregating
 
     for (size_t i = 1; i < num_threads; i++) {
         thread_functors[0].sum += thread_functors[i].sum;
@@ -266,7 +313,8 @@ auto parallel_reduce(Iter first,
 template<typename Iterator, typename Func>
 void parallel_for_each(Iterator first,
                        Iterator last,
-                       Func &&f)
+                       Func &&f,
+                       std::stop_token stopToken = {})
 {
     unsigned long const length = std::distance(first, last);
     if (!length) return;
@@ -277,28 +325,27 @@ void parallel_for_each(Iterator first,
     unsigned long const num_threads = std::min(hardware_threads != 0 ? hardware_threads : 2, max_threads);
     unsigned long const block_size = length / num_threads;
     std::vector<std::future<void> > futures(num_threads - 1);
-    std::vector<std::thread> threads(num_threads - 1);
+    std::vector<std::jthread> threads;
+    threads.reserve(num_threads - 1);
 
     Iterator block_start = first;
     for (unsigned long i = 0; i < (num_threads - 1); ++i) {
         Iterator block_end = block_start;
         std::advance(block_end, block_size);
-        std::packaged_task<void(void)> task(
-            [=]() {
-                std::for_each(block_start, block_end, f);
+        auto task = std::packaged_task<void()>([=, &stopToken]() {
+                for (Iterator it = block_start; it != block_end && !stopToken.stop_requested(); ++it) {
+                    f(*it);
+                }
             });
         futures[i] = task.get_future();
-        threads[i] = std::thread(std::move(task));
+        threads.emplace_back(std::move(task));
         block_start = block_end;
     }
 
-    std::for_each(block_start, last, f);
+    std::for_each(block_start, last, [&](auto &val){ if (!stopToken.stop_requested()) f(val); });
     for (unsigned long i = 0; i < (num_threads - 1); ++i) {
         futures[i].get();
     }
-
-    for (auto &_thread : threads)
-        _thread.join();
 }
 
 template<typename Iterator, typename Func>

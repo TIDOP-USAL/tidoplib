@@ -22,39 +22,66 @@
  *                                                                        *
  **************************************************************************/
 
-#include <fstream>
-#include <iostream>
-#include <algorithm>
-#include <string>
+#pragma once
 
-#include "tidop/core/base/Exception.h"
-
-#include "tidop/geotools/GeoTools.h"
-#include "tidop/geotools/CRSsTools.h"
-
-#include "tidop/pctools/PointCloudReader.h"
-
-TL_DISABLE_WARNINGS
-#include <proj.h>
-
-#include <copc-lib/las/header.hpp>
-#include <lazperf/readers.hpp>
-#include <copc-lib/io/copc_reader.hpp>
-#include <copc-lib/laz/decompressor.hpp>
-TL_DEFAULT_WARNINGS
+#include "tidop/config.h"
+#include "tidop/core/base/Path.h"
+#include "tidop/core/base/macros/SmartPtr.h"
+#include "tidop/pctools/io/impl/PointCloudReader.h"
 
 namespace tl
 {
 
-PointCloudReader::PointCloudReader(tl::Path file)
-  : mPtrGeoTools(nullptr),
-    mFile(std::move(file))
-{
-}
+/*! \addtogroup PointCloudToolsIO
+ *  \{
+ */
 
-auto PointCloudReader::file() const -> tl::Path
+
+/*!
+ * \brief Factory class for creating point cloud readers.
+ *
+ * The PointCloudReaderFactory provides a static method to instantiate a suitable
+ * \ref PointCloudReader based on the input file format (e.g., LAS, LAZ, PLY).
+ *
+ * Internally, it detects the file extension and selects an appropriate implementation
+ * that supports reading point cloud data and metadata.
+ *
+ * ### Example:
+ * \code
+ * #include <tidop/pctools/PointCloudReader.h>
+ *
+ * tl::Path file("example.laz");
+ * auto reader = tl::PointCloudReaderFactory::create(file);
+ * reader->open();
+ *
+ * if (reader->isOpen()) {
+ *     std::cout << "File loaded successfully.\n";
+ *     reader->close();
+ * }
+ * \endcode
+ */
+class TL_EXPORT PointCloudReaderFactory
 {
-    return mFile;
-}
+
+private:
+
+    PointCloudReaderFactory() = default;
+
+public:
+
+    /*!
+     * \brief Creates a point cloud reader for the given file.
+     *
+     * This method determines the format of the file and returns a concrete implementation
+     * of \ref PointCloudReader capable of reading its content.
+     *
+     * \param[in] file Path to the point cloud file.
+     * \return Smart pointer to a \ref PointCloudReader instance.
+     */
+    static auto create(const Path &file) -> PointCloudReaderBase::Ptr;
+};
+
+
+/*! \} */
 
 }

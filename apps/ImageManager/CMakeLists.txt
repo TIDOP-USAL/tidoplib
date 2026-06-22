@@ -22,7 +22,7 @@
 #                                                                        #
 ##########################################################################
 
-if(BUILD_TL_CORE AND BUILD_TL_RASTER_TOOLS)
+if(BUILD_TL_CORE AND TL_HAVE_RASTER_TOOLS)
 
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     include_directories(${CMAKE_SOURCE_DIR}/src)

@@ -9,7 +9,7 @@
 // DHL
 #include <tidop/geotools/GeoTools.h>
 #include <tidop/pctools/PointCloudTools.h>
-#include <tidop/pctools/PointCloudReader.h>
+#include <tidop/pctools/io/impl/PointCloudReader.h>
 //DHL
 
 namespace tl

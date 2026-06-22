@@ -29,15 +29,15 @@
 #include <memory>
 
 #include "tidop/config.h"
-#include "tidop/core/base/defs.h"
 #include "tidop/core/base/Path.h"
 #include "tidop/core/base/macros/SmartPtr.h"
+#include "tidop/geometry/primitives/Point.h"
 #include "tidop/geometry/spatial/BoundingBox.h"
 
-#include <proj.h>
+//#include <proj.h>
 
 #include "tidop/geotools/GeoTools.h"
-#include "PointCloudToolsDefinitions.h"
+#include "tidop/pctools/PointCloudToolsDefinitions.h"
 
 namespace tl
 {
@@ -86,9 +86,9 @@ namespace tl
  * }
  * \endcode
  */
-class TL_EXPORT PointCloudReader
+class TL_EXPORT PointCloudReaderBase
 {
-    GENERATE_UNIQUE_PTR(PointCloudReader)
+    GENERATE_UNIQUE_PTR(PointCloudReaderBase)
 
 public:
 
@@ -96,12 +96,12 @@ public:
      * \brief Constructor
      * \param file Path to the input point cloud file.
      */
-    PointCloudReader(tl::Path file);
+    PointCloudReaderBase(tl::Path file);
 
     /*!
      * \brief Virtual destructor
      */
-    virtual ~PointCloudReader() = default;
+    virtual ~PointCloudReaderBase() = default;
 
     /*!
      * \brief Opens the point cloud file.
@@ -301,49 +301,6 @@ private:
     Path mFile;
 };
 
-/*!
- * \brief Factory class for creating point cloud readers.
- *
- * The PointCloudReaderFactory provides a static method to instantiate a suitable
- * \ref PointCloudReader based on the input file format (e.g., LAS, LAZ, PLY).
- *
- * Internally, it detects the file extension and selects an appropriate implementation
- * that supports reading point cloud data and metadata.
- *
- * ### Example:
- * \code
- * #include <tidop/pctools/PointCloudReader.h>
- *
- * tl::Path file("example.laz");
- * auto reader = tl::PointCloudReaderFactory::create(file);
- * reader->open();
- *
- * if (reader->isOpen()) {
- *     std::cout << "File loaded successfully.\n";
- *     reader->close();
- * }
- * \endcode
- */
-class TL_EXPORT PointCloudReaderFactory
-{
-
-private:
-
-    PointCloudReaderFactory() = default;
-
-public:
-
-    /*!
-     * \brief Creates a point cloud reader for the given file.
-     *
-     * This method determines the format of the file and returns a concrete implementation
-     * of \ref PointCloudReader capable of reading its content.
-     *
-     * \param[in] file Path to the point cloud file.
-     * \return Smart pointer to a \ref PointCloudReader instance.
-     */
-    static auto create(const Path &file) -> PointCloudReader::Ptr;
-};
 
 /*! \} */
 

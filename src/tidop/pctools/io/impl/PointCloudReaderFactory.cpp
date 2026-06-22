@@ -22,23 +22,21 @@
  *                                                                        *
  **************************************************************************/
 
-#include "tidop/config.h"
-#include "tidop/core/base/defs.h"
-#include "tidop/core/base/Path.h"
-#include "tidop/core/base/macros/SmartPtr.h"
+#include "tidop/pctools/io/impl/PointCloudReaderFactory.h"
+
 #include "tidop/core/base/Exception.h"
 #include "tidop/geotools/GeoTools.h"
-#include "tidop/pctools/PointCloudReader.h"
-#include "tidop/pctools/impl/PointCloudReaderPDAL.h"
-#include "tidop/pctools/impl/PlyReader.h"
 
-TL_DISABLE_WARNINGS
-#include <proj.h>
-#include <copc-lib/las/header.hpp>
-#include <lazperf/readers.hpp>
-#include <copc-lib/io/copc_reader.hpp>
-#include <copc-lib/laz/decompressor.hpp>
-TL_DEFAULT_WARNINGS
+#include "tidop/pctools/io/impl/PointCloudReaderPDAL.h"
+#include "tidop/pctools/io/impl/PlyReader.h"
+
+//TL_DISABLE_WARNINGS
+//#include <proj.h>
+//#include <copc-lib/las/header.hpp>
+//#include <lazperf/readers.hpp>
+//#include <copc-lib/io/copc_reader.hpp>
+//#include <copc-lib/laz/decompressor.hpp>
+//TL_DEFAULT_WARNINGS
 
 #include <map>
 #include <string>
@@ -46,9 +44,9 @@ TL_DEFAULT_WARNINGS
 
 namespace tl
 {
-auto PointCloudReaderFactory::create(const Path &file) -> PointCloudReader::Ptr
+auto PointCloudReaderFactory::create(const Path &file) -> PointCloudReaderBase::Ptr
 {
-    PointCloudReader::Ptr pointCloudReader;
+    PointCloudReaderBase::Ptr pointCloudReader;
 
     TL_ASSERT(file.exists(), "File doesn't exist: {}", file.toString());
     std::string extension = file.extension().toString();

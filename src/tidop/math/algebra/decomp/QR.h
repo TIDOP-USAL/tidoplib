@@ -294,9 +294,9 @@ auto QRDecomposition<Mat>::solve(const Vec &b) -> Vector<value_type, cols>
 
         Vector<value_type, rows> y = Q.transpose() * b;
 
-        for (int i = mCols - 1; i >= 0; --i) {
+        for (int i = static_cast<int>(mCols) - 1; i >= 0; --i) {
             value_type sum = 0;
-            for (int j = i + 1; j < mCols; ++j) {
+            for (int j = i + 1; j < static_cast<int>(mCols); ++j) {
                 sum += R(i, j) * x[j];
             }
             x[i] = (y[i] - sum) / R(i, i);

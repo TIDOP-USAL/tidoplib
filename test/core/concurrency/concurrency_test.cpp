@@ -77,6 +77,43 @@ BOOST_FIXTURE_TEST_CASE(parallel_for_test, ConcurrencyTest)
         BOOST_CHECK_EQUAL(nums2[i], aux[i]);
 }
 
+BOOST_FIXTURE_TEST_CASE(parallel_for_cancellation_test, ConcurrencyTest)
+{
+    // 1. Creamos un rango grande y una función que simule trabajo pesado
+    // para dar tiempo a que ocurra la cancelación.
+    size_t total_iterations = 10000;
+    std::atomic<size_t> completed_iterations{0};
+
+    std::stop_source stopSource;
+    std::stop_token stopToken = stopSource.get_token();
+
+    // 2. Lanzamos parallel_for en un hilo separado porque es una llamada bloqueante
+    std::jthread worker_thread([&]() {
+        parallel_for(0, total_iterations, [&](size_t i) {
+            // Simulamos una carga de trabajo ligera pero notable
+            std::this_thread::sleep_for(std::chrono::microseconds(100));
+
+            completed_iterations.fetch_add(1, std::memory_order_relaxed);
+            }, stopToken);
+        });
+
+    // 3. Dejamos que los hilos arranquen y procesen algunas iteraciones
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+    // 4. Solicitamos la cancelación
+    stopSource.request_stop();
+
+    // 5. Esperamos a que el hilo del parallel_for termine (jthread hace join automáticamente aquí)
+    worker_thread.join();
+
+    // 6. Verificaciones (Asserts)
+    // - Al menos algunas iteraciones debieron ejecutarse antes de cancelar.
+    BOOST_CHECK_GT(completed_iterations.load(), 0);
+
+    // - El bucle NO debió completarse por completo debido a la cancelación.
+    BOOST_CHECK_LT(completed_iterations.load(), total_iterations);
+}
+
 struct Sum
 {
     void operator()(int n)

@@ -29,7 +29,7 @@
 
 include(TidopUtils)
 
-if (BUILD_TL_VECTOR_TOOLS)
+if (BUILD_TL_VECTOR_TOOLS AND TL_HAVE_GDAL)
 
     project(VectorTools)
   
@@ -107,5 +107,5 @@ elseif(BUILD_TL_CORE AND BUILD_TL_GRAPHIC)
     message(STATUS "  TidopLib::VectorTools disabled")
     message(STATUS "  TidopLib::Geospatial disabled   [Module dependent on TidopLib::VectorTools that is deactivated]")
 
-endif(BUILD_TL_VECTOR_TOOLS)
+endif()
   

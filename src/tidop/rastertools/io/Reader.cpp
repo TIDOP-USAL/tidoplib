@@ -49,9 +49,14 @@ RasterReader::~RasterReader()
 
 void RasterReader::open(const tl::Path &file, Mode mode)
 {
-    
-    mReader = ImageReaderFactory::create(file, static_cast<ImageReader::Mode>(static_cast<std::underlying_type<Mode>::type>(mode)));
-    mReader->open();
+    try {
+        mReader = ImageReaderFactory::create(file, static_cast<ImageReader::Mode>(static_cast<std::underlying_type<Mode>::type>(mode)));
+        if (mReader) {
+            mReader->open();
+        }
+    } catch (...) {
+        close();
+    }
 }
 
 auto RasterReader::isOpen() const -> bool

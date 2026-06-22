@@ -114,9 +114,8 @@ constexpr bool has_cpp26 = (tl::cpp_version >= tl::CppVersion::cpp_26);
 #cmakedefine TL_HAVE_LIBRAW
 #cmakedefine TL_HAVE_EDSDK
 
-// Parallelization
+// Concurrency
 #cmakedefine TL_HAVE_OPENMP
-#cmakedefine TL_HAVE_PPL
 
 // Visual Leak Detector
 #cmakedefine TL_HAVE_VLD

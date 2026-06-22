@@ -29,7 +29,7 @@
 
 include(TidopUtils)
 
-if (BUILD_TL_GEOTOOLS)
+if (BUILD_TL_GEOTOOLS AND TL_HAVE_GDAL AND TL_HAVE_PROJ)
 
     project(GeoTools)
     

@@ -4638,6 +4638,7 @@ BOOST_FIXTURE_TEST_CASE(diagonal_empty, MatrixDiagonalTest)
 
 BOOST_AUTO_TEST_SUITE_END()
 
+#ifdef TL_HAVE_CUDA
 BOOST_AUTO_TEST_CASE(test_big_matrix)
 {
     const int64_t m = 23;
@@ -4653,12 +4654,14 @@ BOOST_AUTO_TEST_CASE(test_big_matrix)
     C = A * B;
 
     MatrixConfig::instance().product = MatrixConfig::Product::CuBLAS;
+
     D = A * B;
 
     for (size_t r = 0; r < C.rows(); ++r)
         for (size_t c = 0; c < C.cols(); ++c)
             BOOST_CHECK_CLOSE(C(r, c), D(r, c), 0.001);
 }
+#endif
 
 ///TODO: probar con expresiones más complejas, como A*B + C*D, etc.
 

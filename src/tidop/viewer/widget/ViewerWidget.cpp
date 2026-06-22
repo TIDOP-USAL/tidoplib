@@ -114,13 +114,26 @@ void ViewerWidget::paintGL()
 void ViewerWidget::mousePressEvent(QMouseEvent* event)
 {
     mousePressed = true;
-    renderer->setPreviousMouse(Vector2i({ roundToInteger(event->position().x()),
-                                          roundToInteger(event->position().y())}));
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QPointF pos = event->position();
+#else
+    QPoint pos = event->pos();
+#endif
+    renderer->setPreviousMouse(Vector2i({ roundToInteger(pos.x()),
+                                          roundToInteger(pos.y())}));
     button = event->button();
 
-    if(pickerEnabled)
-		picker->pick(renderer->getModels(),Vector2i({ roundToInteger(event->position().x()),
-                                                      roundToInteger(event->position().y()) }));
+    if (pickerEnabled) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        QPointF pickPos = event->position();
+#else
+        QPoint pickPos = event->pos();
+#endif
+        picker->pick(renderer->getModels(), Vector2i({roundToInteger(pickPos.x()),
+                                                      roundToInteger(pickPos.y())}));
+
+    }
 }
 
 void ViewerWidget::mouseDoubleClickEvent(QMouseEvent* e)
@@ -138,12 +151,18 @@ void ViewerWidget::mouseReleaseEvent(QMouseEvent* event)
 
 void ViewerWidget::mouseMoveEvent(QMouseEvent* event)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QPointF pos = event->position();
+#else
+    QPoint pos = event->pos();
+#endif
+
     if (mousePressed && button == Qt::LeftButton)
-        renderer->rotate(roundToInteger(event->position().x()),
-                         roundToInteger(event->position().y()));
+        renderer->rotate(roundToInteger(pos.x()),
+                         roundToInteger(pos.y()));
     else if (mousePressed && button == Qt::RightButton)
-        renderer->pan(roundToInteger(event->position().x()),
-                      roundToInteger(event->position().y()));
+        renderer->pan(roundToInteger(pos.x()),
+                      roundToInteger(pos.y()));
 }
 
 void ViewerWidget::wheelEvent(QWheelEvent* event)

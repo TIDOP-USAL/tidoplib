@@ -49,6 +49,7 @@
 #include <unordered_map>
 
 #include "tidop/geometry/base/Concepts.h"
+#include "tidop/geometry/primitives/Point.h"
 
 namespace tl
 {

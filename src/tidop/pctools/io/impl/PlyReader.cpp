@@ -23,8 +23,8 @@
  **************************************************************************/
 
 
-#include "tidop/pctools/impl/PlyReader.h"
-#include "tidop/pctools/impl/ply/ply.h"
+#include "tidop/pctools/io/impl/PlyReader.h"
+#include "tidop/pctools/io/impl/ply/ply.h"
 
 #include <memory>
 
@@ -33,8 +33,8 @@
 namespace tl
 {
 
-PlyReader::PlyReader(tl::Path file)
-  : PointCloudReader(std::move(file)),
+PlyReader::PlyReader(Path file)
+  : PointCloudReaderBase(std::move(file)),
     mIsOpen(false) 
 {
 }
@@ -67,6 +67,7 @@ void PlyReader::close()
 {
 #ifdef TL_HAVE_PDAL
     mView.reset();
+    mViewSet.clear();
 #else
     mPly.reset();
 #endif // TL_HAVE_PDAL

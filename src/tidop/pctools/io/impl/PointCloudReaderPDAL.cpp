@@ -79,15 +79,20 @@ bool isCOPC(const std::string &filename)
 
     // Saltar los primeros 96 bytes del header LAS estándar
     file.seekg(96, std::ios::beg);
+    if (!file.good()) return false;
 
     // Leer el número de VLRs
-    uint32_t vlr_count;
-    file.read(reinterpret_cast<char *>(&vlr_count), sizeof(vlr_count));
+    uint32_t vlr_count = 0;
+    if (!file.read(reinterpret_cast<char *>(&vlr_count), sizeof(vlr_count))) {
+        return false;
+    }
 
     // Leer cada VLR y verificar si es COPC
     for (uint32_t i = 0; i < vlr_count; ++i) {
         VLRHeader vlr;
-        file.read(reinterpret_cast<char *>(&vlr), sizeof(VLRHeader));
+        if (!file.read(reinterpret_cast<char *>(&vlr), sizeof(VLRHeader))) {
+            break;
+        }
 
         std::string user_id(vlr.user_id, 16);
         if (user_id.find("copc") != std::string::npos && vlr.record_id == 1) {
@@ -96,6 +101,7 @@ bool isCOPC(const std::string &filename)
 
         // Saltar el contenido del VLR
         file.seekg(vlr.record_length, std::ios::cur);
+        if (!file.good()) break;
     }
 
     return false;
@@ -105,7 +111,7 @@ bool isCOPC(const std::string &filename)
 
 
 PointCloudReaderPDAL::PointCloudReaderPDAL(tl::Path file)
-    : PointCloudReader(std::move(file)),
+  : PointCloudReaderBase(std::move(file)),
     mPtrCopcFile(nullptr),
     mPtrLasReader(nullptr)
 {
@@ -127,6 +133,9 @@ PointCloudReaderPDAL::~PointCloudReaderPDAL()
 
 void PointCloudReaderPDAL::close()
 {
+    mView.reset();
+    mViewSet.clear();
+    
     if (mPtrCopcFile) {
         delete(mPtrCopcFile);
         mPtrCopcFile = nullptr;
@@ -557,8 +566,8 @@ void PointCloudReaderPDAL::getPoints(double &x_o, double &y_o, double &z_o,
             mPtrGeoTools->ptrCRSsTools()->crsOperation(mCrsId, crsId, x_o, y_o, z_o);
         }
         pdal::BOX3D bounds(x_min, y_min, z_min, x_max, y_max, z_max);
-        pdal::PointViewSet set;
         pdal::PointTable pointTable;
+        pdal::PointViewSet set;
         if (mPtrLasReader) {
             pdal::LasReader reader;
             {

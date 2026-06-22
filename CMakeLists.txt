@@ -52,60 +52,75 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
-# Include custom modules
-include(CMakeDependentOption)
-include(CompilerInfo)
-include(OperatingSystemInfo)
-include(TidopLibSIMDSupport)
-include(TidopUtils)
-# Añadir TidopLibCXXStandarSupport
+
+##########################################################################
+#  C++ Standard Configuration                                            #
+##########################################################################
+
+include(TidopLibCXXStandardSupport)
+
+tidop_configure_cxx_standard(
+    MIN_VERSION   C++20
+    MAX_VERSION   C++26
+    DEFAULT       C++20
+    CACHE_VAR     TIDOPLIB_CXX_STANDARD
+    DESCRIPTION   "C++ standard to use for TidopLib"
+)
 
 ##########################################################################
 #  Architecture Configuration                                            #
 ##########################################################################
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-  set(TL_ARCH x64)
+    set(TL_ARCH x64)
+elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+    set(TL_ARCH x86)
 else()
-  set(TL_ARCH x86)
+    message(WARNING "Unknown architecture: ${CMAKE_SIZEOF_VOID_P}")
 endif()
 
 
-##########################################################################
-#  C++ Standard Configuration                                            #
-##########################################################################
+# Include custom modules
+include(CMakeDependentOption)
+include(CompilerInfo)
+include(OperatingSystemInfo)
+include(TidopLibSIMDSupport)
+include(TidopUtils)
 
-# TODO: modificar con TidopLibCXXStandarSupport
 
-set(cxx_standard_values "")
 
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.12 AND "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
-    list (APPEND cxx_standard_values C++20)
-endif()
 
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.20 AND "cxx_std_23" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
-    list (APPEND cxx_standard_values C++23)
-endif()
 
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.25 AND "cxx_std_26" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
-    list (APPEND cxx_standard_values C++26)
-endif()
 
-set(TIDOPLIB_CXX_STANDARD "C++20" CACHE STRING "")
-set_property(CACHE TIDOPLIB_CXX_STANDARD PROPERTY STRINGS ${cxx_standard_values})
-
-if(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++20")
-    set(CMAKE_CXX_STANDARD 20)
-elseif(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++23")
-    set(CMAKE_CXX_STANDARD 23)
-elseif(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++26")
-    set(CMAKE_CXX_STANDARD 26)
-else()
-
-endif()
-
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+#set(cxx_standard_values "")
+#
+#if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.12 AND "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+#    list (APPEND cxx_standard_values C++20)
+#endif()
+#
+#if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.20 AND "cxx_std_23" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+#    list (APPEND cxx_standard_values C++23)
+#endif()
+#
+#if(${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.25 AND "cxx_std_26" IN_LIST CMAKE_CXX_COMPILE_FEATURES)
+#    list (APPEND cxx_standard_values C++26)
+#endif()
+#
+#set(TIDOPLIB_CXX_STANDARD "C++20" CACHE STRING "")
+#set_property(CACHE TIDOPLIB_CXX_STANDARD PROPERTY STRINGS ${cxx_standard_values})
+#
+#if(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++20")
+#    set(CMAKE_CXX_STANDARD 20)
+#elseif(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++23")
+#    set(CMAKE_CXX_STANDARD 23)
+#elseif(${TIDOPLIB_CXX_STANDARD} STREQUAL "C++26")
+#    set(CMAKE_CXX_STANDARD 26)
+#else()
+#
+#endif()
+#
+#set(CMAKE_CXX_STANDARD_REQUIRED ON)
+#set(CMAKE_CXX_EXTENSIONS OFF)
 
 
 ##########################################################################
@@ -117,16 +132,19 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
 add_definitions(-DUNICODE)
 
 if(MSVC)
-    if(MSVC_VERSION EQUAL 1900)
-        set(TL_RUNTIME vc14)
-    elseif(MSVC_VERSION MATCHES "^191[0-9]$")
-        set(TL_RUNTIME vc15)
-    elseif(MSVC_VERSION MATCHES "^192[0-9]$")
-        set(TL_RUNTIME vc16)
-    elseif(MSVC_VERSION MATCHES "^193[0-9]$")
-        set(TL_RUNTIME vc17)
+    if(MSVC_TOOLSET_VERSION EQUAL 140)
+        set(TL_RUNTIME vc14)      # VS 2015
+    elseif(MSVC_TOOLSET_VERSION EQUAL 141)
+        set(TL_RUNTIME vc15)      # VS 2017
+    elseif(MSVC_TOOLSET_VERSION EQUAL 142)
+        set(TL_RUNTIME vc16)      # VS 2019
+    elseif(MSVC_TOOLSET_VERSION EQUAL 143)
+        set(TL_RUNTIME vc17)      # VS 2022
+    elseif(MSVC_TOOLSET_VERSION EQUAL 145)
+        set(TL_RUNTIME vc18)      # VS 2026
     else()
-        message(WARNING "TidopLib does not recognize MSVC_VERSION \"${MSVC_VERSION}\". Cannot set TL_RUNTIME")
+        message(WARNING "Toolset ${MSVC_TOOLSET_VERSION} no reconocido. Usando 'vc_latest'.")
+        set(TL_RUNTIME vc_latest)
     endif()
 elseif(MINGW)
     set(TL_RUNTIME mingw)
@@ -150,7 +168,7 @@ endif()
 set (LIB_TYPE STATIC)
 
 # Determine installation prefix for Windows
-if(WIN32 AND CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
+if (WIN32 AND CMAKE_HOST_SYSTEM_NAME MATCHES Windows)
     if(DEFINED TL_RUNTIME AND DEFINED TL_ARCH)
         set(TL_INSTALL_BINARIES_PREFIX "${TL_ARCH}/${TL_RUNTIME}/")
     else()
@@ -303,7 +321,6 @@ OPTION (WITH_GDAL   "Include GDAL Support"                    ON)
 OPTION (WITH_PROJ   "Include PROJ Support"                    ON)
 #cmake_dependent_option(WITH_LIBRAW "Include LibRaw Support" OFF "BUILD_TL_IMG" OFF)
 #cmake_dependent_option(WITH_EDSDK "Include EDSDK Support" OFF "BUILD_TL_IMG" OFF)
-OPTION (WITH_PPL    "Include PPL Support"                     OFF)
 OPTION (WITH_VLD    "Include Visual Leak Detector Support"    OFF)
 cmake_dependent_option(WITH_OpenBLAS "Include OpenBLAS" OFF "BUILD_TL_MATH" OFF)
 OPTION (WITH_OPENMP   "Include OpenMP"                        OFF)
@@ -545,6 +562,8 @@ endif(WITH_CUDA)
 
 # Qt
 
+if (BUILD_TL_VIEWER)
+
 if (USE_QT6)
 
     set(CMAKE_MESSAGE_LOG_LEVEL "ERROR")
@@ -594,6 +613,9 @@ if(QT_VERSION)
 else()
     message(STATUS "  Qt not found")
 endif()
+
+endif(BUILD_TL_VIEWER)
+
 
 # Build documentation
 
