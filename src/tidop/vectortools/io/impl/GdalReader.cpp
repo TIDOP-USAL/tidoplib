@@ -34,6 +34,8 @@
 #include "tidop/vectortools/io/private/TypeConverter.h"
 #include "tidop/vectortools/io/private/gdal.h"
 
+#include <memory>
+
 #ifdef TL_HAVE_GDAL
 TL_DISABLE_WARNINGS
 #include "ogrsf_frmts.h"
@@ -127,7 +129,7 @@ auto VectorReaderGdal::read(const std::string &layerName) -> std::shared_ptr<GLa
         OGRLayer *ogrLayer = mDataset->GetLayerByName(layerName.c_str());
         TL_ASSERT(ogrLayer != nullptr, "Layer not found");
 
-        this->read(ogrLayer);
+        layer = this->read(ogrLayer);
 
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
@@ -372,9 +374,14 @@ auto VectorReaderGdal::read(OGRLayer *ogrLayer) const -> std::shared_ptr<GLayer>
     ////////////////////////////////////////////////////////////////////
 
 
-    OGRFeature *ogr_feature = nullptr;
+    for (;;) {
+        std::unique_ptr<OGRFeature, decltype(&OGRFeature::DestroyFeature)> ogr_feature(
+            ogrLayer->GetNextFeature(),
+            &OGRFeature::DestroyFeature);
 
-    while ((ogr_feature = ogrLayer->GetNextFeature()) != nullptr) {
+        if (!ogr_feature) {
+            break;
+        }
 
         const char *driver_name = mDataset->GetDriverName();
         const char *layer_name;
@@ -390,17 +397,20 @@ auto VectorReaderGdal::read(OGRLayer *ogrLayer) const -> std::shared_ptr<GLayer>
 
         if (OGRGeometry *geometry = ogr_feature->GetGeometryRef()) {
 
-            OGRStyleMgr *ogr_style_mgr = nullptr;
-
             try {
 
                 auto entity = readEntity(geometry);
-                ogr_style_mgr = new OGRStyleMgr();
-                ogr_style_mgr->GetStyleString(ogr_feature);
-                readStyles(ogr_style_mgr, entity.get());
+                if (!entity) {
+                    Message::warning("Unsupported geometry type. Feature skipped");
+                    continue;
+                }
+
+                OGRStyleMgr ogr_style_mgr;
+                ogr_style_mgr.GetStyleString(ogr_feature.get());
+                readStyles(&ogr_style_mgr, entity.get());
 
                 auto attributes = std::make_shared<TableRegister>(layer->tableFields());
-                readData(ogr_feature, feature_definition, attributes.get());
+                readData(ogr_feature.get(), feature_definition, attributes.get());
                 entity->setAttributes(attributes);
 
                 layer->push_back(entity);
@@ -409,16 +419,9 @@ auto VectorReaderGdal::read(OGRLayer *ogrLayer) const -> std::shared_ptr<GLayer>
                 printException(e);
             }
 
-            if (ogr_style_mgr) {
-                delete ogr_style_mgr;
-                ogr_style_mgr = nullptr;
-            }
-
         }
 
     }
-
-    OGRFeature::DestroyFeature(ogr_feature);
 
     return layer;
 }

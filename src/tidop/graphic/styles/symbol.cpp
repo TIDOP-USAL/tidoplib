@@ -32,8 +32,8 @@ namespace tl
 Symbol::Symbol()
   : mShape(Shape::cross),
     mAngle(0.),
-    mColor(0),
-    mOutlineColor(0),
+    mColor(Color::Name::black),
+    mOutlineColor(Color::Name::black),
     mScalingFactor(1.),
     mPriorityLevel(0)
 {

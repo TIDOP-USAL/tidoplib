@@ -31,7 +31,7 @@
 
 #include <proj.h>
 
-#include "tidop/core/base/defs.h"
+#include "tidop/core/base/Defs.h"
 
 namespace tl {
     // Mover a core en versión 4.0

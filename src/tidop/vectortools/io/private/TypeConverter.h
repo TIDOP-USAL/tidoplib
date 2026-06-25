@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "tidop/core/base/defs.h"
+#include "tidop/core/base/Defs.h"
 
 #ifdef TL_HAVE_GDAL
 TL_DISABLE_WARNINGS

@@ -25,9 +25,11 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 
-#include "tidop/core/base/defs.h"
-
+#include "tidop/core/base/Defs.h"
+#include "tidop/core/base/TypeConversions.h"
+#include "tidop/graphic/color/Concepts.h"
 
 namespace tl
 {
@@ -36,32 +38,15 @@ namespace tl
  *  \{
  */
 
-
-/*!
- * \brief Color space class
- *
- */
-class TL_EXPORT ColorSpace
-{
-public:
-
-    ColorSpace();
-    ~ColorSpace();
-
-private:
-
-};
-
-
-
-
-class ColorModel;
-
 /*!
  * \brief Class representing a color with various utility functions.
  */
 class TL_EXPORT Color
 {
+
+private:
+
+    uint32_t mValue = 0xFF000000;
 
 public:
 
@@ -223,128 +208,188 @@ public:
     /*!
      * \brief Default constructor
      */
-    Color();
+    Color() noexcept = default;
 
     /*!
      * \brief Copy constructor
      * \param[in] color Color object
      */
-    Color(const Color &color);
+    constexpr Color(const Color &color) noexcept = default;
 
     /*!
      * \brief Move constructor
      * \param[in] color Color object
      */
-    Color(Color &&color) TL_NOEXCEPT;
+    constexpr Color(Color &&color) noexcept = default;
 
     /*!
      * \brief Constructor
      * \param[in] color Color as an integer
      */
-    explicit Color(uint32_t color);
+    //constexpr explicit Color(uint32_t color) noexcept
+    //  : mValue(color)
+    //{
+    //}
     
     /*!
      * \brief Constructor
      * \param[in] color Color as a string (hexadecimal)
      */
-    explicit Color(const std::string &color);
+    explicit Color(std::string_view color) noexcept;
     
     /*!
      * \brief Constructor
      * \param[in] color Name of the color
      * \see Name
      */
-    explicit Color(const Name &color);
+    constexpr explicit Color(const Name &color) noexcept
+      : mValue(0xFF000000u | static_cast<uint32_t>(color))
+    {
+    }
 
     /*!
      * \brief Constructor
      * \param[in] colorModel Color model
      * \see ColorModel
      */
-    explicit Color(const ColorModel &colorModel);
+    //explicit Color(const ColorModel &colorModel);
     
-    ~Color();
-    
-    /*!
-     * \brief Returns the blue component
-     * \return Blue component
-     */
-    auto blue() const -> int;
-    
-    /*!
-     * \brief Returns the green component
-     * \return Green component
-     */
-    auto green() const -> int;
-    
-    /*!
-     * \brief Returns the red component
-     * \return Red component
-     */
-    auto red() const -> int;
-    
-    /*!
-     * \brief Returns the opacity
-     * \return Opacity
-     */
-    auto opacity() const -> uint8_t;
+    constexpr Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255)
+      : mValue((uint32_t(a) << 24) | (uint32_t(r) << 16) |(uint32_t(g) << 8) |uint32_t(b))
+    {
+    }
 
-    /*!
-     * \brief Sets the opacity
-     * \param[in] opacity New opacity value
-     */
-    void setOpacity(uint8_t opacity);
-    
-    /*!
-     * \brief Computes the luminance value of a color
-     * \return Luminance value
-     */
-    auto luminance() const -> int;
-    
-    /*!
-     * \brief Converts the color to a hexadecimal string
-     * \return Hexadecimal string representation of the color
-     */
-    auto toHex() const -> std::string;
-    
-    /*!
-     * \brief Generates a random color
-     * \return Randomly generated Color object
-     */
-    static auto randomColor() -> Color;
-    
-    operator unsigned int() const { return mColor; }
-    operator int() const { return static_cast<int>(mColor); }
+    template<ColorConvertible T>
+    constexpr explicit Color(const T &color)
+        : Color(color.toColor())
+    {
+    }
+
+    ~Color() = default;
     
     /*!
      * \brief Assignment operator
      * \param[in] color Color to assign
      * \return Reference to this Color object
      */
-    auto operator =(const Color &color) -> Color &;
+    constexpr auto operator =(const Color &color) noexcept -> Color & = default;
 
     /*!
      * \brief Move assignment operator
      * \param[in] color Color to assign
      * \return Reference to this Color object
      */
-    auto operator =(Color &&color) TL_NOEXCEPT -> Color &;
-
-private:
+    constexpr auto operator =(Color &&color) noexcept -> Color & = default;
 
     /*!
-     * \brief Color
+     * \brief Returns the blue component
+     * \return Blue component
      */
-    uint32_t mColor;
-    uint8_t mOpacity{255};
-    bool mHasOpacity{false};
+    [[nodiscard]]
+    constexpr auto blue() const noexcept -> int;
+    
+    /*!
+     * \brief Returns the green component
+     * \return Green component
+     */
+    [[nodiscard]]
+    constexpr auto green() const noexcept -> int;
+    
+    /*!
+     * \brief Returns the red component
+     * \return Red component
+     */
+    [[nodiscard]]
+    constexpr auto red() const noexcept -> int;
+    
+    /*!
+     * \brief Returns the alpha channel
+     * \return Alpha channel
+     */
+    [[nodiscard]]
+    constexpr auto alpha() const noexcept -> int;
+
+    /*!
+     * \brief Sets the alpha channel
+     * \param[in] alpha Alpha value
+     */
+    constexpr void setAlpha(int alpha) noexcept;
+    
+    /*!
+     * \brief Computes the luminance value of a color
+     * \return Luminance value
+     */
+    [[nodiscard]]
+    constexpr auto luminance() const -> int;
+    
+    /*!
+     * \brief Converts the color to a hexadecimal string
+     * \return Hexadecimal string representation of the color
+     */
+    [[nodiscard]]
+    auto toHexRGB() const -> std::string;
+
+    [[nodiscard]]
+    auto toHexARGB() const -> std::string;
+
+    [[nodiscard]]
+    auto toHexRGBA() const -> std::string;
+
+    /*!
+     * \brief Generates a random color
+     * \return Randomly generated Color object
+     */ 
+    [[nodiscard]]
+    static auto randomColor() -> Color;
+    
+    [[nodiscard]]
+    constexpr auto argb() const noexcept -> uint32_t
+    {
+        return mValue;
+    }
+
+    [[nodiscard]]
+    constexpr auto rgb() const noexcept -> uint32_t
+    {
+        return mValue & 0x00FFFFFF;
+    }
+
+    
+    auto operator<=>(const Color &) const = default;
 
 };
 
-TL_EXPORT bool operator == (const Color &color1, const Color &color2);
-TL_EXPORT bool operator != (const Color &color1, const Color &color2);
 
+constexpr auto Color::blue() const noexcept-> int
+{
+    return mValue & 0xFF;
+}
 
+constexpr auto Color::green() const noexcept-> int
+{
+    return (mValue >> 8) & 0xFF;
+}
+
+constexpr auto Color::red() const noexcept -> int
+{
+    return (mValue >> 16) & 0xFF;
+}
+
+constexpr auto Color::alpha() const noexcept -> int
+{
+    return (mValue >> 24) & 0xFF;
+}
+
+constexpr void Color::setAlpha(int alpha) noexcept
+{
+    alpha = std::clamp(alpha, 0, 255);
+    mValue = (mValue & 0x00FFFFFF) | (alpha << 24);
+}
+
+constexpr auto Color::luminance() const -> int
+{
+    return roundToInteger(0.2126 * red() + 0.7152 * green() + 0.0722 * blue());
+}
 
 
 /*! \} */

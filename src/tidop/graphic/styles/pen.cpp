@@ -30,7 +30,7 @@ namespace tl
 
 
 Pen::Pen()
-  : mColor(0),
+  : mColor(Color::Name::black),
     mWidth(1),
     mPredefinedPattern(PredefinedPattern::solid),
     mCap(Cap::butt),

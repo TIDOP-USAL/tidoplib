@@ -30,8 +30,8 @@ namespace tl
 
 
 Brush::Brush()
-  : mForeColor(0),
-    mBackColor(0),
+  : mForeColor(Color::Name::black),
+    mBackColor(Color::Name::black),
     mPattern(Pattern::solid),
     mAngle(0.),
     mScalingFactor(1.),

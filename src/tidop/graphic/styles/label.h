@@ -26,7 +26,7 @@
 
 #include <array>
 
-#include "tidop/core/base/defs.h"
+#include "tidop/core/base/Defs.h"
 #include "tidop/graphic/font.h"
 #include "tidop/graphic/color.h"
 

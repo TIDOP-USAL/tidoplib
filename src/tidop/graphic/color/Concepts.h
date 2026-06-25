@@ -22,11 +22,9 @@
  *                                                                        *
  **************************************************************************/
 
-
 #pragma once
 
-#include "tidop/core/base/defs.h"
-#include "tidop/graphic/color/color.h"
+#include "tidop/config.h"
 
 namespace tl
 {
@@ -34,40 +32,20 @@ namespace tl
 /*! \addtogroup Color
  *  \{
  */
+class Color;
 
-
-/*!
- * \brief Interface for a color model.
- */
-class TL_EXPORT ColorModel
+template<typename T>
+concept ColorConvertible = requires(const T &color)
 {
-
-public:
-
-    /*!
-     * \brief Default constructor
-     */
-    ColorModel();
-
-    /*!
-     * \brief Destructor
-     */
-    virtual ~ColorModel();
-
-    /*!
-     * \brief Converts the model to a Color object.
-     * \return Color object representation
-     */
-    virtual auto toColor() const -> Color = 0;
-
-    /*!
-     * \brief Initializes the model from a Color object.
-     * \param[in] color Color object to initialize from
-     */
-    virtual void fromColor(const Color &color) = 0;
+    { color.toColor() } -> std::same_as<Color>;
 };
 
+template<typename T>
+concept ColorConstructible = requires(const Color &color)
+{
+    { T::fromColor(color) } -> std::same_as<T>;
+};
 
 /*! \} */
 
-} // End namespace tl
+} // namespace tl

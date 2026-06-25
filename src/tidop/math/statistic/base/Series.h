@@ -29,7 +29,7 @@
 #include <iomanip>
 #include <charconv>
 
-#include "tidop/core/base/defs.h"
+#include "tidop/core/base/Defs.h"
 #include "tidop/core/base/Exception.h"
 #include "tidop/core/base/Concepts.h"
 

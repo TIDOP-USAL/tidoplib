@@ -25,7 +25,7 @@
 #pragma once
 
 
-#include "tidop/core/base/defs.h"
+#include "tidop/core/base/Defs.h"
 
 #if defined TL_HAVE_GDAL && (defined TL_HAVE_PROJ4 || defined TL_HAVE_PROJ)
 

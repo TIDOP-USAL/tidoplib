@@ -24,8 +24,12 @@
 
 #pragma once
 
-#include "tidop/core/base/defs.h"
-#include "tidop/graphic/color/color_model.h"
+#include <utility>
+#include <algorithm>
+
+#include "tidop/config.h"
+#include "tidop/graphic/color/Color.h"
+#include "tidop/core/base/TypeConversions.h"
 
 namespace tl
 {
@@ -41,17 +45,14 @@ namespace tl
  * CMYK component values range by default between 0 and 1, representing percentages.
  */
 class TL_EXPORT ColorCMYK 
-  : public ColorModel
 {
 
 protected:
 
-    double mCyan; /*!< Cyan component */
-    double mMagenta; /*!< Magenta component */
-    double mYellow; /*!< Yellow component */
-    double mKey; /*!< Black (Key) component */
-    double mRangeMin; /*!< Minimum range value */
-    double mRangeMax; /*!< Maximum range value */
+    double mCyan = 0.0;       /*!< Cyan component */
+    double mMagenta = 0.0;    /*!< Magenta component */
+    double mYellow = 0.0;     /*!< Yellow component */
+    double mKey = 0.0;        /*!< Black (Key) component */
 
 public:
 
@@ -59,7 +60,7 @@ public:
      * \brief Default constructor.
      * Initializes a CMYK color with default values.
      */
-    ColorCMYK();
+    constexpr ColorCMYK() = default;
 
     /*!
      * \brief Constructor with CMYK components.
@@ -68,110 +69,189 @@ public:
      * \param[in] yellow Yellow component
      * \param[in] key Black (Key) component
      */
-    ColorCMYK(double cyan, double magenta, double yellow, double key);
+    constexpr ColorCMYK(double cyan, double magenta, double yellow, double key)
+      : mCyan(adjustRange(cyan)),
+        mMagenta(adjustRange(magenta)),
+        mYellow(adjustRange(yellow)),
+        mKey(adjustRange(key))
+    {
+    }
 
     /*!
      * \brief Copy constructor.
      * \param[in] color ColorCMYK object to copy
      */
-    ColorCMYK(const ColorCMYK &color);
+    constexpr ColorCMYK(const ColorCMYK &color) = default;;
 
     /*!
      * \brief Move constructor.
      * \param[in] color ColorCMYK object to move
      */
-    ColorCMYK(ColorCMYK &&color) TL_NOEXCEPT;
+    constexpr ColorCMYK(ColorCMYK &&color) noexcept = default;
 
-    /*!
-     * \brief Returns the cyan component.
-     * \return Cyan value
-     */
-    auto cyan() const -> double;
-
-    /*!
-     * \brief Sets the cyan component.
-     * \param[in] cyan New cyan value
-     */
-    void setCyan(double cyan);
-
-    /*!
-     * \brief Returns the magenta component.
-     * \return Magenta value
-     */
-    auto magenta() const -> double;
-
-    /*!
-     * \brief Sets the magenta component.
-     * \param[in] magenta New magenta value
-     */
-    void setMagenta(double magenta);
-
-    /*!
-     * \brief Returns the yellow component.
-     * \return Yellow value
-     */
-    auto yellow() const -> double;
-
-    /*!
-     * \brief Sets the yellow component.
-     * \param[in] yellow New yellow value
-     */
-    void setYellow(double yellow);
-
-    /*!
-     * \brief Returns the key (black) component.
-     * \return Key value
-     */
-    auto key() const -> double;
-
-    /*!
-     * \brief Sets the key (black) component.
-     * \param[in] key New key value
-     */
-    void setKey(double key);
+    ~ColorCMYK() = default;
 
     /*!
      * \brief Assignment operator.
      * \param[in] color ColorCMYK object to assign
      * \return Reference to this ColorCMYK object
      */
-    auto operator =(const ColorCMYK &color) -> ColorCMYK &;
+    constexpr auto operator =(const ColorCMYK &color) -> ColorCMYK & = default;
 
     /*!
      * \brief Move assignment operator.
      * \param[in] color ColorCMYK object to assign
      * \return Reference to this ColorCMYK object
      */
-    auto operator =(ColorCMYK &&color) TL_NOEXCEPT -> ColorCMYK &;
+    constexpr auto operator =(ColorCMYK &&color) noexcept ->ColorCMYK & = default;
 
     /*!
-     * \brief Sets the minimum and maximum value range for CMYK components.
-     * \param[in] min Minimum value (default 0.0)
-     * \param[in] max Maximum value (default 1.0)
+     * \brief Returns the cyan component.
+     * \return Cyan value
      */
-    void setRange(double min, double max);
+    [[nodiscard]]
+    constexpr auto cyan() const noexcept -> double;
+
+    /*!
+     * \brief Sets the cyan component.
+     * \param[in] cyan New cyan value
+     */
+    constexpr void setCyan(double cyan);
+
+    /*!
+     * \brief Returns the magenta component.
+     * \return Magenta value
+     */
+    [[nodiscard]]
+    constexpr auto magenta() const noexcept -> double;
+
+    /*!
+     * \brief Sets the magenta component.
+     * \param[in] magenta New magenta value
+     */
+    constexpr void setMagenta(double magenta);
+
+    /*!
+     * \brief Returns the yellow component.
+     * \return Yellow value
+     */
+    [[nodiscard]]
+    constexpr auto yellow() const noexcept -> double;
+
+    /*!
+     * \brief Sets the yellow component.
+     * \param[in] yellow New yellow value
+     */
+    constexpr void setYellow(double yellow);
+
+    /*!
+     * \brief Returns the key (black) component.
+     * \return Key value
+     */
+    [[nodiscard]]
+    constexpr auto key() const noexcept -> double;
+
+    /*!
+     * \brief Sets the key (black) component.
+     * \param[in] key New key value
+     */
+    constexpr void setKey(double key);
 
     /*!
      * \brief Converts the CMYK model to a Color object.
      * \return Converted Color object
      */
-    auto toColor() const -> Color override;
+    [[nodiscard]]
+    constexpr auto toColor() const -> Color;
 
     /*!
      * \brief Initializes the CMYK model from a Color object.
      * \param[in] color Color object to initialize from
      */
-    void fromColor(const Color &color) override;
+    [[nodiscard]]
+    static constexpr auto fromColor(const Color &color) -> ColorCMYK;
 
 protected:
 
-    void adjustRangeCyan();
-    void adjustRangeMagenta();
-    void adjustRangeYellow();
-    void adjustRangeKey();
+    static constexpr auto adjustRange(double value) -> double;
 
 };
 
+
+constexpr auto ColorCMYK::cyan() const noexcept -> double
+{
+    return mCyan;
+}
+
+constexpr void ColorCMYK::setCyan(double cyan)
+{
+    mCyan = ColorCMYK::adjustRange(cyan);
+}
+
+constexpr auto ColorCMYK::magenta() const noexcept -> double
+{
+    return mMagenta;
+}
+
+constexpr void ColorCMYK::setMagenta(double magenta)
+{
+    mMagenta = ColorCMYK::adjustRange(magenta);
+}
+
+constexpr auto ColorCMYK::yellow() const noexcept -> double
+{
+    return mYellow;
+}
+
+constexpr void ColorCMYK::setYellow(double yellow)
+{
+    mYellow = ColorCMYK::adjustRange(yellow);
+}
+
+constexpr auto ColorCMYK::key() const noexcept -> double
+{
+    return mKey;
+}
+
+constexpr void ColorCMYK::setKey(double key)
+{
+    mKey = adjustRange(key);
+}
+
+constexpr auto ColorCMYK::toColor() const -> Color
+{
+    double aux = (1 - mKey) * 255;
+    int red = roundToInteger((1 - mCyan) * aux);
+    int green = roundToInteger((1 - mMagenta) * aux);
+    int blue = roundToInteger((1 - mYellow) * aux);
+
+    Color color(red, green, blue);
+    return color;
+}
+
+constexpr auto ColorCMYK::fromColor(const Color &color) -> ColorCMYK
+{
+    double r = color.red() / 255.0;
+    double g = color.green() / 255.0;
+    double b = color.blue() / 255.0;
+
+    double max = std::max({r, g, b});
+
+    double key = 1. - max;
+    if (key == 1.) {
+        return ColorCMYK(0., 0., 0., 1.);
+    } else {
+        double cyan = 1. - r / max;
+        double magenta = 1. - g / max;
+        double yellow = 1. - b / max;
+        return ColorCMYK(cyan, magenta, yellow, key);
+    }
+}
+
+constexpr auto ColorCMYK::adjustRange(double value) -> double
+{
+    return std::clamp(value, 0.0, 1.0);
+}
 
 /*! \} */
 

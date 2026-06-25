@@ -36,21 +36,16 @@ if (BUILD_TL_GRAPHIC)
 
     add_files_to_project(${PROJECT_NAME} 
                         SOURCE_FILES 
-                            #color.cpp
                             font.cpp
                             linealgorithms.cpp
                             layer.cpp
                             canvas.cpp
                             painter.cpp
                             datamodel.cpp
-                            color/cmyk.cpp
-                            color/color.cpp
-                            color/color_conversion.cpp
-                            #color/color_space.cpp
-                            color/hsl.cpp
-                            color/hsv.cpp
-                            color/rgb.cpp
-                            color/rgba.cpp
+                            color/Color.cpp
+                            color/ColorConversion.cpp
+                            color/ColorHSL.cpp
+                            color/ColorHSV.cpp
                             entities/entity.cpp
                             entities/point.cpp
                             entities/polygon.cpp
@@ -70,15 +65,14 @@ if (BUILD_TL_GRAPHIC)
                             painter.h
                             Rect.h
                             datamodel.h
-                            color/cmyk.h
-                            color/color.h
-                            color/color_conversion.h
-                            color/color_model.h
-                            #color/color_space.h
-                            color/hsl.h
-                            color/hsv.h
-                            color/rgb.h
-                            color/rgba.h
+                            color/ColorCMYK.h
+                            color/Color.h
+                            color/ColorConversion.h
+                            color/ColorHSL.h
+                            color/ColorHSV.h
+                            color/ColorRGB.h
+                            color/ColorRGBA.h
+                            color/Concepts.h
                             entities/entity.h
                             entities/point.h
                             entities/polygon.h

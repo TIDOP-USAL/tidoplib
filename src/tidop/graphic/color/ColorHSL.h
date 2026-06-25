@@ -24,8 +24,10 @@
 
 #pragma once
 
-#include "tidop/core/base/defs.h"
-#include "tidop/graphic/color/color_model.h"
+#include <algorithm>
+
+#include "tidop/config.h"
+#include "tidop/graphic/color/Color.h"
 
 namespace tl
 {
@@ -45,8 +47,13 @@ namespace tl
  * HSL is widely used in graphics and design software because it is more intuitive for human understanding compared to RGB.
  */
 class TL_EXPORT ColorHSL
-    : public ColorModel
 {
+
+private:
+
+    double mHue = 0.;
+    double mSaturation = 0.;
+    double mLightness = 0.;
 
 public:
 
@@ -54,7 +61,7 @@ public:
      * \brief Default constructor
      * Initializes a default color with hue, saturation, and lightness all set to 0.
      */
-    ColorHSL();
+    constexpr ColorHSL() = default;
 
     /*!
      * \brief Parameterized constructor
@@ -63,57 +70,21 @@ public:
      * \param[in] saturation The saturation value (0 to 1, where 0 is grayscale and 1 is fully saturated).
      * \param[in] lightness The lightness value (0 to 1, where 0 is black, 1 is white, and 0.5 is the pure color).
      */
-    ColorHSL(double hue, double saturation, double lightness);
+    constexpr ColorHSL(double hue, double saturation, double lightness);
 
     /*!
      * \brief Copy constructor
      * Creates a copy of the given ColorHSL object.
      * \param[in] color The ColorHSL object to copy.
      */
-    ColorHSL(const ColorHSL &color);
+    constexpr ColorHSL(const ColorHSL &color) = default;
 
     /*!
      * \brief Move constructor
      * Moves the given ColorHSL object to this instance, transferring ownership of resources.
      * \param[in] color The ColorHSL object to move.
      */
-    ColorHSL(ColorHSL &&color) TL_NOEXCEPT;
-
-    /*!
-     * \brief Retrieves the hue component
-     * \return The hue value (angle in degrees from 0 to 360).
-     */
-    auto hue() const -> double;
-
-    /*!
-     * \brief Sets the hue component
-     * \param[in] hue The hue value to set (angle in degrees from 0 to 360).
-     */
-    void setHue(double hue);
-
-    /*!
-     * \brief Retrieves the saturation component
-     * \return The saturation value (0 to 1).
-     */
-    auto saturation() const -> double;
-
-    /*!
-     * \brief Sets the saturation component
-     * \param[in] saturation The saturation value to set (0 to 1).
-     */
-    void setSaturation(double saturation);
-
-    /*!
-     * \brief Retrieves the lightness component
-     * \return The lightness value (0 to 1).
-     */
-    auto lightness() const -> double;
-
-    /*!
-     * \brief Sets the lightness component
-     * \param[in] lightness The lightness value to set (0 to 1).
-     */
-    void setLightness(double lightness);
+    constexpr ColorHSL(ColorHSL &&color) noexcept = default;
 
     /*!
      * \brief Assignment operator
@@ -121,7 +92,7 @@ public:
      * \param[in] color The ColorHSL object to assign.
      * \return Reference to the current ColorHSL object.
      */
-    auto operator =(const ColorHSL &color)->ColorHSL &;
+    constexpr auto operator =(const ColorHSL &color) -> ColorHSL & = default;
 
     /*!
      * \brief Assignment move operator
@@ -129,39 +100,101 @@ public:
      * \param[in] color The ColorHSL object to move.
      * \return Reference to the current ColorHSL object.
      */
-    auto operator =(ColorHSL &&color) TL_NOEXCEPT->ColorHSL &;
+    constexpr auto operator =(ColorHSL &&color) noexcept -> ColorHSL & = default;
+
+    /*!
+     * \brief Retrieves the hue component
+     * \return The hue value (angle in degrees from 0 to 360).
+     */
+    [[nodiscard]]
+    constexpr auto hue() const noexcept -> double;
+
+    /*!
+     * \brief Sets the hue component
+     * \param[in] hue The hue value to set (angle in degrees from 0 to 360).
+     */
+    constexpr void setHue(double hue);
+
+    /*!
+     * \brief Retrieves the saturation component
+     * \return The saturation value (0 to 1).
+     */
+    [[nodiscard]]
+    constexpr auto saturation() const noexcept -> double;
+
+    /*!
+     * \brief Sets the saturation component
+     * \param[in] saturation The saturation value to set (0 to 1).
+     */
+    constexpr void setSaturation(double saturation);
+
+    /*!
+     * \brief Retrieves the lightness component
+     * \return The lightness value (0 to 1).
+     */
+    [[nodiscard]]
+    constexpr auto lightness() const noexcept -> double;
+
+    /*!
+     * \brief Sets the lightness component
+     * \param[in] lightness The lightness value to set (0 to 1).
+     */
+    constexpr void setLightness(double lightness);
 
     /*!
      * \brief Converts the HSL color to a Color object in another color model
      * \return A Color object corresponding to the HSL values.
      */
-    auto toColor() const->Color override;
+    [[nodiscard]]
+    auto toColor() const -> Color;
 
     /*!
      * \brief Converts a Color object to HSL values
      * \param[in] color The Color object to convert.
      */
-    void fromColor(const Color &color) override;
-
-protected:
-
-    void adjustRangeHue();
-    void adjustRangeSaturation();
-    void adjustRangeLightness();
-
-private:
-
-    double mHue;
-    double mSaturation;
-    double mLightness;
-
-    double mRangeMinHue;
-    double mRangeMaxHue;
-
-    double mRangeMin;
-    double mRangeMax;
+    [[nodiscard]]
+    static auto fromColor(const Color &color) -> ColorHSL;
 
 };
+
+
+
+constexpr ColorHSL::ColorHSL(double hue, double saturation, double lightness)
+  : mHue(std::clamp(hue, 0., 360.)),
+    mSaturation(std::clamp(saturation, 0., 100.)),
+    mLightness(std::clamp(lightness, 0., 100.))
+{
+}
+
+constexpr auto ColorHSL::hue() const noexcept -> double
+{
+    return mHue;
+}
+
+constexpr void ColorHSL::setHue(double hue)
+{
+    mHue = std::clamp(hue, 0., 360.);
+}
+
+constexpr auto ColorHSL::saturation() const noexcept -> double
+{
+    return mSaturation;
+}
+
+constexpr void ColorHSL::setSaturation(double saturation)
+{
+    mSaturation = std::clamp(saturation, 0., 100.);
+}
+
+constexpr auto ColorHSL::lightness() const noexcept -> double
+{
+    return mLightness;
+}
+
+constexpr void ColorHSL::setLightness(double lightness)
+{
+    mLightness = std::clamp(lightness, 0., 100.);
+}
 
 
 /*! \} */

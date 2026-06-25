@@ -24,15 +24,16 @@
 
 #pragma once
 
-#include "tidop/core/base/defs.h"
+#include "tidop/config.h"
 
 #include <string>
 
-#include "tidop/graphic/color/cmyk.h"
-#include "tidop/graphic/color/rgb.h"
-#include "tidop/graphic/color/rgba.h"
-#include "tidop/graphic/color/hsv.h"
-#include "tidop/graphic/color/hsl.h"
+#include "tidop/graphic/color/ColorCMYK.h"
+#include "tidop/graphic/color/ColorRGB.h"
+#include "tidop/graphic/color/ColorRGBA.h"
+#include "tidop/graphic/color/ColorHSV.h"
+#include "tidop/graphic/color/ColorHSL.h"
+#include "tidop/graphic/color/Concepts.h"
 
 namespace tl
 {
@@ -205,50 +206,20 @@ TL_EXPORT void chromaticityCoordinates(int red, int green, int blue, double *r, 
 
 
 
-template<typename Color1, typename Color2>
-auto colorConvert(const Color1 &color1, Color2 &color2) ->
-    std::enable_if_t<std::is_base_of_v<ColorModel, Color1> &&
-                     std::is_base_of_v<ColorModel, Color2>>
-{
-    color2.fromColor(color1.toColor());
-}
-
-//class ColorConverter
+//template<typename Color1, typename Color2>
+//auto colorConvert(const Color1 &color1, Color2 &color2) ->
+//    std::enable_if_t<std::is_base_of_v<ColorModel, Color1> &&
+//                     std::is_base_of_v<ColorModel, Color2>>
 //{
-//
-//private:
-//
-//    ColorConverter() = default;
-//
-//public:
-//
-//    static void convert(const ColorRGB &rgb, ColorRGBA &rgba);
-//    static void convert(const ColorRGB &rgb, ColorCMYK &cmyk);
-//    static void convert(const ColorRGB &rgb, ColorHSL &hsl);
-//    static void convert(const ColorRGB &rgb, ColorHSV &hsv);
-//
-//    static void convert(const ColorRGBA &rgba, ColorRGB &rgb);
-//    static void convert(const ColorRGBA &rgba, ColorCMYK &cmyk);
-//    static void convert(const ColorRGBA &rgba, ColorHSL &hsl);
-//    static void convert(const ColorRGBA &rgba, ColorHSV &hsv);
-//
-//    static void convert(const ColorCMYK &cmyk, ColorRGB &rgb);
-//    static void convert(const ColorCMYK &cmyk, ColorRGBA &rgba);
-//    static void convert(const ColorCMYK &cmyk, ColorHSL &hsl);
-//    static void convert(const ColorCMYK &cmyk, ColorHSV &hsv);
-//
-//    static void convert(const ColorHSL &hsl, ColorRGB &rgb);
-//    static void convert(const ColorHSL &hsl, ColorRGBA &rgba);
-//    static void convert(const ColorHSL &hsl, ColorCMYK &cmyk);
-//    static void convert(const ColorHSL &hsl, ColorHSV &hsv);
-//
-//    static void convert(const ColorHSV &hsv, ColorRGB &rgb);
-//    static void convert(const ColorHSV &hsv, ColorRGBA &rgba);
-//    static void convert(const ColorHSV &hsv, ColorCMYK &cmyk);
-//    static void convert(const ColorHSV &hsv, ColorHSL &hsl);
-//};
+//    color2.fromColor(color1.toColor());
+//}
 
-
+template<ColorConvertible Color1,
+         ColorConstructible Color2>
+constexpr auto colorConvert(const Color1 &color1) -> Color2
+{
+    return Color2::fromColor(color1.toColor());
+}
 
 /*! \} */
 

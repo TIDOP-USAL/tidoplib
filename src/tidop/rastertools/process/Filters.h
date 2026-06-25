@@ -26,7 +26,7 @@
 
 #include <opencv2/core.hpp>
 
-#include "tidop/core/base/defs.h"
+#include "tidop/core/base/Defs.h"
 #include "tidop/rastertools/process/ImgProcess.h"
 #include "tidop/rastertools/process/filters/Bilateral.h"
 #include "tidop/rastertools/process/filters/Blur.h"

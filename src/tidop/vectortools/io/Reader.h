@@ -28,7 +28,7 @@
 #include <list>
 #include <string>
 
-#include "tidop/core/base/defs.h"
+#include "tidop/core/base/Defs.h"
 #include "tidop/core/base/Path.h"
 
 

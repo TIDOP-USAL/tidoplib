@@ -25,7 +25,7 @@
 #include <tidop/pctools/PointCloudTools.h>
 //#include <tidop/pctools/PointCloudFileManager.h>
 //#include <tidop/pctools/PointCloudFile.h>
-#include <tidop/pctools/PointCloudReader.h>
+#include <tidop/pctools/io/Reader.h>
 
 #include <copc-lib/io/copc_reader.hpp>
 #include <copc-lib/laz/decompressor.hpp>
@@ -310,45 +310,42 @@ int main(int argc, char* argv[])
 
     double x_o, y_o, z_o;
     try {
-        PointCloudReader::Ptr pointCloudReader;
-        pointCloudReader = PointCloudReaderFactory::create(pointCloudFileName);
-        pointCloudReader->open();
-        std::vector<std::string> dimensionsNames = pointCloudReader->getDimensionsNames();
+
+        PointCloudReader pointCloudReader(pointCloudFileName);
+        std::vector<std::string> dimensionsNames = pointCloudReader.getDimensionsNames();
         double xmin_25830_5782, ymin_25830_5782, zmin_25830_5782;
         double xmax_25830_5782, ymax_25830_5782, zmax_25830_5782;
-        pointCloudReader->getBoundingBox(xmin_25830_5782, ymin_25830_5782, zmin_25830_5782,
+        pointCloudReader.getBoundingBox(xmin_25830_5782, ymin_25830_5782, zmin_25830_5782,
             xmax_25830_5782, ymax_25830_5782, zmax_25830_5782, crsId_25830_5782);
         double xmin_4937, ymin_4937, zmin_4937;
         double xmax_4937, ymax_4937, zmax_4937;
-        pointCloudReader->getBoundingBox(xmin_4937, ymin_4937, zmin_4937,
+        pointCloudReader.getBoundingBox(xmin_4937, ymin_4937, zmin_4937,
             xmax_4937, ymax_4937, zmax_4937, crsId_4937);
         std::map<int, double> resolutionByLevel;
-        pointCloudReader->copcGetResolutionByLevel(resolutionByLevel);
+        pointCloudReader.copcGetResolutionByLevel(resolutionByLevel);
         double resolution = 0.05;
         std::vector<std::vector<float> > coordinates;
         std::vector<std::vector<float> > dimensionsValues;
-        pointCloudReader->getPoints(x_o, y_o, z_o, coordinates, 
+        pointCloudReader.getPoints(x_o, y_o, z_o, coordinates, 
             dimensionsNames, dimensionsValues,
             x_min, y_min, z_min, x_max, y_max, z_max, resolution, crsId_25830_5782);// crsId_25830_5782);
 
         // no copc
         if (doNoCopc)
         {
-            PointCloudReader::Ptr pointCloudReaderNoCopc;
-            pointCloudReaderNoCopc = PointCloudReaderFactory::create(pointCloudFileNameNoCopc);
-            pointCloudReaderNoCopc->open();
-            std::vector<std::string> dimensionsNamesNoCopc = pointCloudReaderNoCopc->getDimensionsNames();
+            PointCloudReader pointCloudReaderNoCopc(pointCloudFileNameNoCopc);
+            std::vector<std::string> dimensionsNamesNoCopc = pointCloudReaderNoCopc.getDimensionsNames();
             double xmin_25830_5782NoCopc, ymin_25830_5782NoCopc, zmin_25830_5782NoCopc;
             double xmax_25830_5782NoCopc, ymax_25830_5782NoCopc, zmax_25830_5782NoCopc;
-            pointCloudReaderNoCopc->getBoundingBox(xmin_25830_5782NoCopc, ymin_25830_5782NoCopc, zmin_25830_5782NoCopc,
+            pointCloudReaderNoCopc.getBoundingBox(xmin_25830_5782NoCopc, ymin_25830_5782NoCopc, zmin_25830_5782NoCopc,
                 xmax_25830_5782NoCopc, ymax_25830_5782NoCopc, zmax_25830_5782NoCopc, crsId_25830_5782);
             double xmin_4937NoCopc, ymin_4937NoCopc, zmin_4937NoCopc;
             double xmax_4937NoCopc, ymax_4937NoCopc, zmax_4937NoCopc;
-            pointCloudReaderNoCopc->getBoundingBox(xmin_4937NoCopc, ymin_4937NoCopc, zmin_4937NoCopc,
+            pointCloudReaderNoCopc.getBoundingBox(xmin_4937NoCopc, ymin_4937NoCopc, zmin_4937NoCopc,
                 xmax_4937NoCopc, ymax_4937NoCopc, zmax_4937NoCopc, crsId_4937);
             std::vector<std::vector<float> > coordinatesNoCopc;
             std::vector<std::vector<float> > dimensionsValuesNoCopc;
-            pointCloudReaderNoCopc->getPoints(x_o, y_o, z_o,coordinatesNoCopc, 
+            pointCloudReaderNoCopc.getPoints(x_o, y_o, z_o,coordinatesNoCopc, 
                 dimensionsNamesNoCopc, dimensionsValuesNoCopc,
                 x_min, y_min, z_min, x_max, y_max, z_max, crsId_25830_5782);// crsId_25830_5782);
         }

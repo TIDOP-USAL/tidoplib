@@ -33,7 +33,7 @@
 #include "LSWMS.h"
 #endif
 
-#include "tidop/core/base/defs.h"
+#include "tidop/core/base/Defs.h"
 #include "tidop/geometry/primitives/Segment.h"
 
 namespace tl

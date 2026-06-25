@@ -31,7 +31,7 @@
 #include <opencv2/xphoto/white_balance.hpp>
 #endif // HAVE_OPENCV_XPHOTO
 
-#include "tidop/core/base/defs.h"
+#include "tidop/core/base/Defs.h"
 #include "tidop/graphic/color.h"
 #include "tidop/rastertools/process/ImgProcess.h"
 

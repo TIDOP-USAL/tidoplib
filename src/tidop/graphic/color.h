@@ -1,5 +1,5 @@
 /**************************************************************************
- *                                                                        *
+ *                                                       idop/graphic/color/cmyk.h                 *
  * Copyright (C) 2021 by Tidop Research Group                             *
  * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
  *                                                                        *
@@ -26,12 +26,10 @@
 
 #pragma once
 
-#include "tidop/graphic/color/cmyk.h"
-#include "tidop/graphic/color/color.h"
-#include "tidop/graphic/color/color_conversion.h"
-#include "tidop/graphic/color/color_model.h"
-//#include "tidop/graphic/color/color_space.h"
-#include "tidop/graphic/color/hsl.h"
-#include "tidop/graphic/color/hsv.h"
-#include "tidop/graphic/color/rgb.h"
-#include "tidop/graphic/color/rgba.h"
+#include "tidop/graphic/color/Color.h"
+#include "tidop/graphic/color/ColorCMYK.h"
+#include "tidop/graphic/color/ColorConversion.h"
+#include "tidop/graphic/color/ColorHSL.h"
+#include "tidop/graphic/color/ColorHSV.h"
+#include "tidop/graphic/color/ColorRGB.h"
+#include "tidop/graphic/color/ColorRGBA.h"

@@ -28,7 +28,7 @@
 #ifdef TL_HAVE_CUDA
 /// \endcond
 
-#include "tidop/core/base/defs.h"
+#include "tidop/core/base/Defs.h"
 #include "tidop/math/base/cuda/CublasTraits.h"
 
 #include <cuda_runtime.h>

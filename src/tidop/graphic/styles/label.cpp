@@ -32,10 +32,10 @@ namespace tl
 
 Label::Label()
   : mAngle(0.),
-    mForegroundColor(0),
-    mBackgroundColor(0),
-    mOutlineColor(0),
-    mShadowColor(0),
+    mForegroundColor(Color::Name::black),
+    mBackgroundColor(Color::Name::black),
+    mOutlineColor(Color::Name::black),
+    mShadowColor(Color::Name::black),
     mStretch(100.),
     mPlacement(Placement::point),
     mAnchorPosition(AnchorPosition::vertical_baseline | AnchorPosition::horizontal_left),

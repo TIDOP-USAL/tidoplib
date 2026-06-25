@@ -28,7 +28,7 @@
 
 #include <opencv2/core.hpp>
 
-#include "tidop/core/base/defs.h"
+#include "tidop/core/base/Defs.h"
 #include "tidop/rastertools/process/ImgProcess.h"
 
 namespace tl

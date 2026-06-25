@@ -22,64 +22,68 @@
  *                                                                        *
  **************************************************************************/
 
-/*!
- * \ingroup MorphOper
- * \brief Morphological gradient operation.
- */
+#include "tidop/graphic/color/Color.h"
+//#include "tidop/graphic/color/ColorModel.h"
 
-
-#pragma once
-
-#include "tidop/config.h"
-
-#include <opencv2/core.hpp>
-#include <opencv2/imgproc.hpp>
-
-#include "tidop/core/base/Defs.h"
-#include "tidop/graphic/color.h"
-#include "tidop/rastertools/process/ImgProcess.h"
+#include <random>
+#include <utility>
+#include <charconv>
 
 namespace tl
 {
 
-
-/*! \addtogroup MorphOper
- *
- * \{
- */
-
-
-class TL_EXPORT MorphologicalOperation
-  : public ImageProcess
+Color::Color(std::string_view color) noexcept
 {
+    if (color.starts_with('#')) {
+        color.remove_prefix(1);
+    }
 
-protected:
+    uint32_t value = 0;
 
-    cv::Mat mStructuringElement;
-    cv::Point mAnchor;
-    int mIterations;
-    int mBorderType;
-    cv::Scalar mBorderValue;
+    std::from_chars(color.data(), color.data() + color.size(), value, 16);
 
-public:
+    switch (color.size()) {
+    case 6: // RRGGBB
+        mValue = 0xFF000000u | value;
+        break;
 
-    MorphologicalOperation(ImageProcess::ProcessType type,
-                           int size,
-                           cv::MorphShapes shapes = cv::MORPH_RECT,
-                           const cv::Point &anchor = cv::Point(-1, -1),
-                           int iterations = 1,
-                           int borderType = cv::BORDER_CONSTANT,
-                           const cv::Scalar &borderValue = cv::morphologyDefaultBorderValue());
-    
-    ~MorphologicalOperation() override = default;
+    case 8: // AARRGGBB
+        mValue = value;
+        break;
 
-    void run(const cv::Mat &matIn, cv::Mat &matOut) const override;
+    default:
+        mValue = 0xFF000000u;
+        break;
+    }
+}
 
-protected:
+//Color::Color(const ColorModel &colorModel)
+//{
+//    *this = colorModel.toColor();
+//}
 
-    virtual void execute(const cv::Mat &matIn, cv::Mat &matOut) const = 0;
-};
+auto Color::toHexRGB() const -> std::string
+{
+    return tl::format("{:06X}", mValue & 0x00FFFFFF);
+}
 
-/*! \} */
+auto Color::toHexRGBA() const -> std::string
+{
+    return tl::format("{:06X}{:02X}", mValue & 0x00FFFFFF, alpha()); 
+}
+
+auto Color::toHexARGB() const -> std::string
+{
+    return tl::format("{:08X}", mValue & 0xFFFFFFFF);
+}
+
+auto Color::randomColor() -> Color
+{
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, 16777216);
+    return Color(static_cast<Color::Name>(dis(gen)));
+}
+
 
 } // End namespace tl

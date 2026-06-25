@@ -58,7 +58,7 @@ Image::Image(int rows,
     unsigned char r = static_cast<unsigned char>(color.red());
     unsigned char g = static_cast<unsigned char>(color.green());
     unsigned char b = static_cast<unsigned char>(color.blue());
-    unsigned char a = color.opacity();
+    unsigned char a = color.alpha();
 
     for (int i = 0; i < mRows; ++i) {
         for (int j = 0; j < mCols; ++j) {

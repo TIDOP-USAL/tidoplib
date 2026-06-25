@@ -26,7 +26,7 @@
 
 #include <memory>
 
-#include "tidop/core/base/defs.h"
+#include "tidop/core/base/Defs.h"
 #include "tidop/graphic/styles/label.h"
 #include "tidop/graphic/styles/pen.h"
 #include "tidop/graphic/styles/symbol.h"

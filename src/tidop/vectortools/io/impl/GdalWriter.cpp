@@ -33,6 +33,8 @@
 #include "tidop/vectortools/io/private/gdal.h"
 #include "tidop/vectortools/io/private/TypeConverter.h"
 
+#include <memory>
+
 #ifdef TL_HAVE_GDAL
 TL_DISABLE_WARNINGS
 #include "ogrsf_frmts.h"
@@ -157,13 +159,20 @@ void VectorWriterGdal::write(const GLayer &layer)
         }
 
         OGRStyleTable ogr_style_table;
-        auto *ogr_style_mgr = new OGRStyleMgr(&ogr_style_table);
-
-        OGRFeature *ogr_feature = nullptr;
+        OGRStyleMgr ogr_style_mgr(&ogr_style_table);
 
         for (auto &entity : layer) {
 
-            ogr_feature = OGRFeature::CreateFeature(ogr_layer->GetLayerDefn());
+            if (!entity) {
+                Message::warning("Null graphic entity. Feature skipped");
+                continue;
+            }
+
+            std::unique_ptr<OGRFeature, decltype(&OGRFeature::DestroyFeature)> ogr_feature(
+                OGRFeature::CreateFeature(ogr_layer->GetLayerDefn()),
+                &OGRFeature::DestroyFeature);
+
+            TL_ASSERT(ogr_feature != nullptr, "Create Feature Error");
 
             if (const auto attributes = entity->attributes()) {
                 for (size_t i = 0; i < attributes->size(); i++) {
@@ -172,70 +181,67 @@ void VectorWriterGdal::write(const GLayer &layer)
                 }
             }
 
+            bool supported_entity = true;
+
             switch (entity->type()) {
             case GraphicEntity::Type::point_2d:
-                VectorWriterGdal::writePoint(ogr_feature, dynamic_cast<GPoint *>(entity.get()));
+                VectorWriterGdal::writePoint(ogr_feature.get(), dynamic_cast<GPoint *>(entity.get()));
                 break;
             case GraphicEntity::Type::point_3d:
-                VectorWriterGdal::writePoint(ogr_feature, dynamic_cast<GPoint3D *>(entity.get()));
+                VectorWriterGdal::writePoint(ogr_feature.get(), dynamic_cast<GPoint3D *>(entity.get()));
                 break;
             case GraphicEntity::Type::linestring_2d:
-                VectorWriterGdal::writeLineString(ogr_feature, dynamic_cast<GLineString *>(entity.get()));
+                VectorWriterGdal::writeLineString(ogr_feature.get(), dynamic_cast<GLineString *>(entity.get()));
                 break;
             case GraphicEntity::Type::linestring_3d:
-                VectorWriterGdal::writeLineString(ogr_feature, dynamic_cast<GLineString3D *>(entity.get()));
+                VectorWriterGdal::writeLineString(ogr_feature.get(), dynamic_cast<GLineString3D *>(entity.get()));
                 break;
             case GraphicEntity::Type::polygon_2d:
-                VectorWriterGdal::writePolygon(ogr_feature, dynamic_cast<GPolygon *>(entity.get()));
+                VectorWriterGdal::writePolygon(ogr_feature.get(), dynamic_cast<GPolygon *>(entity.get()));
                 break;
             case GraphicEntity::Type::polygon_3d:
-                VectorWriterGdal::writePolygon(ogr_feature, dynamic_cast<GPolygon3D *>(entity.get()));
+                VectorWriterGdal::writePolygon(ogr_feature.get(), dynamic_cast<GPolygon3D *>(entity.get()));
                 break;
             case GraphicEntity::Type::segment_2d:
-                break;
             case GraphicEntity::Type::segment_3d:
-                break;
             case GraphicEntity::Type::window:
-                break;
             case GraphicEntity::Type::box:
+                supported_entity = false;
                 break;
             case GraphicEntity::Type::multipoint_2d:
-                VectorWriterGdal::writeMultiPoint(ogr_feature, dynamic_cast<GMultiPoint *>(entity.get()));
+                VectorWriterGdal::writeMultiPoint(ogr_feature.get(), dynamic_cast<GMultiPoint *>(entity.get()));
                 break;
             case GraphicEntity::Type::multipoint_3d:
-                VectorWriterGdal::writeMultiPoint(ogr_feature, dynamic_cast<GMultiPoint3D *>(entity.get()));
+                VectorWriterGdal::writeMultiPoint(ogr_feature.get(), dynamic_cast<GMultiPoint3D *>(entity.get()));
                 break;
             case GraphicEntity::Type::multiline_2d:
-                VectorWriterGdal::writeMultiLineString(ogr_feature, dynamic_cast<GMultiLineString *>(entity.get()));
+                VectorWriterGdal::writeMultiLineString(ogr_feature.get(), dynamic_cast<GMultiLineString *>(entity.get()));
                 break;
             case GraphicEntity::Type::multiline_3d:
-                VectorWriterGdal::writeMultiLineString(ogr_feature, dynamic_cast<GMultiLineString3D *>(entity.get()));
+                VectorWriterGdal::writeMultiLineString(ogr_feature.get(), dynamic_cast<GMultiLineString3D *>(entity.get()));
                 break;
             case GraphicEntity::Type::multipolygon_2d:
-                VectorWriterGdal::writeMultiPolygon(ogr_feature, dynamic_cast<GMultiPolygon *>(entity.get()));
+                VectorWriterGdal::writeMultiPolygon(ogr_feature.get(), dynamic_cast<GMultiPolygon *>(entity.get()));
                 break;
             case GraphicEntity::Type::multipolygon_3d:
-                VectorWriterGdal::writeMultiPolygon(ogr_feature, dynamic_cast<GMultiPolygon3D *>(entity.get()));
+                VectorWriterGdal::writeMultiPolygon(ogr_feature.get(), dynamic_cast<GMultiPolygon3D *>(entity.get()));
                 break;
             case GraphicEntity::Type::circle:
-                break;
             case GraphicEntity::Type::ellipse:
+                supported_entity = false;
                 break;
             }
 
-            VectorWriterGdal::writeStyles(ogr_style_mgr, entity.get());
+            if (!supported_entity) {
+                Message::warning("Unsupported graphic entity type. Feature skipped");
+                continue;
+            }
 
-            auto ogr_err = ogr_layer->CreateFeature(ogr_feature);
+            VectorWriterGdal::writeStyles(&ogr_style_mgr, entity.get());
+
+            auto ogr_err = ogr_layer->CreateFeature(ogr_feature.get());
             TL_ASSERT(ogr_err == OGRERR_NONE, "Create Feature Error");
         }
-
-
-        if (ogr_style_mgr) {
-            delete ogr_style_mgr;
-            ogr_style_mgr = nullptr;
-        }
-
-        OGRFeature::DestroyFeature(ogr_feature);
 
     } catch (...) {
         TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
