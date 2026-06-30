@@ -150,9 +150,9 @@ void VectorWriterGdal::write(const GLayer &layer)
 
         for (const auto &field : layer.tableFields()) {
 
-            OGRFieldType ogr_type = typeToGdal(field->type());
-            OGRFieldDefn fieldDefinition(field->name().c_str(), ogr_type);
-            fieldDefinition.SetWidth(field->size());
+            OGRFieldType ogr_type = typeToGdal(field.type());
+            OGRFieldDefn fieldDefinition(field.name().c_str(), ogr_type);
+            fieldDefinition.SetWidth(field.size());
             OGRErr error = ogr_layer->CreateField(&fieldDefinition);
             TL_ASSERT(error == OGRERR_NONE, "Creating field failed");
 
@@ -174,12 +174,13 @@ void VectorWriterGdal::write(const GLayer &layer)
 
             TL_ASSERT(ogr_feature != nullptr, "Create Feature Error");
 
-            if (const auto attributes = entity->attributes()) {
-                for (size_t i = 0; i < attributes->size(); i++) {
+            auto attributes = entity->attributes();
+            //if (const auto attributes = entity->attributes()) {
+                for (size_t i = 0; i < attributes.size(); i++) {
                     TL_TODO("En función del tipo de dato. Por ahora sólo cadenas")
-                    ogr_feature->SetField(static_cast<int>(i), attributes->value(static_cast<int>(i)).c_str());
+                    ogr_feature->SetField(static_cast<int>(i), attributes.value(static_cast<int>(i)).c_str());
                 }
-            }
+            //}
 
             bool supported_entity = true;
 
@@ -312,8 +313,9 @@ void VectorWriterGdal::writePoint(OGRFeature *ogrFeature,
 
         OGRPoint ogr_point;
 
-        ogr_point.setX(gPoint->x());
-        ogr_point.setY(gPoint->y());
+        auto &geometry = gPoint->geometry();
+        ogr_point.setX(geometry.x());
+        ogr_point.setY(geometry.y());
 
         auto ogr_err = ogrFeature->SetGeometry(&ogr_point);
 
@@ -331,9 +333,10 @@ void VectorWriterGdal::writePoint(OGRFeature *ogrFeature,
 
         OGRPoint ogr_point;
 
-        ogr_point.setX(gPoint3D->x());
-        ogr_point.setY(gPoint3D->y());
-        ogr_point.setZ(gPoint3D->z());
+        auto &geometry = gPoint3D->geometry();
+        ogr_point.setX(geometry.x());
+        ogr_point.setY(geometry.y());
+        ogr_point.setZ(geometry.z());
 
         auto ogr_err = ogrFeature->SetGeometry(&ogr_point);
 
@@ -352,7 +355,9 @@ void VectorWriterGdal::writeLineString(OGRFeature *ogrFeature,
 
         OGRLineString ogr_line_string;
 
-        for (const auto &point : *gLineString) {
+        const auto &geometry = gLineString->geometry();
+
+        for (const auto &point : geometry) {
             OGRPoint pt(point.x(), point.y());
             ogr_line_string.addPoint(&pt);
         }
@@ -374,7 +379,7 @@ void VectorWriterGdal::writeLineString(OGRFeature *ogrFeature,
 
         OGRLineString ogr_line_string;
 
-        for (const auto &point : *gLineString3D) {
+        for (const auto &point : gLineString3D->geometry()) {
             OGRPoint pt(point.x(), point.y(), point.z());
             ogr_line_string.addPoint(&pt);
         }
@@ -396,7 +401,9 @@ void VectorWriterGdal::writePolygon(OGRFeature *ogrFeature,
         OGRPolygon ogr_polygon;
         OGRLinearRing ogr_linear_ring;
 
-        for (const auto &point : gPolygon->outer()) {
+        const auto &geometry = gPolygon->geometry();
+
+        for (const auto &point : geometry.outer()) {
             OGRPoint pt(point.x(), point.y());
             ogr_linear_ring.addPoint(&pt);
         }
@@ -406,8 +413,8 @@ void VectorWriterGdal::writePolygon(OGRFeature *ogrFeature,
 
         TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
-        for (size_t i = 0; i < gPolygon->numInners(); i++) {
-            auto &hole = gPolygon->inner(i);
+        for (size_t i = 0; i < geometry.numInners(); i++) {
+            auto &hole = geometry.inner(i);
             OGRLinearRing ogr_inner_linear_ring;
 
             for (const auto &point : hole) {
@@ -438,7 +445,9 @@ void VectorWriterGdal::writePolygon(OGRFeature *ogrFeature,
         OGRPolygon ogr_polygon;
         OGRLinearRing ogr_linear_ring;
 
-        for (const auto &point : gPolygon3D->outer()) {
+        const auto &geometry = gPolygon3D->geometry();
+
+        for (const auto &point : geometry.outer()) {
             OGRPoint pt(point.x(), point.y(), point.z());
             ogr_linear_ring.addPoint(&pt);
         }
@@ -448,9 +457,9 @@ void VectorWriterGdal::writePolygon(OGRFeature *ogrFeature,
 
         TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 
-        for (size_t i = 0; i < gPolygon3D->numInners(); i++) {
+        for (size_t i = 0; i < geometry.numInners(); i++) {
 
-            auto hole = gPolygon3D->inner(i);
+            auto hole = geometry.inner(i);
             OGRLinearRing inner_linear_ring;
 
             for (const auto &point : hole) {
@@ -480,7 +489,9 @@ void VectorWriterGdal::writeMultiPoint(OGRFeature *ogrFeature,
 
         OGRMultiPoint ogr_multi_point;
 
-        for (auto &point : *gMultiPoint) {
+        const auto &geometry = gMultiPoint->geometry();
+
+        for (auto &point : geometry) {
             OGRPoint ogrPoint;
             ogrPoint.setX(point.x());
             ogrPoint.setY(point.y());
@@ -505,7 +516,9 @@ void VectorWriterGdal::writeMultiPoint(OGRFeature *ogrFeature,
 
         OGRMultiPoint ogr_multi_point;
 
-        for (auto &point : *gMultiPoint3D) {
+        const auto &geometry = gMultiPoint3D->geometry();
+
+        for (auto &point : geometry) {
 
             OGRPoint ogr_point;
             ogr_point.setX(point.x());
@@ -534,7 +547,9 @@ void VectorWriterGdal::writeMultiLineString(OGRFeature *ogrFeature,
 
         OGRMultiLineString ogr_multi_line_string;
 
-        for (auto &line_string : *gMultiLineString) {
+        const auto &geometry = gMultiLineString->geometry();
+
+        for (auto &line_string : geometry) {
 
             OGRLineString ogr_line_string;
             for (const auto &point : line_string) {
@@ -562,7 +577,10 @@ void VectorWriterGdal::writeMultiLineString(OGRFeature *ogrFeature,
     try {
 
         OGRMultiLineString ogr_multi_line_string;
-        for (auto &line_string : *gMultiLineString3D) {
+
+        const auto &geometry = gMultiLineString3D->geometry();
+
+        for (auto &line_string : geometry) {
 
             OGRLineString ogr_line_string;
             for (const auto &point : line_string) {
@@ -590,7 +608,10 @@ void VectorWriterGdal::writeMultiPolygon(OGRFeature *ogrFeature,
     try {
 
         OGRMultiPolygon ogr_multi_polygon;
-        for (auto &polygon : *gMultiPolygon) {
+
+        const auto &geometry = gMultiPolygon->geometry();
+
+        for (auto &polygon : geometry) {
 
             OGRPolygon ogr_polygon;
             OGRLinearRing ogr_linear_ring;
@@ -639,7 +660,10 @@ void VectorWriterGdal::writeMultiPolygon(OGRFeature *ogrFeature,
     try {
 
         OGRMultiPolygon ogr_multi_polygon;
-        for (auto &polygon : *gMultiPolygon3D) {
+
+        const auto &geometry = gMultiPolygon3D->geometry();
+
+        for (auto &polygon : geometry) {
 
             OGRPolygon ogr_polygon;
             OGRLinearRing ogr_linear_ring;

@@ -71,6 +71,8 @@ private:
 
 public:
 
+    //TableField() = default;
+
     /*!
      * \brief Constructor
      * \param[in] name Field name
@@ -116,14 +118,14 @@ public:
      * \brief Constructor with field reference.
      * \param[in] field Associated table field.
      */
-    RegisterValue(const std::shared_ptr<TableField> &field);
+    RegisterValue(const TableField &field);
 
     /*!
      * \brief Constructor with initial value.
      * \param[in] field Associated table field.
      * \param[in] value String-formatted value.
      */
-    RegisterValue(const std::shared_ptr<TableField> &field,
+    RegisterValue(const TableField &field,
                   std::string value);
 
     ~RegisterValue();
@@ -141,7 +143,7 @@ public:
 
 private:
 
-    std::shared_ptr<TableField> mField;
+    TableField mField;
     //Por ahora cargo una cadena con el valor
     std::string mValue;
 };
@@ -165,11 +167,13 @@ protected:
 
 public:
 
+    TableRegister() = default;
+
     /*!
      * \brief Constructs a new record with the given table schema.
      * \param[in] fields Table fields defining the register structure.
      */
-    TableRegister(const std::vector<std::shared_ptr<TableField>> &fields);
+    TableRegister(const std::vector<TableField> &fields);
 
     /*!
      * \brief Copy constructor
@@ -215,13 +219,13 @@ class TL_EXPORT DataTable
 {
 public:
 
-    typedef std::list<std::shared_ptr<TableRegister>>::iterator iterator;
+    typedef std::vector<TableRegister>::iterator iterator;
 
 private:
 
     std::string mTableName;
-    std::vector<std::shared_ptr<TableField>> mTableFields;
-    std::list<std::shared_ptr<TableRegister>> mRegister;
+    std::vector<TableField> mTableFields;
+    std::vector<TableRegister> mRegister;
 
 public:
 
@@ -231,7 +235,7 @@ public:
      * \param[in] tableField Vector of field definitions.
      */
     DataTable(const std::string &tableName,
-              const std::vector<std::shared_ptr<TableField>> &tableField);
+              const std::vector<TableField> &tableField);
 
     ~DataTable() = default;
 
@@ -255,12 +259,12 @@ public:
      * \param[in] index Optional index (unused).
      * \return New `TableRegister` object.
      */
-    auto createRegister(int index) const -> std::shared_ptr<TableRegister>;
+    auto createRegister(int index) const -> TableRegister;
 
     /*!
      * \brief Returns the list of fields that define the table schema.
      */
-    auto fields() const -> std::vector<std::shared_ptr<TableField>>;
+    auto fields() const -> std::vector<TableField>;
 
     /*!
      * \brief Sets the table name.
@@ -299,18 +303,17 @@ public:
      * \see TableField
      */
     void createTable(const std::string &tableName,
-                     const std::vector<std::shared_ptr<TableField>> &fields);
+                     const std::vector<TableField> &fields);
 
     /*!
      * \brief Adds an existing table to the model.
      * \param[in] table Table to add.
      */
-    void addTable(const std::shared_ptr<DataTable>& table);
+    void addTable(const DataTable& table);
 
 private:
 
-    std::list<std::shared_ptr<DataTable>> mDataTables;
-
+    std::vector<DataTable> mDataTables;
 };
 
 /*! \} */ // End Graphic

@@ -64,7 +64,7 @@ class GraphicStyle;
  * \see Canvas, GraphicStyle, Affine
  */
 class TL_EXPORT Painter
-  : public GraphicStyle
+  //: public GraphicStyle
 {
 
 public:
@@ -108,7 +108,7 @@ public:
      * \brief Draws a point using raw coordinates.
      * \param[in] point 2D point.
      */
-    void drawPoint(const Point<double> &point) const;
+    void drawPoint(const Point2d &point) const;
 
     /*!
      * \brief Draws a polyline geometry.
@@ -139,18 +139,21 @@ public:
      * \param[in] multipoint Multipoint object.
      */
     void drawMultiPoint(const GMultiPoint &multipoint) const;
+    void drawMultiPoint(const MultiPoint<Point2d> &multipoint) const;
 
     /*!
      * \brief Draws a multilinestring geometry.
      * \param[in] multiLineString Multi-line object.
      */
     void drawMultiLineString(const GMultiLineString &multiLineString) const;
+    void drawMultiLineString(const MultiLineString<Point2d> &multiLineString) const;
 
     /*!
      * \brief Draws a multipolygon geometry.
      * \param[in] multiPolygon Multi-polygon object.
      */
     void drawMultiPolygon(const GMultiPolygon &multiPolygon) const;
+    void drawMultiPolygon(const MultiPolygon<Point2d> &multiPolygon) const;
 
 #ifdef TL_HAVE_OPENCV
     /*!
@@ -165,7 +168,7 @@ public:
      * \param[in] point Insertion point.
      * \param[in] text Text to render.
      */
-    void drawText(const Point<double> &point, const std::string &text) const;
+    void drawText(const Point2d &point, const std::string &text) const;
 
     /*!
      * \brief Sets the canvas used for drawing operations.
@@ -181,12 +184,12 @@ public:
      * \brief Pushes a new style onto the style stack.
      * \param[in] style Graphic style to apply.
      */
-    void pushStyle(const GraphicStyle &style);
+    //void pushStyle(const GraphicStyle &style);
 
     /*!
      * \brief Pops the last style from the style stack.
      */
-    void popStyle();
+    //void popStyle();
 
     /*!
      * \brief Sets the affine transform applied to all drawing operations.
@@ -197,11 +200,21 @@ public:
     //void drawImage(const RasterGraphics &image, const geometry::WindowI &w);
     //void drawImage(const RasterGraphics &image, Helmert2D<geometry::Point<int>> *trf);
 
+private:
+
+   auto resolvedStyle(const GraphicStyle &entityStyle) const -> GraphicStyle;
+   void drawImpl(const Point2d &geometry, const GraphicStyle &style) const;
+   void drawImpl(const LineString<Point2d> &geometry, const GraphicStyle &style) const;
+   void drawImpl(const Polygon<Point2d> &geometry, const GraphicStyle &style) const;
+   void drawImpl(const MultiPoint<Point2d> &geometry, const GraphicStyle &style) const;
+   void drawImpl(const MultiLineString<Point2d> &geometry, const GraphicStyle &style) const;
+   void drawImpl(const MultiPolygon<Point2d> &geometry, const GraphicStyle &style) const;
+
 protected:
 
     Affine<double, 2> mTransform;
     Canvas *mCanvas;
-    std::vector<GraphicStyle> mStyleStack;
+    GraphicStyle mDefaultStyle;
 
 };
 

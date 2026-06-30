@@ -29,90 +29,90 @@ namespace tl
 {
 
 
-GraphicStyle::GraphicStyle()
-  : mPen(std::make_shared<Pen>()),
-    mBrush(nullptr/*std::make_shared<Brush>()*/),
-    mSymbol(std::make_shared<Symbol>()),
-    mLabel(std::make_shared<Label>())
+//GraphicStyle::GraphicStyle()
+//  : mPen(std::make_shared<Pen>()),
+//    mBrush(nullptr/*std::make_shared<Brush>()*/),
+//    mSymbol(std::make_shared<Symbol>()),
+//    mLabel(std::make_shared<Label>())
+//{
+//}
+
+//GraphicStyle::GraphicStyle(const GraphicStyle &graphicStyle)
+//  : mPen(graphicStyle.mPen),
+//    mBrush(graphicStyle.mBrush),
+//    mSymbol(graphicStyle.mSymbol),
+//    mLabel(graphicStyle.mLabel)
+//{
+//}
+//
+//GraphicStyle::GraphicStyle(GraphicStyle &&graphicStyle) TL_NOEXCEPT
+//  : mPen(std::move(graphicStyle.mPen)),
+//    mBrush(std::move(graphicStyle.mBrush)),
+//    mSymbol(std::move(graphicStyle.mSymbol)),
+//    mLabel(std::move(graphicStyle.mLabel))
+//{
+//}
+
+auto GraphicStyle::pen() const -> const Pen*
 {
+    return mPen ? &(*mPen) : nullptr;
 }
 
-GraphicStyle::GraphicStyle(const GraphicStyle &graphicStyle)
-  : mPen(graphicStyle.mPen),
-    mBrush(graphicStyle.mBrush),
-    mSymbol(graphicStyle.mSymbol),
-    mLabel(graphicStyle.mLabel)
+void GraphicStyle::setPen(Pen pen)
 {
+    mPen = std::move(pen);
 }
 
-GraphicStyle::GraphicStyle(GraphicStyle &&graphicStyle) TL_NOEXCEPT
-  : mPen(std::move(graphicStyle.mPen)),
-    mBrush(std::move(graphicStyle.mBrush)),
-    mSymbol(std::move(graphicStyle.mSymbol)),
-    mLabel(std::move(graphicStyle.mLabel))
+auto GraphicStyle::brush() const -> const Brush*
 {
+    return mBrush ? &(*mBrush) : nullptr;
 }
 
-auto GraphicStyle::pen() const -> std::shared_ptr<Pen>
+void GraphicStyle::setBrush(Brush brush)
 {
-    return mPen;
+    mBrush = std::move(brush);
 }
 
-void GraphicStyle::setPen(const std::shared_ptr<Pen> &pen)
+auto GraphicStyle::symbol() const -> const Symbol*
 {
-    mPen = pen;
+    return mSymbol ? &(*mSymbol) : nullptr;
 }
 
-auto GraphicStyle::brush() const -> std::shared_ptr<Brush>
+void GraphicStyle::setSymbol(Symbol symbol)
 {
-    return mBrush;
+    mSymbol = std::move(symbol) ;
 }
 
-void GraphicStyle::setBrush(const std::shared_ptr<Brush> &brush)
+auto GraphicStyle::label() const -> const Label*
 {
-    mBrush = brush;
+    return mLabel ? &(*mLabel) : nullptr;
 }
 
-auto GraphicStyle::symbol() const -> std::shared_ptr<Symbol>
+void GraphicStyle::setLabel(Label label)
 {
-    return mSymbol;
+    mLabel = std::move(label);
 }
 
-void GraphicStyle::setSymbol(const std::shared_ptr<Symbol> &symbol)
-{
-    mSymbol = symbol;
-}
-
-auto GraphicStyle::label() const -> std::shared_ptr<Label>
-{
-    return mLabel;
-}
-
-void GraphicStyle::setLabel(const std::shared_ptr<Label> &label)
-{
-    mLabel = label;
-}
-
-auto GraphicStyle::operator =(const GraphicStyle &graphicStyle) -> GraphicStyle&
-{
-    if (this != &graphicStyle) {
-        mPen = graphicStyle.mPen;
-        mBrush = graphicStyle.mBrush;
-        mSymbol = graphicStyle.mSymbol;
-        mLabel = graphicStyle.mLabel;
-    }
-    return *this;
-}
-
-auto GraphicStyle::operator =(GraphicStyle &&graphicStyle) TL_NOEXCEPT -> GraphicStyle &
-{
-    if (this != &graphicStyle) {
-        mPen = std::move(graphicStyle.mPen);
-        mBrush = std::move(graphicStyle.mBrush);
-        mSymbol = std::move(graphicStyle.mSymbol);
-        mLabel = std::move(graphicStyle.mLabel);
-    }
-    return *this;
-}
+//auto GraphicStyle::operator =(const GraphicStyle &graphicStyle) -> GraphicStyle&
+//{
+//    if (this != &graphicStyle) {
+//        mPen = graphicStyle.mPen;
+//        mBrush = graphicStyle.mBrush;
+//        mSymbol = graphicStyle.mSymbol;
+//        mLabel = graphicStyle.mLabel;
+//    }
+//    return *this;
+//}
+//
+//auto GraphicStyle::operator =(GraphicStyle &&graphicStyle) TL_NOEXCEPT -> GraphicStyle &
+//{
+//    if (this != &graphicStyle) {
+//        mPen = std::move(graphicStyle.mPen);
+//        mBrush = std::move(graphicStyle.mBrush);
+//        mSymbol = std::move(graphicStyle.mSymbol);
+//        mLabel = std::move(graphicStyle.mLabel);
+//    }
+//    return *this;
+//}
 
 } // End namespace tl

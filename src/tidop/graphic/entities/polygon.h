@@ -43,15 +43,19 @@ class Painter;
  * \brief Polygon graphic class
  */
 class TL_EXPORT GPolygon
-  : public Polygon<Point2d>,
-    public GraphicEntity
+  : public GraphicEntity
 {
+
+private:
+
+    Polygon<Point2d> mGeometry;
+
 public:
 
     /*!
      * \brief Default constructor
      */
-    GPolygon();
+    GPolygon() = default;
 
     explicit GPolygon(size_t size);
 
@@ -66,13 +70,13 @@ public:
      * \brief Copy constructor
      * \param[in] gPolygon Object to be copied
      */
-    GPolygon(const GPolygon &gPolygon);
+    GPolygon(const GPolygon &gPolygon) = default;
 
     /*!
      * \brief Move Constructor
      * \param[in] gPolygon GPolygon object that moves
      */
-    GPolygon(GPolygon &&gPolygon) TL_NOEXCEPT;
+    GPolygon(GPolygon &&gPolygon) noexcept = default;
 
     ~GPolygon() override;
 
@@ -81,19 +85,23 @@ public:
      * \param[in] gPolygon Object to be copied
      * \return Object reference
      */
-    auto operator =(const GPolygon& gPolygon) -> GPolygon&;
+    auto operator =(const GPolygon& gPolygon) -> GPolygon& = default;
 
     /*!
      * \brief Move assignment operator
      * \param[in] gPolygon GPolygon object that moves
      * \return Object reference
      */
-    auto operator =(GPolygon&& gPolygon) TL_NOEXCEPT -> GPolygon&;
+    auto operator =(GPolygon&& gPolygon) noexcept -> GPolygon& = default;
+
+    auto geometry() const -> const Polygon<Point2d> & { return mGeometry; }
+    auto geometry() -> Polygon<Point2d> & { return mGeometry; }
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
     auto window() const -> BoundingBox<Point2d> override;
     void draw(Painter &painter) const override;
+    auto clone() const -> std::unique_ptr<GraphicEntity> override;
 };
 
 
@@ -101,15 +109,19 @@ public:
  * \brief 3D polygon graphics class
  */
 class TL_EXPORT GPolygon3D
-  : public Polygon<Point3d>,
-    public GraphicEntity
+  : public GraphicEntity
 {
+
+private:
+
+    Polygon<Point3d> mGeometry;
+
 public:
 
     /*!
      * \brief Default constructor
      */
-    GPolygon3D();
+    GPolygon3D() = default;
 
     explicit GPolygon3D(size_t size);
 
@@ -124,13 +136,13 @@ public:
      * \brief Copy constructor
      * \param[in] gPolygon3D Object to be copied
      */
-    GPolygon3D(const GPolygon3D &gPolygon3D);
+    GPolygon3D(const GPolygon3D &gPolygon3D) = default;
 
     /*!
      * \brief Move Constructor
      * \param[in] gPolygon3D GPolygon object that moves
      */
-    GPolygon3D(GPolygon3D &&gPolygon3D) TL_NOEXCEPT;
+    GPolygon3D(GPolygon3D &&gPolygon3D) noexcept = default;
 
     ~GPolygon3D() override;
 
@@ -139,19 +151,23 @@ public:
      * \param[in] gPolygon3D Object to be copied
      * \return Object reference
      */
-    auto operator =(const GPolygon3D& gPolygon3D) -> GPolygon3D&;
+    auto operator =(const GPolygon3D& gPolygon3D) -> GPolygon3D& = default;
 
     /*!
      * \brief Move assignment operator
      * \param[in] gPolygon3D GPolygon object that moves
      * \return Object reference
      */
-    auto operator =(GPolygon3D&& gPolygon3D) TL_NOEXCEPT -> GPolygon3D&;
+    auto operator =(GPolygon3D&& gPolygon3D) noexcept -> GPolygon3D& = default;
+
+    auto geometry() const -> const Polygon<Point3d> & { return mGeometry; }
+    auto geometry() -> Polygon<Point3d> & { return mGeometry; }
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
     auto window() const -> BoundingBox<Point2d> override;
     void draw(Painter &painter) const override;
+    auto clone() const -> std::unique_ptr<GraphicEntity> override;
 };
 
 
@@ -159,15 +175,19 @@ public:
  * \brief Multi-polygon graphic class
  */
 class TL_EXPORT GMultiPolygon
-  : public MultiPolygon<Point2d>,
-    public GraphicEntity
+  : public GraphicEntity
 {
+
+private:
+
+    MultiPolygon<Point2d> mGeometry;
+
 public:
 
     /*!
      * \brief Default constructor
      */
-    GMultiPolygon();
+    GMultiPolygon() = default;
 
     explicit GMultiPolygon(size_t size);
 
@@ -182,13 +202,13 @@ public:
      * \brief Copy constructor
      * \param[in] multiPolygon Object to be copied
      */
-    GMultiPolygon(const GMultiPolygon &multiPolygon);
+    GMultiPolygon(const GMultiPolygon &multiPolygon) = default;
 
     /*!
      * \brief Move Constructor
      * \param[in] multiPolygon GMultiPolygon object that moves
      */
-    GMultiPolygon(GMultiPolygon &&multiPolygon) TL_NOEXCEPT;
+    GMultiPolygon(GMultiPolygon &&multiPolygon) noexcept = default;
 
     ~GMultiPolygon() override;
 
@@ -197,19 +217,23 @@ public:
      * \param[in] multiPolygon Object to be copied
      * \return Object reference
      */
-    auto operator =(const GMultiPolygon &multiPolygon) -> GMultiPolygon&;
+    auto operator =(const GMultiPolygon &multiPolygon) -> GMultiPolygon& = default;
 
     /*!
      * \brief Move assignment operator
      * \param[in] multiPolygon GPolygon object that moves
      * \return Object reference
      */
-    auto operator =(GMultiPolygon &&multiPolygon) TL_NOEXCEPT -> GMultiPolygon&;
+    auto operator =(GMultiPolygon &&multiPolygon) noexcept -> GMultiPolygon& = default;
+
+    auto geometry() const -> const MultiPolygon<Point2d> & { return mGeometry; }
+    auto geometry() -> MultiPolygon<Point2d> & { return mGeometry; }
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
     auto window() const -> BoundingBox<Point2d> override;
     void draw(Painter &painter) const override;
+    auto clone() const -> std::unique_ptr<GraphicEntity> override;
 };
 
 
@@ -217,15 +241,19 @@ public:
  * \brief Multi-polygon 3D graphic class
  */
 class TL_EXPORT GMultiPolygon3D
-  : public MultiPolygon<Point3d>,
-    public GraphicEntity
+  : public GraphicEntity
 {
+
+private:
+
+    MultiPolygon<Point3d> mGeometry;
+
 public:
 
     /*!
      * \brief Default constructor
      */
-    GMultiPolygon3D();
+    GMultiPolygon3D() = default;
 
     /*!
      * \brief Constructor from a MultiPolygon
@@ -240,13 +268,13 @@ public:
      * \brief Copy constructor
      * \param multiPolygon3D Object to be copied
      */
-    GMultiPolygon3D(const GMultiPolygon3D &multiPolygon3D);
+    GMultiPolygon3D(const GMultiPolygon3D &multiPolygon3D) = default;
 
     /*!
      * \brief Move Constructor
      * \param[in] multiPolygon3D GPolygon object that moves
      */
-    GMultiPolygon3D(GMultiPolygon3D &&multiPolygon3D) TL_NOEXCEPT;
+    GMultiPolygon3D(GMultiPolygon3D &&multiPolygon3D) noexcept = default;
 
     ~GMultiPolygon3D() override;
 
@@ -255,19 +283,23 @@ public:
      * \param multiPolygon3D Objeto GMultiPolygon3D que se copia
      * \return Referencia al objeto
      */
-    auto operator =(const GMultiPolygon3D &multiPolygon3D) -> GMultiPolygon3D&;
+    auto operator =(const GMultiPolygon3D &multiPolygon3D) -> GMultiPolygon3D& = default;
 
     /*!
      * \brief Move assignment operator
      * \param[in] multiPolygon3D GMultiPolygon3D object that moves
      * \return Object reference
      */
-    auto operator =(GMultiPolygon3D &&multiPolygon3D) TL_NOEXCEPT -> GMultiPolygon3D &;
+    auto operator =(GMultiPolygon3D &&multiPolygon3D) noexcept -> GMultiPolygon3D & = default;
+
+    auto geometry() const -> const MultiPolygon<Point3d> & { return mGeometry; }
+    auto geometry() -> MultiPolygon<Point3d> & { return mGeometry; }
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
     auto window() const -> BoundingBox<Point2d> override;
     void draw(Painter &painter) const override;
+    auto clone() const -> std::unique_ptr<GraphicEntity> override;
 };
 
 

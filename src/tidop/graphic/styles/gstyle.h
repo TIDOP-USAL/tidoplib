@@ -25,6 +25,7 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 
 #include "tidop/core/base/Defs.h"
 #include "tidop/graphic/styles/label.h"
@@ -61,97 +62,100 @@ class TL_EXPORT GraphicStyle
 
 private:
 
-    std::shared_ptr<Pen> mPen;
-    std::shared_ptr<Brush> mBrush;
-    std::shared_ptr<Symbol> mSymbol;
-    std::shared_ptr<Label> mLabel;
+    std::optional<Pen> mPen;
+    std::optional<Brush> mBrush;
+    std::optional<Symbol> mSymbol;
+    std::optional<Label> mLabel;
 
 public:
 
     /*!
      * \brief Default constructor
      */
-    GraphicStyle();
+    GraphicStyle() = default;
 
     /*!
      * \brief Copy constructor.
      * \param[in] graphicStyle The style to copy.
      */
-    GraphicStyle(const GraphicStyle &graphicStyle);
+    GraphicStyle(const GraphicStyle &graphicStyle) = default;
 
     /*!
      * \brief Move constructor.
      * \param[in] graphicStyle The style to move.
      */
-    GraphicStyle(GraphicStyle&& graphicStyle) noexcept;
+    GraphicStyle(GraphicStyle &&graphicStyle) noexcept = default;
 
     /*!
      * \brief Destructor
      */
-    virtual ~GraphicStyle() = default;
-
-    /*!
-     * \brief Returns the current pen style.
-     * \return Shared pointer to the `Pen` object (may be null).
-     */
-    auto pen() const -> std::shared_ptr<Pen>;
-
-    /*!
-     * \brief Sets the pen style.
-     * \param[in] pen Shared pointer to the pen style.
-     */
-    void setPen(const std::shared_ptr<Pen> &pen);
-
-    /*!
-     * \brief Returns the current brush style.
-     * \return Shared pointer to the `Brush` object (may be null).
-     */
-    auto brush() const -> std::shared_ptr<Brush>;
-
-    /*!
-     * \brief Sets the brush style.
-     * \param[in] brush Shared pointer to the brush style.
-     */
-    void setBrush(const std::shared_ptr<Brush> &brush);
-
-    /*!
-     * \brief Returns the current symbol style.
-     * \return Shared pointer to the `Symbol` object (may be null).
-     */
-    auto symbol() const -> std::shared_ptr<Symbol>;
-
-    /*!
-     * \brief Sets the symbol style.
-     * \param[in] symbol Shared pointer to the symbol style.
-     */
-    void setSymbol(const std::shared_ptr<Symbol> &symbol);
-
-    /*!
-     * \brief Returns the current label style.
-     * \return Shared pointer to the `Label` object (may be null).
-     */
-    auto label() const -> std::shared_ptr<Label>;
-
-    /*!
-     * \brief Sets the label style.
-     * \param[in] label Shared pointer to the label style.
-     */
-    void setLabel(const std::shared_ptr<Label> &label);
+    ~GraphicStyle() = default;
 
     /*!
      * \brief Copy assignment operator.
      * \param[in] graphicStyle The style to copy.
      * \return Reference to this object.
      */
-    auto operator =(const GraphicStyle &graphicStyle) -> GraphicStyle&;
+    auto operator =(const GraphicStyle &graphicStyle) -> GraphicStyle & = default;
 
     /*!
      * \brief Move assignment operator.
      * \param[in] graphicStyle The style to move.
      * \return Reference to this object.
      */
-    auto operator =(GraphicStyle &&graphicStyle) TL_NOEXCEPT -> GraphicStyle &;
+    auto operator =(GraphicStyle &&graphicStyle) noexcept -> GraphicStyle & = default;
 
+    /*!
+     * \brief Returns the current pen style.
+     * \return Shared pointer to the `Pen` object (may be null).
+     */
+    [[nodiscard]]
+    auto pen() const -> const Pen *;
+
+    /*!
+     * \brief Sets the pen style.
+     * \param[in] pen Shared pointer to the pen style.
+     */
+    void setPen(Pen pen);
+
+    /*!
+     * \brief Returns the current brush style.
+     * \return Shared pointer to the `Brush` object (may be null).
+     */
+    [[nodiscard]]
+    auto brush() const -> const Brush *;
+
+    /*!
+     * \brief Sets the brush style.
+     * \param[in] brush Shared pointer to the brush style.
+     */
+    void setBrush(Brush brush);
+
+    /*!
+     * \brief Returns the current symbol style.
+     * \return Shared pointer to the `Symbol` object (may be null).
+     */
+    [[nodiscard]]
+    auto symbol() const -> const Symbol*;
+
+    /*!
+     * \brief Sets the symbol style.
+     * \param[in] symbol Shared pointer to the symbol style.
+     */
+    void setSymbol(Symbol symbol);
+
+    /*!
+     * \brief Returns the current label style.
+     * \return Shared pointer to the `Label` object (may be null).
+     */
+    [[nodiscard]]
+    auto label() const -> const Label*;
+
+    /*!
+     * \brief Sets the label style.
+     * \param[in] label Shared pointer to the label style.
+     */
+    void setLabel(Label label);
 };
 
 

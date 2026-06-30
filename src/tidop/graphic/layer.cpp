@@ -46,22 +46,40 @@ GLayer::GLayer()
 
 GLayer::GLayer(const GLayer &gLayer)
   : mName(gLayer.mName),
-    mEntities(gLayer.mEntities),
-    mSelectEntity(gLayer.mSelectEntity)
+    mTableFields(gLayer.mTableFields)
 {
+    mEntities.reserve(gLayer.mEntities.size());
+
+    for (const auto &entity : gLayer.mEntities) {
+        if (entity) {
+            mEntities.push_back(entity->clone());
+        } else {
+            mEntities.push_back(nullptr);
+        }
+    }
+
+    //mTableFields.reserve(gLayer.mTableFields.size());
+    //for (const auto &field : gLayer.mTableFields) {
+    //    if (field) {
+    //        mTableFields.push_back(std::make_unique<TableField>(*field));
+    //    } else {
+    //        mTableFields.push_back(nullptr);
+    //    }
+    //}
+
+    // OJO con mSelectEntity: No podemos copiar el puntero crudo original 
+    // porque apuntaría a una entidad de la OTRA capa. 
+    // Lo correcto es resetearlo a nullptr (o buscar el equivalente indexado).
+    mSelectEntity = nullptr;
 }
 
-GLayer::GLayer(GLayer &&gLayer) TL_NOEXCEPT
+GLayer::GLayer(GLayer &&gLayer) noexcept
   : mName(std::move(gLayer.mName)),
     mEntities(std::move(gLayer.mEntities)),
-    mSelectEntity(std::move(gLayer.mSelectEntity))
+    mSelectEntity(gLayer.mSelectEntity),
+    mTableFields(std::move(gLayer.mTableFields))
 {
-}
-
-GLayer::GLayer(std::initializer_list<std::shared_ptr<GraphicEntity>> entities)
-  : mEntities(entities),
-    mSelectEntity(nullptr)
-{
+    gLayer.mSelectEntity = nullptr;
 }
 
 auto GLayer::name() const -> std::string
@@ -74,42 +92,37 @@ void GLayer::setName(const std::string &name)
     mName = name;
 }
 
-auto GLayer::begin() TL_NOEXCEPT -> iterator
+auto GLayer::begin() noexcept -> iterator
 {
     return mEntities.begin();
 }
 
-auto GLayer::begin() const TL_NOEXCEPT -> const_iterator
+auto GLayer::begin() const noexcept -> const_iterator
 {
     return mEntities.cbegin();
 }
 
-auto GLayer::end() TL_NOEXCEPT -> iterator
+auto GLayer::end() noexcept -> iterator
 {
     return mEntities.end();
 }
 
-auto GLayer::end() const TL_NOEXCEPT -> const_iterator
+auto GLayer::end() const noexcept -> const_iterator
 {
     return mEntities.cend();
 }
 
-void GLayer::push_back(const std::shared_ptr<GraphicEntity> &entity)
+void GLayer::push_back(std::unique_ptr<GraphicEntity> entity)
 {
-    mEntities.push_back(entity);
+    mEntities.push_back(std::move(entity));
 }
 
-void GLayer::push_back(std::shared_ptr<GraphicEntity> &&entity) TL_NOEXCEPT
-{
-    mEntities.push_back(std::forward<std::shared_ptr<GraphicEntity>>(entity));
-}
-
-void GLayer::clear() TL_NOEXCEPT
+void GLayer::clear() noexcept
 {
     mEntities.clear();
 }
 
-bool GLayer::empty() const TL_NOEXCEPT
+bool GLayer::empty() const noexcept
 {
     return mEntities.empty();
 }
@@ -119,35 +132,75 @@ void GLayer::resize(size_type count)
     mEntities.resize(count);
 }
 
-void GLayer::resize(size_type count, const std::shared_ptr<GraphicEntity> &value)
-{
-    mEntities.resize(count, value);
-}
-
-auto GLayer::size() const TL_NOEXCEPT -> size_type
+auto GLayer::size() const noexcept -> size_type
 {
     return mEntities.size();
 }
 
-auto GLayer::operator=(const GLayer& entity) -> GLayer&
+auto GLayer::operator=(const GLayer &entity) -> GLayer&
 {
+    //if (this != &entity) {
+    //    this->mName = entity.mName;
+    //    this->mEntities = entity.mEntities;
+    //    this->mSelectEntity = entity.mSelectEntity;
+    //}
+    //return (*this);
     if (this != &entity) {
-        this->mName = entity.mName;
-        this->mEntities = entity.mEntities;
-        this->mSelectEntity = entity.mSelectEntity;
+        mName = entity.mName;
+        mTableFields = entity.mTableFields;
+
+        // Limpiamos lo que teníamos antes (unique_ptr destruye la memoria automáticamente)
+        mEntities.clear();
+        mEntities.reserve(entity.mEntities.size());
+
+        for (const auto &e : entity.mEntities) {
+            if (e) {
+                mEntities.push_back(e->clone());
+            } else {
+                mEntities.push_back(nullptr);
+            }
+        }
+
+        //mTableFields.clear();
+        //mTableFields.reserve(entity.mTableFields.size());
+        //for (const auto &field : entity.mTableFields) {
+        //    if (field) {
+        //        mTableFields.push_back(std::make_unique<TableField>(*field));
+        //    } else {
+        //        mTableFields.push_back(nullptr);
+        //    }
+        //}
+
+        mSelectEntity = nullptr; // Reseteamos la selección por seguridad
     }
-    return (*this);
+    return *this;
 }
 
-auto GLayer::operator=(GLayer&& entity) TL_NOEXCEPT -> GLayer&
+auto GLayer::operator=(GLayer&& entity) noexcept -> GLayer&
 {
+    //if (this != &entity) {
+    //    this->mName = std::move(entity.mName);
+    //    this->mEntities.clear();
+    //    this->mEntities = std::move(entity.mEntities);
+    //    this->mSelectEntity = std::move(entity.mSelectEntity);
+    //}
+    //return (*this);
     if (this != &entity) {
-        this->mName = std::move(entity.mName);
-        this->mEntities.clear();
-        this->mEntities = std::move(entity.mEntities);
-        this->mSelectEntity = std::move(entity.mSelectEntity);
+        mName = std::move(entity.mName);
+        mTableFields = std::move(entity.mTableFields);
+
+        // Al asignar con std::move, el operador de asignación de std::vector 
+        // destruye automáticamente todas las entidades viejas que tuviera 'this'
+        // y se adueña del nuevo bloque de memoria de 'entity'.
+        mEntities = std::move(entity.mEntities);
+
+        // Transferimos el puntero de observación
+        mSelectEntity = entity.mSelectEntity;
+
+        // Dejamos el objeto origen limpio
+        entity.mSelectEntity = nullptr;
     }
-    return (*this);
+    return *this;
 }
 
 auto GLayer::erase(const_iterator first, const_iterator last) -> iterator
@@ -155,12 +208,12 @@ auto GLayer::erase(const_iterator first, const_iterator last) -> iterator
     return mEntities.erase(std::move(first), std::move(last));
 }
 
-void GLayer::addDataField(const std::shared_ptr<TableField> &field)
+void GLayer::addDataField(TableField field)
 {
-    mTableFields.push_back(field);
+    mTableFields.push_back(std::move(field));
 }
 
-auto GLayer::tableFields() const -> std::vector<std::shared_ptr<TableField>>
+auto GLayer::tableFields() const -> const std::vector<TableField>&
 {
     return mTableFields;
 }

@@ -64,12 +64,12 @@ auto TableField::size() const -> int
 
 
 
-RegisterValue::RegisterValue(const std::shared_ptr<TableField> &field)
+RegisterValue::RegisterValue(const TableField &field)
   : mField(field)
 {
 }
 
-RegisterValue::RegisterValue(const std::shared_ptr<TableField> &field,
+RegisterValue::RegisterValue(const TableField &field,
                              std::string value)
   : mField(field),
     mValue(std::move(value))
@@ -94,7 +94,7 @@ void RegisterValue::setValue(const std::string &value)
 
 
 
-TableRegister::TableRegister(const std::vector<std::shared_ptr<TableField>> &fields)
+TableRegister::TableRegister(const std::vector<TableField> &fields)
 {
     size_t size = fields.size();
 
@@ -135,7 +135,7 @@ auto TableRegister::size() const -> size_t
 
 
 DataTable::DataTable(const std::string &tableName,
-                     const std::vector<std::shared_ptr<TableField>> &tableField)
+                     const std::vector<TableField> &tableField)
   : mTableName(tableName),
     mTableFields(tableField)
 {
@@ -156,14 +156,14 @@ auto DataTable::name() const -> std::string
     return mTableName;
 }
 
-auto DataTable::createRegister(int index) const -> std::shared_ptr<TableRegister>
+auto DataTable::createRegister(int index) const -> TableRegister
 {
     ///TODO: Completar
     unusedParameter(index);
-    return std::make_shared<TableRegister>(mTableFields);
+    return TableRegister(mTableFields);
 }
 
-auto DataTable::fields() const -> std::vector<std::shared_ptr<TableField>>
+auto DataTable::fields() const -> std::vector<TableField>
 {
     return mTableFields;
 }
@@ -186,12 +186,12 @@ auto DataTable::size() const -> size_t
 
 
 void DataModel::createTable(const std::string &tableName,
-                            const std::vector<std::shared_ptr<TableField>> &fields)
+                            const std::vector<TableField> &fields)
 {
-    mDataTables.push_back(std::make_shared<DataTable>(tableName, fields));
+    mDataTables.push_back(DataTable(tableName, fields));
 }
 
-void DataModel::addTable(const std::shared_ptr<DataTable> &table)
+void DataModel::addTable(const DataTable &table)
 {
     mDataTables.push_back(table);
 }

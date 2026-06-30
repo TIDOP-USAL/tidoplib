@@ -94,21 +94,21 @@ public:
 private:
 
     auto read(OGRLayer *ogrLayer) const -> std::shared_ptr<GLayer>;
-    static auto readEntity(OGRGeometry *ogrGeometry) -> std::shared_ptr<GraphicEntity>;
-    static auto readPoint(const OGRPoint *ogrPoint) -> std::shared_ptr<GPoint>;
-    static auto readPoint3D(const OGRPoint *ogrPoint) -> std::shared_ptr<GPoint3D>;
-    static auto readLineString(const OGRLineString *ogrLineString) -> std::shared_ptr<GLineString>;
-    static auto readLineString3D(const OGRLineString *ogrLineString) -> std::shared_ptr<GLineString3D>;
-    static auto readPolygon(OGRPolygon *ogrPolygon) -> std::shared_ptr<GPolygon>;
-    static auto readPolygon3D(OGRPolygon *ogrPolygon) -> std::shared_ptr<GPolygon3D>;
-    static auto readMultiPoint(OGRMultiPoint *ogrMultiPoint) -> std::shared_ptr<GMultiPoint>;
-    static auto readMultiPoint3D(OGRMultiPoint *ogrMultiPoint) -> std::shared_ptr<GMultiPoint3D>;
-    static auto readMultiLineString(OGRMultiLineString *ogrMultiLineString) -> std::shared_ptr<GMultiLineString>;
-    static auto readMultiLineString3D(OGRMultiLineString *ogrMultiLineString) -> std::shared_ptr<GMultiLineString3D>;
-    static auto readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon) -> std::shared_ptr<GMultiPolygon>;
-    static auto readMultiPolygon3D(OGRMultiPolygon *ogrMultiPolygon) -> std::shared_ptr<GMultiPolygon3D>;
+    static auto readEntity(OGRGeometry *ogrGeometry) -> std::unique_ptr<GraphicEntity>;
+    static auto readPoint(const OGRPoint *ogrPoint) -> std::unique_ptr<GPoint>;
+    static auto readPoint3D(const OGRPoint *ogrPoint) -> std::unique_ptr<GPoint3D>;
+    static auto readLineString(const OGRLineString *ogrLineString) -> std::unique_ptr<GLineString>;
+    static auto readLineString3D(const OGRLineString *ogrLineString) -> std::unique_ptr<GLineString3D>;
+    static auto readPolygon(OGRPolygon *ogrPolygon) -> std::unique_ptr<GPolygon>;
+    static auto readPolygon3D(OGRPolygon *ogrPolygon) -> std::unique_ptr<GPolygon3D>;
+    static auto readMultiPoint(OGRMultiPoint *ogrMultiPoint) -> std::unique_ptr<GMultiPoint>;
+    static auto readMultiPoint3D(OGRMultiPoint *ogrMultiPoint) -> std::unique_ptr<GMultiPoint3D>;
+    static auto readMultiLineString(OGRMultiLineString *ogrMultiLineString) -> std::unique_ptr<GMultiLineString>;
+    static auto readMultiLineString3D(OGRMultiLineString *ogrMultiLineString) -> std::unique_ptr<GMultiLineString3D>;
+    static auto readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon) -> std::unique_ptr<GMultiPolygon>;
+    static auto readMultiPolygon3D(OGRMultiPolygon *ogrMultiPolygon) -> std::unique_ptr<GMultiPolygon3D>;
     static void readStyles(OGRStyleMgr *ogrStyle, GraphicEntity *gStyle);
-    static auto readPen(OGRStylePen *ogrStylePen) -> std::shared_ptr<Pen>;
+    static auto readPen(OGRStylePen *ogrStylePen) -> Pen;
     static void readPenColor(OGRStylePen *ogrStylePen, Pen *pen);
     static void readPenCap(OGRStylePen *ogrStylePen, Pen *pen);
     static void readPenPattern(OGRStylePen *ogrStylePen, Pen *pen);
@@ -117,7 +117,7 @@ private:
     static void readPenWidth(OGRStylePen *ogrStylePen, Pen *pen);
     static void readPenPerpendicularOffset(OGRStylePen *ogrStylePen, Pen *pen);
     static void readPenPriorityLevel(OGRStylePen *ogrStylePen, Pen *pen);
-    static auto readBrush(OGRStyleBrush *ogrStyleBrush) -> std::shared_ptr<Brush>;
+    static auto readBrush(OGRStyleBrush *ogrStyleBrush) -> Brush;
     static void readBrushAngle(OGRStyleBrush *ogrStyleBrush, Brush *brush);
     static void readBrushBackColor(OGRStyleBrush *ogrStyleBrush, Brush *brush);
     static void readBrushForeColor(OGRStyleBrush *ogrStyleBrush, Brush *brush);
@@ -125,7 +125,7 @@ private:
     static void readBrushPriorityLevel(OGRStyleBrush *ogrStyleBrush, Brush *brush);
     static void readBrushScalingFactor(OGRStyleBrush *ogrStyleBrush, Brush *brush);
     static void readBrushSpacing(OGRStyleBrush *ogrStyleBrush, Brush *brush);
-    static auto readSymbol(OGRStyleSymbol *ogrStyleSymbol) -> std::shared_ptr<Symbol>;
+    static auto readSymbol(OGRStyleSymbol *ogrStyleSymbol) -> Symbol;
     static void readSymbolAngle(OGRStyleSymbol *ogrStyleSymbol, Symbol *symbol);
     static void readSymbolColor(OGRStyleSymbol *ogrStyleSymbol, Symbol *symbol);
     static void readSymbolName(OGRStyleSymbol *ogrStyleSymbol, Symbol *symbol);
@@ -133,7 +133,7 @@ private:
     static void readSymbolOutlineColor(OGRStyleSymbol *ogrStyleSymbol, Symbol *symbol);
     static void readSymbolPriorityLevel(OGRStyleSymbol *ogrStyleSymbol, Symbol *symbol);
     static void readSymbolScalingFactor(OGRStyleSymbol *ogrStyleSymbol, Symbol *symbol);
-    static auto readLabel(OGRStyleLabel *ogrStyleLabel) -> std::shared_ptr<Label>;
+    static auto readLabel(OGRStyleLabel *ogrStyleLabel) -> Label;
     static void readLabelAnchorPosition(OGRStyleLabel *ogrStyleLabel, Label *label);
     static void readLabelAngle(OGRStyleLabel *ogrStyleLabel, Label *label);
     static void readLabelBackgroundColor(OGRStyleLabel *ogrStyleLabel, Label *label);

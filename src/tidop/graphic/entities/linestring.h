@@ -41,16 +41,19 @@ namespace tl
  * \brief 2D polyline graphic class
  */
 class TL_EXPORT GLineString
-  : public LineString<Point<double>>,
-    public GraphicEntity
+  : public GraphicEntity
 {
+
+private:
+
+    LineString<Point<double>> mGeometry;
 
 public:
 
     /*!
      * \brief Default constructor
      */
-    GLineString();
+    GLineString() = default;
 
     explicit GLineString(size_t size);
 
@@ -65,12 +68,12 @@ public:
     /*!
      * \brief Copy constructor
      */
-    GLineString(const GLineString &lineString);
+    GLineString(const GLineString &lineString) = default;
 
     /*!
      * \brief Move constructor
      */
-    GLineString(GLineString &&lineString) TL_NOEXCEPT;
+    GLineString(GLineString &&lineString) noexcept = default;
 
 
     ~GLineString() override;
@@ -80,19 +83,23 @@ public:
      * \param[in] gLineString GLineString object to be copied
      * \return Object reference
      */
-    auto operator =(const GLineString &gLineString) -> GLineString&;
+    auto operator =(const GLineString &gLineString) -> GLineString& = default;
 
     /*!
      * \brief Assignment move operator
      * \param[in] gLineString GLineString object that moves
      * \return Object reference
      */
-    auto operator =(GLineString &&gLineString) TL_NOEXCEPT -> GLineString&;
+    auto operator =(GLineString &&gLineString) noexcept -> GLineString& = default;
+
+    auto geometry() const -> const LineString<Point<double>> & { return mGeometry; }
+    auto geometry() -> LineString<Point<double>> & { return mGeometry; }
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
     auto window() const ->BoundingBox<Point2d> override;
     void draw(Painter &painter) const override;
+    auto clone() const -> std::unique_ptr<GraphicEntity> override;
 };
 
 
@@ -103,15 +110,19 @@ public:
  * \brief 3D polyline graphic class
  */
 class TL_EXPORT GLineString3D
-  : public LineString<Point3d>,
-    public GraphicEntity
+  : public GraphicEntity
 {
+
+private:
+
+    LineString<Point3d> mGeometry;
+
 public:
 
     /*!
      * \brief Default constructor
      */
-    GLineString3D();
+    GLineString3D() = default;
 
     explicit GLineString3D(size_t size);
 
@@ -126,12 +137,12 @@ public:
     /*!
      * \brief Copy constructor
      */
-    GLineString3D(const GLineString3D &gLineString3D);
+    GLineString3D(const GLineString3D &gLineString3D) = default;
 
     /*!
      * \brief Move constructor
      */
-    GLineString3D(GLineString3D &&gLineString3D) TL_NOEXCEPT;
+    GLineString3D(GLineString3D &&gLineString3D) noexcept = default;
 
     ~GLineString3D() override;
 
@@ -140,20 +151,24 @@ public:
      * \param[in] gLineString3D GLineString3D object to be copied
      * \return Object reference
      */
-    auto operator =(const GLineString3D& gLineString3D) -> GLineString3D&;
+    auto operator =(const GLineString3D& gLineString3D) -> GLineString3D& = default;
 
     /*!
      * \brief Assignment move operator
      * \param[in] gLineString3D GLineString3D object that moves
      * \return Object reference
      */
-    auto operator =(GLineString3D&& gLineString3D) TL_NOEXCEPT -> GLineString3D&;
+    auto operator =(GLineString3D&& gLineString3D) noexcept -> GLineString3D& = default;
+
+    auto geometry() const -> const LineString<Point3d> & { return mGeometry; }
+    auto geometry() -> LineString<Point3d> & { return mGeometry; }
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
 
     void draw(Painter &painter) const override;
     auto window() const -> BoundingBox<Point2d> override;
+    auto clone() const -> std::unique_ptr<GraphicEntity> override;
 };
 
 
@@ -163,15 +178,19 @@ public:
  * \brief Multi-polyline graphic class
  */
 class TL_EXPORT GMultiLineString
-  : public MultiLineString<Point2d>,
-    public GraphicEntity
+  : public GraphicEntity
 {
+
+private:
+
+    MultiLineString<Point2d> mGeometry;
+
 public:
 
     /*!
      * \brief Default constructor
      */
-    GMultiLineString();
+    GMultiLineString() = default;
 
     explicit GMultiLineString(size_t size);
 
@@ -184,29 +203,33 @@ public:
     /*!
      * \brief Copy constructor
      */
-    GMultiLineString(const GMultiLineString &gMultiLineString);
+    GMultiLineString(const GMultiLineString &gMultiLineString) = default;
 
     /*!
      * \brief Move constructor
      */
-    GMultiLineString(GMultiLineString &&gMultiLineString) TL_NOEXCEPT;
+    GMultiLineString(GMultiLineString &&gMultiLineString) noexcept = default;
 
     ~GMultiLineString() override;
 
     /*!
      * \brief Assignment copy operator
      */
-    auto operator =(const GMultiLineString &gMultiLineString) -> GMultiLineString&;
+    auto operator =(const GMultiLineString &gMultiLineString) -> GMultiLineString& = default;
 
     /*!
      * \brief Assignment move operator
      */
-    auto operator =(GMultiLineString &&gMultiLineString) TL_NOEXCEPT -> GMultiLineString&;
+    auto operator =(GMultiLineString &&gMultiLineString) noexcept -> GMultiLineString& = default;
+
+    auto geometry() const -> const MultiLineString<Point2d> & { return mGeometry; }
+    auto geometry() -> MultiLineString<Point2d> & { return mGeometry; }
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
     auto window() const -> BoundingBox<Point2d> override;
     void draw(Painter &painter) const override;
+    auto clone() const -> std::unique_ptr<GraphicEntity> override;
 };
 
 
@@ -215,15 +238,18 @@ public:
  * \brief 3D multi-polyline graphic class
  */
 class TL_EXPORT GMultiLineString3D
-  : public MultiLineString<Point3d>,
-    public GraphicEntity
+  : public GraphicEntity
 {
+private:
+
+    MultiLineString<Point3d> mGeometry;
+
 public:
 
     /*!
      * \brief Default constructor
      */
-    GMultiLineString3D();
+    GMultiLineString3D() = default;
 
     explicit GMultiLineString3D(size_t size);
 
@@ -232,29 +258,33 @@ public:
     /*!
      * \brief Copy constructor
      */
-    GMultiLineString3D(const GMultiLineString3D &gMultiLineString3D);
+    GMultiLineString3D(const GMultiLineString3D &gMultiLineString3D) = default;
 
     /*!
      * \brief Move constructor
      */
-    GMultiLineString3D(GMultiLineString3D &&gMultiLineString3D) TL_NOEXCEPT;
+    GMultiLineString3D(GMultiLineString3D &&gMultiLineString3D) noexcept = default;
 
     ~GMultiLineString3D() override;
 
     /*!
      * \brief Assignment copy operator
      */
-    auto operator =(const GMultiLineString3D &gMultiLineString3D) -> GMultiLineString3D&;
+    auto operator =(const GMultiLineString3D &gMultiLineString3D) -> GMultiLineString3D& = default;
 
     /*!
      * \brief Assignment move operator
      */
-    auto operator =(GMultiLineString3D &&gMultiLineString3D) TL_NOEXCEPT -> GMultiLineString3D&;
+    auto operator =(GMultiLineString3D &&gMultiLineString3D) noexcept -> GMultiLineString3D& = default;
+
+    auto geometry() const -> const MultiLineString<Point3d> & { return mGeometry; }
+    auto geometry() -> MultiLineString<Point3d> & { return mGeometry; }
 
     auto isMultiEntity() const -> bool override;
     auto isSimpleEntity() const -> bool override;
     auto window() const -> BoundingBox<Point2d> override;
     void draw(Painter &painter) const override;
+    auto clone() const -> std::unique_ptr<GraphicEntity> override;
 };
 
 

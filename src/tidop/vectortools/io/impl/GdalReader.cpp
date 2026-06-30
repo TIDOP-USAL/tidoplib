@@ -366,7 +366,7 @@ auto VectorReaderGdal::read(OGRLayer *ogrLayer) const -> std::shared_ptr<GLayer>
             TableField::Type type = typeFromGdal(field_definition->GetType());
             int width = field_definition->GetWidth();
 
-            layer->addDataField(std::make_shared<TableField>(name, type, width));
+            layer->addDataField(TableField(name, type, width));
 
         }
     }
@@ -409,11 +409,11 @@ auto VectorReaderGdal::read(OGRLayer *ogrLayer) const -> std::shared_ptr<GLayer>
                 ogr_style_mgr.GetStyleString(ogr_feature.get());
                 readStyles(&ogr_style_mgr, entity.get());
 
-                auto attributes = std::make_shared<TableRegister>(layer->tableFields());
-                readData(ogr_feature.get(), feature_definition, attributes.get());
+                TableRegister attributes(layer->tableFields());
+                readData(ogr_feature.get(), feature_definition, &attributes);
                 entity->setAttributes(attributes);
 
-                layer->push_back(entity);
+                layer->push_back(std::move(entity));
 
             } catch (std::exception &e) {
                 printException(e);
@@ -426,9 +426,9 @@ auto VectorReaderGdal::read(OGRLayer *ogrLayer) const -> std::shared_ptr<GLayer>
     return layer;
 }
 
-auto VectorReaderGdal::readEntity(OGRGeometry *ogrGeometry) -> std::shared_ptr<GraphicEntity>
+auto VectorReaderGdal::readEntity(OGRGeometry *ogrGeometry) -> std::unique_ptr<GraphicEntity>
 {
-    std::shared_ptr<GraphicEntity> graphic_entity;
+    std::unique_ptr<GraphicEntity> graphic_entity;
 
     OGRwkbGeometryType type;
     if (wkbHasZ(ogrGeometry->getGeometryType()))
@@ -599,54 +599,57 @@ auto VectorReaderGdal::readEntity(OGRGeometry *ogrGeometry) -> std::shared_ptr<G
     return graphic_entity;
 }
 
-auto VectorReaderGdal::readPoint(const OGRPoint *ogrPoint) -> std::shared_ptr<GPoint>
+auto VectorReaderGdal::readPoint(const OGRPoint *ogrPoint) -> std::unique_ptr<GPoint>
 {
-    return std::make_shared<GPoint>(ogrPoint->getX(),
+    return std::make_unique<GPoint>(ogrPoint->getX(),
                                     ogrPoint->getY());
 }
 
-auto VectorReaderGdal::readPoint3D(const OGRPoint *ogrPoint) -> std::shared_ptr<GPoint3D>
+auto VectorReaderGdal::readPoint3D(const OGRPoint *ogrPoint) -> std::unique_ptr<GPoint3D>
 {
-    return std::make_shared<GPoint3D>(ogrPoint->getX(),
+    return std::make_unique<GPoint3D>(ogrPoint->getX(),
                                       ogrPoint->getY(),
                                       ogrPoint->getZ());
 }
 
-auto VectorReaderGdal::readLineString(const OGRLineString *ogrLineString) -> std::shared_ptr<GLineString>
+auto VectorReaderGdal::readLineString(const OGRLineString *ogrLineString) -> std::unique_ptr<GLineString>
 {
     size_t size = static_cast<size_t>(ogrLineString->getNumPoints());
-    auto line_string = std::make_shared<GLineString>(size);
+    auto line_string = std::make_unique<GLineString>(size);
+    auto &geometry = line_string->geometry();
 
     for (size_t i = 0; i < size; i++) {
-        (*line_string)[i].x() = ogrLineString->getX(static_cast<int>(i));
-        (*line_string)[i].y() = ogrLineString->getY(static_cast<int>(i));
+        geometry[i].x() = ogrLineString->getX(static_cast<int>(i));
+        geometry[i].y() = ogrLineString->getY(static_cast<int>(i));
     }
 
     return line_string;
 }
 
-auto VectorReaderGdal::readLineString3D(const OGRLineString *ogrLineString) -> std::shared_ptr<GLineString3D>
+auto VectorReaderGdal::readLineString3D(const OGRLineString *ogrLineString) -> std::unique_ptr<GLineString3D>
 {
     size_t size = static_cast<size_t>(ogrLineString->getNumPoints());
-    auto line_string = std::make_shared<GLineString3D>(size);
+    auto line_string = std::make_unique<GLineString3D>(size);
+    auto &geometry = line_string->geometry();
 
     for (size_t i = 0; i < size; i++) {
-        (*line_string)[i].x() = ogrLineString->getX(static_cast<int>(i));
-        (*line_string)[i].y() = ogrLineString->getY(static_cast<int>(i));
-        (*line_string)[i].z() = ogrLineString->getZ(static_cast<int>(i));
+        geometry[i].x() = ogrLineString->getX(static_cast<int>(i));
+        geometry[i].y() = ogrLineString->getY(static_cast<int>(i));
+        geometry[i].z() = ogrLineString->getZ(static_cast<int>(i));
     }
 
     return line_string;
 }
 
-auto VectorReaderGdal::readPolygon(OGRPolygon *ogrPolygon) -> std::shared_ptr<GPolygon>
+auto VectorReaderGdal::readPolygon(OGRPolygon *ogrPolygon) -> std::unique_ptr<GPolygon>
 {
     const OGRLinearRing *ogr_linear_ring = ogrPolygon->getExteriorRing();
     size_t size = ogr_linear_ring->getNumPoints();
-    auto polygon = std::make_shared<GPolygon>(size);
+    auto polygon = std::make_unique<GPolygon>(size);
+    auto &geometry = polygon->geometry();
 
     for (size_t i = 0; i < size; i++) {
-        polygon->outer()[i] = Point2d(ogr_linear_ring->getX(static_cast<int>(i)),
+        geometry.outer()[i] = Point2d(ogr_linear_ring->getX(static_cast<int>(i)),
                                       ogr_linear_ring->getY(static_cast<int>(i)));
     }
 
@@ -659,20 +662,21 @@ auto VectorReaderGdal::readPolygon(OGRPolygon *ogrPolygon) -> std::shared_ptr<GP
             hole[j] = Point<double>(ogr_linear_ring->getX(j),
                                     ogr_linear_ring->getY(j));
         }
-        polygon->addInner(hole);
+        geometry.addInner(hole);
     }
 
     return polygon;
 }
 
-auto VectorReaderGdal::readPolygon3D(OGRPolygon *ogrPolygon) -> std::shared_ptr<GPolygon3D>
+auto VectorReaderGdal::readPolygon3D(OGRPolygon *ogrPolygon) -> std::unique_ptr<GPolygon3D>
 {
     const OGRLinearRing *ogr_linear_ring = ogrPolygon->getExteriorRing();
     size_t size = ogr_linear_ring->getNumPoints();
-    auto polygon = std::make_shared <GPolygon3D>(size);
+    auto polygon = std::make_unique<GPolygon3D>(size);
+    auto &geometry = polygon->geometry();
 
     for (size_t i = 0; i < size; i++) {
-        polygon->outer()[i] = Point3d(ogr_linear_ring->getX(static_cast<int>(i)),
+        geometry.outer()[i] = Point3d(ogr_linear_ring->getX(static_cast<int>(i)),
                                       ogr_linear_ring->getY(static_cast<int>(i)),
                                       ogr_linear_ring->getZ(static_cast<int>(i)));
     }
@@ -687,16 +691,16 @@ auto VectorReaderGdal::readPolygon3D(OGRPolygon *ogrPolygon) -> std::shared_ptr<
                                      ogr_linear_ring->getY(static_cast<int>(j)),
                                      ogr_linear_ring->getZ(static_cast<int>(j)));
         }
-        polygon->addInner(hole);
+        geometry.addInner(hole);
     }
 
     return polygon;
 }
 
-auto VectorReaderGdal::readMultiPoint(OGRMultiPoint *ogrMultiPoint) -> std::shared_ptr<GMultiPoint>
+auto VectorReaderGdal::readMultiPoint(OGRMultiPoint *ogrMultiPoint) -> std::unique_ptr<GMultiPoint>
 {
     auto size = static_cast<size_t>(ogrMultiPoint->getNumGeometries());
-    auto multi_point = std::make_shared<GMultiPoint>(size);
+    auto multi_point = std::make_unique<GMultiPoint>(size);
 
     for (size_t i = 0; i < size; i++) {
 
@@ -705,18 +709,18 @@ auto VectorReaderGdal::readMultiPoint(OGRMultiPoint *ogrMultiPoint) -> std::shar
 #else
         const OGRPoint *point = dynamic_cast<OGRPoint *>(ogrMultiPoint->getGeometryRef(static_cast<int>(i)));
 #endif
-
-        (*multi_point)[i].x() = point->getX();
-        (*multi_point)[i].y() = point->getY();
+        auto &geometry = multi_point->geometry();
+        geometry[i].x() = point->getX();
+        geometry[i].y() = point->getY();
     }
 
     return multi_point;
 }
 
-auto VectorReaderGdal::readMultiPoint3D(OGRMultiPoint *ogrMultiPoint) -> std::shared_ptr<GMultiPoint3D>
+auto VectorReaderGdal::readMultiPoint3D(OGRMultiPoint *ogrMultiPoint) -> std::unique_ptr<GMultiPoint3D>
 {
     auto size = static_cast<size_t>(ogrMultiPoint->getNumGeometries());
-    auto multi_point = std::make_shared<GMultiPoint3D>(size);
+    auto multi_point = std::make_unique<GMultiPoint3D>(size);
 
     for (size_t i = 0; i < size; i++) {
 
@@ -725,19 +729,20 @@ auto VectorReaderGdal::readMultiPoint3D(OGRMultiPoint *ogrMultiPoint) -> std::sh
 #else
         const OGRPoint *point = dynamic_cast<OGRPoint *>(ogrMultiPoint->getGeometryRef(static_cast<int>(i)));
 #endif
+        auto &geometry = multi_point->geometry();
 
-        (*multi_point)[i].x() = point->getX();
-        (*multi_point)[i].y() = point->getY();
-        (*multi_point)[i].z() = point->getZ();
+        geometry[i].x() = point->getX();
+        geometry[i].y() = point->getY();
+        geometry[i].z() = point->getZ();
     }
 
     return multi_point;
 }
 
-auto VectorReaderGdal::readMultiLineString(OGRMultiLineString *ogrMultiLineString) -> std::shared_ptr<GMultiLineString>
+auto VectorReaderGdal::readMultiLineString(OGRMultiLineString *ogrMultiLineString) -> std::unique_ptr<GMultiLineString>
 {
     size_t size = static_cast<size_t>(ogrMultiLineString->getNumGeometries());
-    auto multi_line_string = std::make_shared<GMultiLineString>(size);
+    auto multi_line_string = std::make_unique<GMultiLineString>(size);
 
     for (size_t i = 0; i < size; i++) {
 
@@ -746,23 +751,24 @@ auto VectorReaderGdal::readMultiLineString(OGRMultiLineString *ogrMultiLineStrin
 #else
         const OGRLineString *line_string = dynamic_cast<OGRLineString *>(ogrMultiLineString->getGeometryRef(static_cast<int>(i)));
 #endif
+        auto &geometry = multi_line_string->geometry();
 
         auto np = static_cast<size_t>(line_string->getNumPoints());
-        (*multi_line_string)[i].resize(np);
+        geometry[i].resize(np);
 
         for (size_t j = 0; j < np; j++) {
-            (*multi_line_string)[i][j].x() = line_string->getX(static_cast<int>(j));
-            (*multi_line_string)[i][j].y() = line_string->getY(static_cast<int>(j));
+            geometry[i][j].x() = line_string->getX(static_cast<int>(j));
+            geometry[i][j].y() = line_string->getY(static_cast<int>(j));
         }
     }
 
     return multi_line_string;
 }
 
-auto VectorReaderGdal::readMultiLineString3D(OGRMultiLineString *ogrMultiLineString) -> std::shared_ptr<GMultiLineString3D>
+auto VectorReaderGdal::readMultiLineString3D(OGRMultiLineString *ogrMultiLineString) -> std::unique_ptr<GMultiLineString3D>
 {
     size_t size = static_cast<size_t>(ogrMultiLineString->getNumGeometries());
-    auto line_string = std::make_shared<GMultiLineString3D>(size);
+    auto line_string = std::make_unique<GMultiLineString3D>(size);
 
     for (size_t i = 0; i < size; i++) {
 
@@ -772,23 +778,25 @@ auto VectorReaderGdal::readMultiLineString3D(OGRMultiLineString *ogrMultiLineStr
         const OGRLineString *ogr_line_string = dynamic_cast<OGRLineString *>(ogrMultiLineString->getGeometryRef(static_cast<int>(i)));
 #endif
 
+        auto &geometry = line_string->geometry();
+
         auto points_size = static_cast<size_t>(ogr_line_string->getNumPoints());
-        (*line_string)[i].resize(points_size);
+        geometry[i].resize(points_size);
 
         for (size_t j = 0; j < points_size; j++) {
-            (*line_string)[i][j].x() = ogr_line_string->getX(static_cast<int>(j));
-            (*line_string)[i][j].y() = ogr_line_string->getY(static_cast<int>(j));
-            (*line_string)[i][j].z() = ogr_line_string->getZ(static_cast<int>(j));
+            geometry[i][j].x() = ogr_line_string->getX(static_cast<int>(j));
+            geometry[i][j].y() = ogr_line_string->getY(static_cast<int>(j));
+            geometry[i][j].z() = ogr_line_string->getZ(static_cast<int>(j));
         }
     }
 
     return line_string;
 }
 
-auto VectorReaderGdal::readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon) -> std::shared_ptr<GMultiPolygon>
+auto VectorReaderGdal::readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon) -> std::unique_ptr<GMultiPolygon>
 {
     size_t size = static_cast<size_t>(ogrMultiPolygon->getNumGeometries());
-    auto multi_polygon = std::make_shared<GMultiPolygon>(size);
+    auto multi_polygon = std::make_unique<GMultiPolygon>(size);
 
     for (size_t i = 0; i < size; i++) {
 
@@ -797,6 +805,8 @@ auto VectorReaderGdal::readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon) -> std
 #else
         const OGRPolygon *ogr_polygon = dynamic_cast<OGRPolygon *>(ogrMultiPolygon->getGeometryRef(static_cast<int>(i)));
 #endif
+
+        auto &geometry = multi_polygon->geometry();
 
         const OGRLinearRing *ogr_linear_ring = ogr_polygon->getExteriorRing();
         auto np = static_cast<size_t>(ogr_linear_ring->getNumPoints());
@@ -807,7 +817,7 @@ auto VectorReaderGdal::readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon) -> std
             polygon[j].x() = ogr_linear_ring->getX(static_cast<int>(j));
             polygon[j].y() = ogr_linear_ring->getY(static_cast<int>(j));
         }
-        (*multi_polygon)[i].outer() = polygon;
+        geometry[i].outer() = polygon;
 
         int nir = ogr_polygon->getNumInteriorRings();
         for (size_t k = 0; k < nir; k++) {
@@ -818,7 +828,7 @@ auto VectorReaderGdal::readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon) -> std
                 hole[j] = Point2d(ogr_interior_ring->getX(j),
                                   ogr_interior_ring->getY(j));
             }
-            (*multi_polygon)[i].addInner(hole);
+            geometry[i].addInner(hole);
         }
         //}
 
@@ -827,10 +837,10 @@ auto VectorReaderGdal::readMultiPolygon(OGRMultiPolygon *ogrMultiPolygon) -> std
     return multi_polygon;
 }
 
-auto VectorReaderGdal::readMultiPolygon3D(OGRMultiPolygon *ogrMultiPolygon) -> std::shared_ptr<GMultiPolygon3D>
+auto VectorReaderGdal::readMultiPolygon3D(OGRMultiPolygon *ogrMultiPolygon) -> std::unique_ptr<GMultiPolygon3D>
 {
     size_t size = static_cast<size_t>(ogrMultiPolygon->getNumGeometries());
-    auto multi_polygon = std::make_shared <GMultiPolygon3D>(size);
+    auto multi_polygon = std::make_unique<GMultiPolygon3D>(size);
 
     for (size_t i = 0; i < size; i++) {
 
@@ -839,6 +849,8 @@ auto VectorReaderGdal::readMultiPolygon3D(OGRMultiPolygon *ogrMultiPolygon) -> s
 #else
         const OGRPolygon *ogr_polygon = dynamic_cast<OGRPolygon *>(ogrMultiPolygon->getGeometryRef(static_cast<int>(i)));
 #endif
+
+        auto &geometry = multi_polygon->geometry();
 
         const OGRLinearRing *ogr_linear_ring = ogr_polygon->getExteriorRing();
         auto points_size = static_cast<size_t>(ogr_linear_ring->getNumPoints());
@@ -850,7 +862,7 @@ auto VectorReaderGdal::readMultiPolygon3D(OGRMultiPolygon *ogrMultiPolygon) -> s
             polygon[j].y() = ogr_linear_ring->getY(static_cast<int>(j));
             polygon[j].z() = ogr_linear_ring->getZ(static_cast<int>(j));
         }
-        (*multi_polygon)[i].outer() = polygon;
+        geometry[i].outer() = polygon;
 
         int nir = ogr_polygon->getNumInteriorRings();
         for (size_t k = 0; k < nir; k++) {
@@ -862,7 +874,7 @@ auto VectorReaderGdal::readMultiPolygon3D(OGRMultiPolygon *ogrMultiPolygon) -> s
                                   ogr_linear_ring->getY(static_cast<int>(j)),
                                   ogr_linear_ring->getZ(static_cast<int>(j)));
             }
-            (*multi_polygon)[i].addInner(hole);
+            geometry[i].addInner(hole);
         }
     }
 
@@ -900,18 +912,18 @@ void VectorReaderGdal::readStyles(OGRStyleMgr *ogrStyle, GraphicEntity *gStyle)
     }
 }
 
-auto VectorReaderGdal::readPen(OGRStylePen *ogrStylePen) -> std::shared_ptr<Pen>
+auto VectorReaderGdal::readPen(OGRStylePen *ogrStylePen) -> Pen
 {
-    auto pen = std::make_shared<Pen>();
+    Pen pen;
 
-    readPenColor(ogrStylePen, pen.get());
-    readPenCap(ogrStylePen, pen.get());
-    readPenPattern(ogrStylePen, pen.get());
-    readPenJoin(ogrStylePen, pen.get());
-    readPenName(ogrStylePen, pen.get());
-    readPenWidth(ogrStylePen, pen.get());
-    readPenPerpendicularOffset(ogrStylePen, pen.get());
-    readPenPriorityLevel(ogrStylePen, pen.get());
+    readPenColor(ogrStylePen, &pen);
+    readPenCap(ogrStylePen, &pen);
+    readPenPattern(ogrStylePen, &pen);
+    readPenJoin(ogrStylePen, &pen);
+    readPenName(ogrStylePen, &pen);
+    readPenWidth(ogrStylePen, &pen);
+    readPenPerpendicularOffset(ogrStylePen, &pen);
+    readPenPriorityLevel(ogrStylePen, &pen);
 
     return pen;
 }
@@ -1047,17 +1059,17 @@ void VectorReaderGdal::readPenPriorityLevel(OGRStylePen *ogrStylePen, Pen *pen)
     }
 }
 
-auto VectorReaderGdal::readBrush(OGRStyleBrush* ogrStyleBrush) -> std::shared_ptr<Brush>
+auto VectorReaderGdal::readBrush(OGRStyleBrush* ogrStyleBrush) -> Brush
 {
-    auto brush = std::make_shared<Brush>();
+    Brush brush;
 
-    readBrushAngle(ogrStyleBrush, brush.get());
-    readBrushBackColor(ogrStyleBrush, brush.get());
-    readBrushForeColor(ogrStyleBrush, brush.get());
-    readBrushName(ogrStyleBrush, brush.get());
-    readBrushPriorityLevel(ogrStyleBrush, brush.get());
-    readBrushScalingFactor(ogrStyleBrush, brush.get());
-    readBrushSpacing(ogrStyleBrush, brush.get());
+    readBrushAngle(ogrStyleBrush, &brush);
+    readBrushBackColor(ogrStyleBrush, &brush);
+    readBrushForeColor(ogrStyleBrush, &brush);
+    readBrushName(ogrStyleBrush, &brush);
+    readBrushPriorityLevel(ogrStyleBrush, &brush);
+    readBrushScalingFactor(ogrStyleBrush, &brush);
+    readBrushSpacing(ogrStyleBrush, &brush);
 
     return brush;
 }
@@ -1147,17 +1159,17 @@ void VectorReaderGdal::readBrushSpacing(OGRStyleBrush *ogrStyleBrush, Brush *bru
     }
 }
 
-auto VectorReaderGdal::readSymbol(OGRStyleSymbol *ogrStyleSymbol) -> std::shared_ptr<Symbol>
+auto VectorReaderGdal::readSymbol(OGRStyleSymbol *ogrStyleSymbol) -> Symbol
 {
-    auto symbol = std::make_shared<Symbol>();
+    Symbol symbol;
 
-    readSymbolAngle(ogrStyleSymbol, symbol.get());
-    readSymbolColor(ogrStyleSymbol, symbol.get());
-    readSymbolName(ogrStyleSymbol, symbol.get());
-    readSymbolOffset(ogrStyleSymbol, symbol.get());
-    readSymbolOutlineColor(ogrStyleSymbol, symbol.get());
-    readSymbolPriorityLevel(ogrStyleSymbol, symbol.get());
-    readSymbolScalingFactor(ogrStyleSymbol, symbol.get());
+    readSymbolAngle(ogrStyleSymbol, &symbol);
+    readSymbolColor(ogrStyleSymbol, &symbol);
+    readSymbolName(ogrStyleSymbol, &symbol);
+    readSymbolOffset(ogrStyleSymbol, &symbol);
+    readSymbolOutlineColor(ogrStyleSymbol, &symbol);
+    readSymbolPriorityLevel(ogrStyleSymbol, &symbol);
+    readSymbolScalingFactor(ogrStyleSymbol, &symbol);
 
     return symbol;
 }
@@ -1254,20 +1266,20 @@ void VectorReaderGdal::readSymbolScalingFactor(OGRStyleSymbol *ogrStyleSymbol, S
     }
 }
 
-auto VectorReaderGdal::readLabel(OGRStyleLabel *ogrStyleLabel) -> std::shared_ptr<Label>
+auto VectorReaderGdal::readLabel(OGRStyleLabel *ogrStyleLabel) -> Label
 {
-    auto label = std::make_shared<Label>();
+    Label label;
 
-    readLabelAnchorPosition(ogrStyleLabel, label.get());
-    readLabelAngle(ogrStyleLabel, label.get());
-    readLabelBackgroundColor(ogrStyleLabel, label.get());
-    readLabelForegroundColor(ogrStyleLabel, label.get());
-    readLabelOutlineColor(ogrStyleLabel, label.get());
-    readLabelShadowColor(ogrStyleLabel, label.get());
-    readLabelLabelPlacement(ogrStyleLabel, label.get());
-    readLabelOffset(ogrStyleLabel, label.get());
-    readLabelStretch(ogrStyleLabel, label.get());
-    readLabelFont(ogrStyleLabel, label.get());
+    readLabelAnchorPosition(ogrStyleLabel, &label);
+    readLabelAngle(ogrStyleLabel, &label);
+    readLabelBackgroundColor(ogrStyleLabel, &label);
+    readLabelForegroundColor(ogrStyleLabel, &label);
+    readLabelOutlineColor(ogrStyleLabel, &label);
+    readLabelShadowColor(ogrStyleLabel, &label);
+    readLabelLabelPlacement(ogrStyleLabel, &label);
+    readLabelOffset(ogrStyleLabel, &label);
+    readLabelStretch(ogrStyleLabel, &label);
+    readLabelFont(ogrStyleLabel, &label);
 
     return label;
 }

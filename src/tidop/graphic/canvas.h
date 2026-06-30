@@ -158,42 +158,42 @@ protected:
      * \param[in] point Point
      * \param[in] style Style
      */
-    virtual void drawPoint(const Point2d &point, const GraphicStyle &style) = 0;
-
+    virtual void draw(const Point2d &point, const GraphicStyle &style) = 0;
+    
     /*!
      * \brief Draw a polyline on the canvas
      * \param[in] lineString Polyline
      * \param[in] style Style
      */
-    virtual void drawLineString(const LineString<Point2d> &lineString, const GraphicStyle &style) = 0;
+    virtual void draw(const LineString<Point2d> &lineString, const GraphicStyle &style) = 0;
 
     /*!
      * \brief Draw a polygon on the canvas
      * \param[in] polygon Polygon
      * \param[in] style Style
      */
-    virtual void drawPolygon(const Polygon<Point2d> &polygon, const GraphicStyle &style) = 0;
+    virtual void draw(const Polygon<Point2d> &polygon, const GraphicStyle &style) = 0;
 
     /*!
      * \brief Draws a set of points on the canvas
      * \param[in] multiPoint Collection of points
      * \param[in] style Style to apply to each point
      */
-    virtual void drawMultiPoint(const MultiPoint<Point2d> &multiPoint, const GraphicStyle &style) = 0;
+    virtual void draw(const MultiPoint<Point2d> &multiPoint, const GraphicStyle &style) = 0;
 
     /*!
      * \brief Draws a set of polylines on the canvas
      * \param[in] multiLineString Collection of polylines
      * \param[in] style Style to apply to each polyline
      */
-    virtual void drawMultiLineString(const MultiLineString<Point2d> &multiLineString, const GraphicStyle &style) = 0;
+    virtual void draw(const MultiLineString<Point2d> &multiLineString, const GraphicStyle &style) = 0;
 
     /*!
      * \brief Draws a set of polygons on the canvas
      * \param[in] multiPolygon Collection of polygons
      * \param[in] style Style to apply to each polygon
      */
-    virtual void drawMultiPolygon(const MultiPolygon<Point2d> &multiPolygon, const GraphicStyle &style) = 0;
+    virtual void draw(const MultiPolygon<Point2d> &multiPolygon, const GraphicStyle &style) = 0;
 
     /*!
      * \brief Draw a text on the canvas
@@ -316,12 +316,12 @@ public:
 
 protected:
 
-    void drawPoint(const Point2d &point, const GraphicStyle &style) override;
-    void drawLineString(const LineString<Point2d> &lineString, const GraphicStyle &style) override;
-    void drawPolygon(const Polygon<Point2d> &polygon, const GraphicStyle &style) override;
-    void drawMultiPoint(const MultiPoint<Point2d> &multiPoint, const GraphicStyle &style) override;
-    void drawMultiLineString(const MultiLineString<Point2d> &multiLineString, const GraphicStyle &style) override;
-    void drawMultiPolygon(const MultiPolygon<Point2d> &multiPolygon, const GraphicStyle &style) override;
+    void draw(const Point2d &point, const GraphicStyle &style) override;
+    void draw(const LineString<Point2d> &lineString, const GraphicStyle &style) override;
+    void draw(const Polygon<Point2d> &polygon, const GraphicStyle &style) override;
+    void draw(const MultiPoint<Point2d> &multiPoint, const GraphicStyle &style) override;
+    void draw(const MultiLineString<Point2d> &multiLineString, const GraphicStyle &style) override;
+    void draw(const MultiPolygon<Point2d> &multiPolygon, const GraphicStyle &style) override;
     void drawText(const Point2d &point, const std::string &text, const GraphicStyle &style) override;
 
 private:

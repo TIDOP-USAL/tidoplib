@@ -30,60 +30,60 @@ namespace tl
 {
 
 
-GPolygon::GPolygon()
-  : GraphicEntity(GraphicEntity::Type::polygon_2d)
-{
-}
+//GPolygon::GPolygon()
+//  : GraphicEntity(GraphicEntity::Type::polygon_2d)
+//{
+//}
 
 GPolygon::GPolygon(size_t size)
-  : Polygon<Point2d>(size),
+  : mGeometry(size),
     GraphicEntity(GraphicEntity::Type::polygon_2d)
 {
 }
 
 GPolygon::GPolygon(const Polygon<Point2d> &polygon)
-  : Polygon<Point2d>(polygon),
+  : mGeometry(polygon),
     GraphicEntity(GraphicEntity::Type::polygon_2d)
 {
 }
 
-GPolygon::GPolygon(const GPolygon &gPolygon)
-  : Polygon<Point2d>(gPolygon),
-    GraphicEntity(gPolygon)
-{
-}
-
-GPolygon::GPolygon(GPolygon &&gPolygon) TL_NOEXCEPT
-  : Polygon<Point2d>(std::forward<Polygon<Point2d>>(gPolygon)),
-    GraphicEntity(std::forward<GraphicEntity>(gPolygon))
-{
-}
+//GPolygon::GPolygon(const GPolygon &gPolygon)
+//  : Polygon<Point2d>(gPolygon),
+//    GraphicEntity(gPolygon)
+//{
+//}
+//
+//GPolygon::GPolygon(GPolygon &&gPolygon) TL_NOEXCEPT
+//  : Polygon<Point2d>(std::forward<Polygon<Point2d>>(gPolygon)),
+//    GraphicEntity(std::forward<GraphicEntity>(gPolygon))
+//{
+//}
 
 GPolygon::~GPolygon()
 {
 }
 
-auto GPolygon::operator =(const GPolygon& gPolygon) -> GPolygon&
-{
-    if (this != &gPolygon) {
-        Polygon<Point2d>::operator=(gPolygon);
-        GraphicEntity::operator=(gPolygon);
-    }
-    return *this;
-}
-
-auto GPolygon::operator =(GPolygon&& gPolygon) TL_NOEXCEPT -> GPolygon&
-{
-    if (this != &gPolygon) {
-        Polygon<Point2d>::operator=(std::forward<Polygon<Point2d>>(gPolygon));
-        GraphicEntity::operator=(std::forward<GraphicEntity>(gPolygon));
-    }
-    return *this;
-}
+//auto GPolygon::operator =(const GPolygon& gPolygon) -> GPolygon&
+//{
+//    if (this != &gPolygon) {
+//        Polygon<Point2d>::operator=(gPolygon);
+//        GraphicEntity::operator=(gPolygon);
+//    }
+//    return *this;
+//}
+//
+//auto GPolygon::operator =(GPolygon&& gPolygon) TL_NOEXCEPT -> GPolygon&
+//{
+//    if (this != &gPolygon) {
+//        Polygon<Point2d>::operator=(std::forward<Polygon<Point2d>>(gPolygon));
+//        GraphicEntity::operator=(std::forward<GraphicEntity>(gPolygon));
+//    }
+//    return *this;
+//}
 
 auto GPolygon::window() const -> BoundingBox<Point2d>
 {
-    return tl::envelope(static_cast<const Polygon<Point2d> &>(*this));
+    return tl::envelope(this->geometry());
 }
 
 void GPolygon::draw(Painter &painter) const
@@ -91,136 +91,143 @@ void GPolygon::draw(Painter &painter) const
     painter.drawPolygon(*this);
 }
 
-
-
-
-
-GPolygon3D::GPolygon3D()
-  : GraphicEntity(GraphicEntity::Type::polygon_3d)
+auto GPolygon::clone() const -> std::unique_ptr<GraphicEntity>
 {
+    return std::make_unique<GPolygon>(*this);
 }
 
+
+
+//GPolygon3D::GPolygon3D()
+//  : GraphicEntity(GraphicEntity::Type::polygon_3d)
+//{
+//}
+
 GPolygon3D::GPolygon3D(size_t size)
-  : Polygon<Point3d>(size),
+  : mGeometry(size),
     GraphicEntity(GraphicEntity::Type::polygon_3d)
 {
 }
 
 GPolygon3D::GPolygon3D(const Polygon<Point3d> &polygon)
-  : Polygon<Point3d>(polygon),
+  : mGeometry(polygon),
     GraphicEntity(GraphicEntity::Type::polygon_3d)
 {
 }
 
-GPolygon3D::GPolygon3D(const GPolygon3D &gPolygon3D)
-  : Polygon<Point3d>(gPolygon3D),
-    GraphicEntity(gPolygon3D)
-{
-}
-
-GPolygon3D::GPolygon3D(GPolygon3D &&gPolygon3D) TL_NOEXCEPT
-  : Polygon<Point3d>(std::forward<Polygon<Point3d>>(gPolygon3D)),
-    GraphicEntity(std::forward<GraphicEntity>(gPolygon3D))
-{
-}
+//GPolygon3D::GPolygon3D(const GPolygon3D &gPolygon3D)
+//  : Polygon<Point3d>(gPolygon3D),
+//    GraphicEntity(gPolygon3D)
+//{
+//}
+//
+//GPolygon3D::GPolygon3D(GPolygon3D &&gPolygon3D) TL_NOEXCEPT
+//  : Polygon<Point3d>(std::forward<Polygon<Point3d>>(gPolygon3D)),
+//    GraphicEntity(std::forward<GraphicEntity>(gPolygon3D))
+//{
+//}
 
 GPolygon3D::~GPolygon3D()
 {
 }
 
-auto GPolygon3D::operator =(const GPolygon3D& gPolygon3D) -> GPolygon3D&
-{
-    if (this != &gPolygon3D) {
-        Polygon<Point3d>::operator=(gPolygon3D);
-        GraphicEntity::operator=(gPolygon3D);
-    }
-    return *this;
-}
-
-auto GPolygon3D::operator =(GPolygon3D&& gPolygon3D) TL_NOEXCEPT -> GPolygon3D&
-{
-    if (this != &gPolygon3D) {
-        Polygon<Point3d>::operator=(std::forward<Polygon<Point3d>>(gPolygon3D));
-        GraphicEntity::operator=(std::forward<GraphicEntity>(gPolygon3D));
-    }
-    return *this;
-}
+//auto GPolygon3D::operator =(const GPolygon3D& gPolygon3D) -> GPolygon3D&
+//{
+//    if (this != &gPolygon3D) {
+//        Polygon<Point3d>::operator=(gPolygon3D);
+//        GraphicEntity::operator=(gPolygon3D);
+//    }
+//    return *this;
+//}
+//
+//auto GPolygon3D::operator =(GPolygon3D&& gPolygon3D) TL_NOEXCEPT -> GPolygon3D&
+//{
+//    if (this != &gPolygon3D) {
+//        Polygon<Point3d>::operator=(std::forward<Polygon<Point3d>>(gPolygon3D));
+//        GraphicEntity::operator=(std::forward<GraphicEntity>(gPolygon3D));
+//    }
+//    return *this;
+//}
 
 auto GPolygon3D::window() const -> BoundingBox<Point2d>
 {
-    auto bbox = tl::envelope(static_cast<const Polygon<Point3d>&>(*this));
+    auto bbox = tl::envelope(this->geometry());
     return BoundingBox<Point2d>(static_cast<Point2d>(bbox.min()), static_cast<Point2d>(bbox.max()));
 }
 
 void GPolygon3D::draw(Painter &painter) const
 {
-    auto &outer = this->outer();
+    auto &outer = this->geometry().outer();
     Polygon<Point2d> poly2d(outer.size());
     for (size_t i = 0; i < outer.size(); ++i)
         poly2d.outer()[i] = Point2d(outer[i].x(), outer[i].y());
     painter.drawPolygon(poly2d);
 }
 
-
-
-
-
-GMultiPolygon::GMultiPolygon()
-  : GraphicEntity(GraphicEntity::Type::multipolygon_2d)
+auto GPolygon3D::clone() const -> std::unique_ptr<GraphicEntity>
 {
+    return std::make_unique<GPolygon3D>(*this);
 }
 
+
+
+
+//GMultiPolygon::GMultiPolygon()
+//  : GraphicEntity(GraphicEntity::Type::multipolygon_2d)
+//{
+//}
+
 GMultiPolygon::GMultiPolygon(size_t size)
-  : MultiPolygon<Point2d>(size),
+  : mGeometry(size),
     GraphicEntity(GraphicEntity::Type::multipolygon_2d)
 {
 }
 
 GMultiPolygon::GMultiPolygon(const MultiPolygon<Point2d> &multiPolygon)
-  : MultiPolygon<Point2d>(multiPolygon),
+  : mGeometry(multiPolygon),
     GraphicEntity(GraphicEntity::Type::multipolygon_2d)
 {
 }
 
-GMultiPolygon::GMultiPolygon(const GMultiPolygon &multiPolygon)
-  : MultiPolygon<Point2d>(multiPolygon),
-    GraphicEntity(multiPolygon)
-{
-}
-
-GMultiPolygon::GMultiPolygon(GMultiPolygon&& multiPolygon) TL_NOEXCEPT
-  : MultiPolygon<Point2d>(std::forward<MultiPolygon<Point2d>>(multiPolygon)),
-    GraphicEntity(std::forward<GraphicEntity>(multiPolygon))
-{
-}
+//GMultiPolygon::GMultiPolygon(const GMultiPolygon &multiPolygon)
+//  : MultiPolygon<Point2d>(multiPolygon),
+//    GraphicEntity(multiPolygon)
+//{
+//}
+//
+//GMultiPolygon::GMultiPolygon(GMultiPolygon&& multiPolygon) TL_NOEXCEPT
+//  : MultiPolygon<Point2d>(std::forward<MultiPolygon<Point2d>>(multiPolygon)),
+//    GraphicEntity(std::forward<GraphicEntity>(multiPolygon))
+//{
+//}
 
 GMultiPolygon::~GMultiPolygon()
 {
 }
 
-auto GMultiPolygon::operator =(const GMultiPolygon &multiPolygon) -> GMultiPolygon&
-{
-    if (this != &multiPolygon) {
-        MultiPolygon<Point2d>::operator=(multiPolygon);
-        GraphicEntity::operator=(multiPolygon);
-    }
-
-    return *this;
-}
-
-auto GMultiPolygon::operator=(GMultiPolygon &&multiPolygon) noexcept -> GMultiPolygon&
-{
-    if (this != &multiPolygon) {
-        MultiPolygon<Point2d>::operator=(std::forward<MultiPolygon<Point2d>>(multiPolygon));
-        GraphicEntity::operator=(std::forward<GraphicEntity>(multiPolygon));
-    }
-
-    return *this;
-}
+//auto GMultiPolygon::operator =(const GMultiPolygon &multiPolygon) -> GMultiPolygon&
+//{
+//    if (this != &multiPolygon) {
+//        MultiPolygon<Point2d>::operator=(multiPolygon);
+//        GraphicEntity::operator=(multiPolygon);
+//    }
+//
+//    return *this;
+//}
+//
+//auto GMultiPolygon::operator=(GMultiPolygon &&multiPolygon) noexcept -> GMultiPolygon&
+//{
+//    if (this != &multiPolygon) {
+//        MultiPolygon<Point2d>::operator=(std::forward<MultiPolygon<Point2d>>(multiPolygon));
+//        GraphicEntity::operator=(std::forward<GraphicEntity>(multiPolygon));
+//    }
+//
+//    return *this;
+//}
 
 auto GMultiPolygon::window() const -> BoundingBox<Point2d>
 {
-    return tl::envelope(static_cast<const MultiPolygon<Point2d>&>(*this));
+    return tl::envelope(this->mGeometry);
 }
 
 void GMultiPolygon::draw(Painter &painter) const
@@ -228,71 +235,75 @@ void GMultiPolygon::draw(Painter &painter) const
     painter.drawMultiPolygon(*this);
 }
 
-
-
-
-
-GMultiPolygon3D::GMultiPolygon3D()
-  : GraphicEntity(GraphicEntity::Type::multipolygon_3d)
+auto GMultiPolygon::clone() const -> std::unique_ptr<GraphicEntity>
 {
+    return std::make_unique<GMultiPolygon>(*this);
 }
 
+
+
+//GMultiPolygon3D::GMultiPolygon3D()
+//  : GraphicEntity(GraphicEntity::Type::multipolygon_3d)
+//{
+//}
+
 GMultiPolygon3D::GMultiPolygon3D(const MultiPolygon<Point3d> &multiPolygon)
-  : MultiPolygon<Point3d>(multiPolygon),
+  : mGeometry(multiPolygon),
     GraphicEntity(GraphicEntity::Type::multipolygon_3d)
 {
 }
 
 GMultiPolygon3D::GMultiPolygon3D(size_t size)
-  : MultiPolygon<Point3d>(size),
+  : mGeometry(size),
     GraphicEntity(GraphicEntity::Type::multipolygon_3d)
 {
 }
 
-GMultiPolygon3D::GMultiPolygon3D(const GMultiPolygon3D &multiPolygon3D)
-  : MultiPolygon<Point3d>(multiPolygon3D),
-    GraphicEntity(multiPolygon3D)
-{
-}
-
-GMultiPolygon3D::GMultiPolygon3D(GMultiPolygon3D &&multiPolygon3D) TL_NOEXCEPT
-  : MultiPolygon<Point3d>(std::forward<MultiPolygon<Point3d>>(multiPolygon3D)),
-    GraphicEntity(multiPolygon3D){
-}
+//GMultiPolygon3D::GMultiPolygon3D(const GMultiPolygon3D &multiPolygon3D)
+//  : MultiPolygon<Point3d>(multiPolygon3D),
+//    GraphicEntity(multiPolygon3D)
+//{
+//}
+//
+//GMultiPolygon3D::GMultiPolygon3D(GMultiPolygon3D &&multiPolygon3D) TL_NOEXCEPT
+//  : MultiPolygon<Point3d>(std::forward<MultiPolygon<Point3d>>(multiPolygon3D)),
+//    GraphicEntity(multiPolygon3D){
+//}
 
 GMultiPolygon3D::~GMultiPolygon3D()
 {
 }
 
-auto GMultiPolygon3D::operator =(const GMultiPolygon3D &multiPolygon3D) -> GMultiPolygon3D&
-{
-    if (this != &multiPolygon3D) {
-        MultiPolygon<Point3d>::operator=(multiPolygon3D);
-        GraphicEntity::operator=(multiPolygon3D);
-    }
-    return *this;
-}
-
-auto GMultiPolygon3D::operator=(GMultiPolygon3D &&multiPolygon3D) noexcept -> GMultiPolygon3D&
-{
-    if (this != &multiPolygon3D) {
-        MultiPolygon<Point3d>::operator=(std::forward<MultiPolygon<Point3d>>(multiPolygon3D));
-        GraphicEntity::operator=(std::forward<GraphicEntity>(multiPolygon3D));
-    }
-    return *this;
-}
+//auto GMultiPolygon3D::operator =(const GMultiPolygon3D &multiPolygon3D) -> GMultiPolygon3D&
+//{
+//    if (this != &multiPolygon3D) {
+//        MultiPolygon<Point3d>::operator=(multiPolygon3D);
+//        GraphicEntity::operator=(multiPolygon3D);
+//    }
+//    return *this;
+//}
+//
+//auto GMultiPolygon3D::operator=(GMultiPolygon3D &&multiPolygon3D) noexcept -> GMultiPolygon3D&
+//{
+//    if (this != &multiPolygon3D) {
+//        MultiPolygon<Point3d>::operator=(std::forward<MultiPolygon<Point3d>>(multiPolygon3D));
+//        GraphicEntity::operator=(std::forward<GraphicEntity>(multiPolygon3D));
+//    }
+//    return *this;
+//}
 
 auto GMultiPolygon3D::window() const -> BoundingBox<Point2d>
 {
-    auto bbox = tl::envelope(static_cast<const MultiPolygon<Point3d>&>(*this));
+    auto bbox = tl::envelope(this->mGeometry);
     return BoundingBox<Point2d>(static_cast<Point2d>(bbox.min()), static_cast<Point2d>(bbox.max()));
 }
 
 void GMultiPolygon3D::draw(Painter &painter) const
 {
-    GMultiPolygon tmp(size());
-    for (size_t i = 0; i < size(); ++i) {
-        const auto &poly = (*this)[i];
+    size_t n = this->mGeometry.size();
+    MultiPolygon<Point2d> tmp(n);
+    for (size_t i = 0; i < n; ++i) {
+        const auto &poly = this->mGeometry[i];
         auto &outer = poly.outer();
         auto &inners = poly.inners();
         Polygon<Point2d> p(outer.size());
@@ -310,6 +321,11 @@ void GMultiPolygon3D::draw(Painter &painter) const
         tmp[i] = p;
     }
     painter.drawMultiPolygon(tmp);
+}
+
+auto GMultiPolygon3D::clone() const -> std::unique_ptr<GraphicEntity>
+{
+    return std::make_unique<GMultiPolygon3D>(*this);
 }
 
 } // End namespace tl

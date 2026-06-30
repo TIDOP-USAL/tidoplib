@@ -109,7 +109,6 @@ public:
  * \see GraphicStyle, Painter, TableRegister
  */
 class TL_EXPORT GraphicEntity
-  : public GraphicStyle
 {
 
 public:
@@ -146,43 +145,63 @@ public:
 protected:
 
     Type mEntityType;
-    std::shared_ptr<TableRegister> mData;
+    TableRegister mData;
+    GraphicStyle mStyle;
 
 public:
+
+    GraphicEntity() = default;
 
     /*!
      * \brief Constructs a graphical entity of the given type.
      * \param[in] type Geometry type of the entity.
      */
-    explicit GraphicEntity(Type type);
+    explicit GraphicEntity(Type type, const GraphicStyle &style = {});
 
     /*!
      * \brief Copy constructor.
      * \param[in] graphicEntity Entity to copy.
      */
-    GraphicEntity(const GraphicEntity &graphicEntity);
+    GraphicEntity(const GraphicEntity &graphicEntity) = default;
 
     /*!
      * \brief Move constructor.
      * \param[in] graphicEntity Entity to move.
      */
-    GraphicEntity(GraphicEntity &&graphicEntity) TL_NOEXCEPT;
+    GraphicEntity(GraphicEntity &&graphicEntity) noexcept = default;
 
-    ~GraphicEntity() override = default;
+    virtual ~GraphicEntity() = default;
 
     /*!
      * \brief Copy assignment operator.
      * \param[in] graphicEntity Entity to copy.
      * \return Reference to this object.
      */
-    auto operator =(const GraphicEntity& graphicEntity) -> GraphicEntity&;
+    auto operator =(const GraphicEntity& graphicEntity) -> GraphicEntity& = default;
 
     /*!
      * \brief Move assignment operator.
      * \param[in] graphicEntity Entity to move.
      * \return Reference to this object.
      */
-    auto operator =(GraphicEntity&& graphicEntity) TL_NOEXCEPT -> GraphicEntity&;
+    auto operator =(GraphicEntity&& graphicEntity) noexcept -> GraphicEntity& = default;
+
+    void setStyle(const GraphicStyle &style) { mStyle = style; }
+    [[nodiscard]]
+    auto style() const -> const GraphicStyle & { return mStyle; }   
+
+    void setPen(const Pen &pen) { mStyle.setPen(pen); }
+    [[nodiscard]]
+    auto pen() const -> const Pen * { return mStyle.pen(); }
+    void setBrush(const Brush &brush) { mStyle.setBrush(brush); }
+    [[nodiscard]] 
+    auto brush() const -> const Brush * { return mStyle.brush(); }
+    void setSymbol(const Symbol &symbol) { mStyle.setSymbol(symbol); }
+    [[nodiscard]] 
+    auto symbol() const -> const Symbol * { return mStyle.symbol(); }
+    void setLabel(const Label &label) { mStyle.setLabel(label); }
+    [[nodiscard]] 
+    auto label() const -> const Label * { return mStyle.label(); }
 
     /*!
      * \brief Returns the geometric type of the entity.
@@ -218,13 +237,15 @@ public:
      * \brief Returns the attribute data associated with this entity.
      * \return Shared pointer to the attribute table entry.
      */
-    auto attributes() const -> std::shared_ptr<TableRegister>;
+    auto attributes() const -> TableRegister;
 
     /*!
      * \brief Associates attribute data with this entity.
      * \param[in] data Pointer to the attribute table entry.
      */
-    void setAttributes(const std::shared_ptr<TableRegister> &attributes);
+    void setAttributes(const TableRegister &attributes);
+
+    virtual auto clone() const -> std::unique_ptr<GraphicEntity> = 0;
 
 };
 

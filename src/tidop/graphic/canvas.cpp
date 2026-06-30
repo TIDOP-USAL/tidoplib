@@ -56,7 +56,7 @@ CanvasCV::CanvasCV(const CanvasCV &canvas)
 
 CanvasCV::~CanvasCV() = default;
 
-void CanvasCV::drawPoint(const Point2d &point, const GraphicStyle &style)
+void CanvasCV::draw(const Point2d &point, const GraphicStyle &style)
 {
     const auto style_symbol = style.symbol();
     const auto style_pen = style.pen();
@@ -131,7 +131,7 @@ void CanvasCV::drawPoint(const Point2d &point, const GraphicStyle &style)
     }
 }
 
-void CanvasCV::drawLineString(const LineString<Point2d> &lineString, const GraphicStyle &style)
+void CanvasCV::draw(const LineString<Point2d> &lineString, const GraphicStyle &style)
 {
     size_t n = lineString.size();
     std::vector<std::vector<cv::Point>> pts(1, std::vector<cv::Point>(n));
@@ -153,7 +153,7 @@ void CanvasCV::drawLineString(const LineString<Point2d> &lineString, const Graph
 }
 
 
-void CanvasCV::drawPolygon(const Polygon<Point2d> &polygon, const GraphicStyle &style)
+void CanvasCV::draw(const Polygon<Point2d> &polygon, const GraphicStyle &style)
 {
     // Añadir islas (huecos) si las hay
     const auto &outer = polygon.outer();
@@ -212,24 +212,24 @@ void CanvasCV::drawPolygon(const Polygon<Point2d> &polygon, const GraphicStyle &
     //}
 }
 
-void CanvasCV::drawMultiPoint(const MultiPoint<Point2d> &multiPoint, const GraphicStyle &style)
+void CanvasCV::draw(const MultiPoint<Point2d> &multiPoint, const GraphicStyle &style)
 {
     for (const auto &pt : multiPoint) {
-        drawPoint(pt, style);
+        draw(pt, style);
     }
 }
 
-void CanvasCV::drawMultiLineString(const MultiLineString<Point2d> &multiLineString, const GraphicStyle &style)
+void CanvasCV::draw(const MultiLineString<Point2d> &multiLineString, const GraphicStyle &style)
 {
     for (const auto &ls : multiLineString) {
-        drawLineString(ls, style);
+        draw(ls, style);
     }
 }
 
-void CanvasCV::drawMultiPolygon(const MultiPolygon<Point2d> &multiPolygon, const GraphicStyle &style)
+void CanvasCV::draw(const MultiPolygon<Point2d> &multiPolygon, const GraphicStyle &style)
 {
     for (const auto &poly : multiPolygon) {
-        drawPolygon(poly, style);
+        draw(poly, style);
     }
 }
 

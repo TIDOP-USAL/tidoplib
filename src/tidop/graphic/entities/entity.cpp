@@ -34,54 +34,55 @@ namespace tl
 
 
 
-GraphicEntity::GraphicEntity(Type type)
-  : mEntityType(type)
+GraphicEntity::GraphicEntity(Type type, const GraphicStyle &style)
+  : mEntityType(type), 
+    mStyle(style)
 {
 }
 
-GraphicEntity::GraphicEntity(const GraphicEntity &graphicEntity)
-  : GraphicStyle(graphicEntity),
-    mEntityType(graphicEntity.mEntityType)
-{
-}
+//GraphicEntity::GraphicEntity(const GraphicEntity &graphicEntity)
+//  : GraphicStyle(graphicEntity),
+//    mEntityType(graphicEntity.mEntityType)
+//{
+//}
+//
+//GraphicEntity::GraphicEntity(GraphicEntity &&graphicEntity) TL_NOEXCEPT
+//  : GraphicStyle(std::forward<GraphicStyle>(graphicEntity)),
+//    mEntityType(graphicEntity.mEntityType)
+//{
+//}
 
-GraphicEntity::GraphicEntity(GraphicEntity &&graphicEntity) TL_NOEXCEPT
-  : GraphicStyle(std::forward<GraphicStyle>(graphicEntity)),
-    mEntityType(graphicEntity.mEntityType)
-{
-}
-
-auto GraphicEntity::operator =(const GraphicEntity& graphicEntity) -> GraphicEntity&
-{
-    if (this != &graphicEntity) {
-        GraphicStyle::operator=(graphicEntity);
-        mEntityType = graphicEntity.mEntityType;
-    }
-
-    return *this;
-}
-
-auto GraphicEntity::operator =(GraphicEntity&& graphicEntity) TL_NOEXCEPT -> GraphicEntity&
-{
-    if (this != &graphicEntity) {
-        GraphicStyle::operator=(std::forward<GraphicStyle>(graphicEntity));
-        mEntityType = graphicEntity.mEntityType;
-    }
-
-    return *this;
-}
+//auto GraphicEntity::operator =(const GraphicEntity& graphicEntity) -> GraphicEntity&
+//{
+//    if (this != &graphicEntity) {
+//        GraphicStyle::operator=(graphicEntity);
+//        mEntityType = graphicEntity.mEntityType;
+//    }
+//
+//    return *this;
+//}
+//
+//auto GraphicEntity::operator =(GraphicEntity&& graphicEntity) TL_NOEXCEPT -> GraphicEntity&
+//{
+//    if (this != &graphicEntity) {
+//        GraphicStyle::operator=(std::forward<GraphicStyle>(graphicEntity));
+//        mEntityType = graphicEntity.mEntityType;
+//    }
+//
+//    return *this;
+//}
 
 auto GraphicEntity::type() const -> Type
 {
     return mEntityType;
 }
 
-auto GraphicEntity::attributes() const -> std::shared_ptr<TableRegister>
+auto GraphicEntity::attributes() const -> TableRegister
 {
     return mData;
 }
 
-void GraphicEntity::setAttributes(const std::shared_ptr<TableRegister> &attributes)
+void GraphicEntity::setAttributes(const TableRegister &attributes)
 {
     mData = attributes;
 }
