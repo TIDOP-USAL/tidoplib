@@ -285,10 +285,10 @@ void ImageWriterGdal::write(const cv::Mat &image, const Rect<int> &rect)
             //    .rowRange(rect_to_crop_image.y, rect_to_crop_image.bottomLeft().y())
             //    .clone();
 
-            const int offset_x = rect_to_write.x - rect.x;
-            const int offset_y = rect_to_write.y - rect.y;
+            const int offset_x = rect_to_write.x() - rect.x();
+            const int offset_y = rect_to_write.y() - rect.y();
 
-            cv::Rect roi(offset_x, offset_y, rect_to_write.width, rect_to_write.height);
+            cv::Rect roi(offset_x, offset_y, rect_to_write.width(), rect_to_write.height());
             cv::Rect image_bounds(0, 0, image.cols, image.rows);
 
             roi = roi & image_bounds;
@@ -355,8 +355,8 @@ void ImageWriterGdal::write(const cv::Mat &image, const Rect<int> &rect)
         //  }
         //}
 
-        CPLErr cerr = mDataset->RasterIO(GF_Write, rect_to_write.x, rect_to_write.y,
-                                         rect_to_write.width, rect_to_write.height, buff,
+        CPLErr cerr = mDataset->RasterIO(GF_Write, rect_to_write.x(), rect_to_write.y(),
+                                         rect_to_write.width(), rect_to_write.height(), buff,
                                          image_to_write.cols, image_to_write.rows,
                                          gdal_data_type, image_to_write.channels(),
                                          internal::gdalBandOrder(image_to_write.channels()).data(), pixel_space,

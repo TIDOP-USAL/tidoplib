@@ -97,7 +97,7 @@ Image::Image(int rows,
 Image::Image(const Size<int> &size,
              DataType type,
              int channels)
-  : Image(size.height, size.width, type, channels)
+  : Image(size.height(), size.width(), type, channels)
 {
 }
 
@@ -105,7 +105,7 @@ Image::Image(const Size<int> &size,
              DataType type,
              int channels,
              const Color &color)
-  : Image(size.height, size.width, type, channels, color)
+  : Image(size.height(), size.width(), type, channels, color)
 {
 }
 
@@ -113,7 +113,7 @@ Image::Image(const Size<int> &size,
              DataType type,
              int channels,
              void *data)
-  : Image(size.height, size.width, type, channels, data)
+  : Image(size.height(), size.width(), type, channels, data)
 {
 }
 

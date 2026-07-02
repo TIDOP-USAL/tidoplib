@@ -188,14 +188,14 @@ auto HogDescriptor::operator =(HogDescriptor &&hog) TL_NOEXCEPT -> HogDescriptor
 
 void HogDescriptor::init()
 {
-    cv::Size win_size(mProperties.winSize().width,
-                      mProperties.winSize().height);
-    cv::Size block_size(mProperties.blockSize().width,
-                        mProperties.blockSize().height);
-    cv::Size block_stride(mProperties.blockStride().width,
-                          mProperties.blockStride().height);
-    cv::Size cell_size(mProperties.cellSize().width,
-                       mProperties.cellSize().height);
+    cv::Size win_size(mProperties.winSize().width(),
+                      mProperties.winSize().height());
+    cv::Size block_size(mProperties.blockSize().width(),
+                        mProperties.blockSize().height());
+    cv::Size block_stride(mProperties.blockStride().width(),
+                          mProperties.blockStride().height());
+    cv::Size cell_size(mProperties.cellSize().width(),
+                       mProperties.cellSize().height());
 
     mHOG = std::make_shared<cv::HOGDescriptor>(win_size,
                                                block_size,
@@ -213,7 +213,7 @@ void HogDescriptor::normalizepatch(const cv::Mat &gray,
 
         cv::Point center = keypoint.pt;
 
-        cv::Size outsize(mProperties.winSize().width, mProperties.winSize().height);
+        cv::Size outsize(mProperties.winSize().width(), mProperties.winSize().height());
         output = cv::Mat::zeros(outsize, CV_8UC1);
         cv::Size maskenter;
         maskenter.height = cvRound(keypoint.size);

@@ -110,8 +110,8 @@ BOOST_FIXTURE_TEST_CASE(get_value, PropertyTest)
     BOOST_CHECK_EQUAL(1, property_uint64->value());
 
     auto size = property_size->value();
-    BOOST_CHECK_EQUAL(100, size.width);
-    BOOST_CHECK_EQUAL(100, size.height);
+    BOOST_CHECK_EQUAL(100, size.width());
+    BOOST_CHECK_EQUAL(100, size.height());
 
     auto map_property = property_map->value();
     auto it = map_property.find("Alice");
@@ -149,8 +149,8 @@ BOOST_FIXTURE_TEST_CASE(set_value, PropertyTest)
     property_uint64->setValue(2);
     BOOST_CHECK_EQUAL(2, property_uint64->value());
     property_size->setValue({250, 150});
-    BOOST_CHECK_EQUAL(250, property_size->value().width);
-    BOOST_CHECK_EQUAL(150, property_size->value().height);
+    BOOST_CHECK_EQUAL(250, property_size->value().width());
+    BOOST_CHECK_EQUAL(150, property_size->value().height());
 
     auto map_property = property_map->value();
 
@@ -210,8 +210,8 @@ BOOST_FIXTURE_TEST_CASE(from_string, PropertyTest)
     property_uint64->fromString("2");
     BOOST_CHECK_EQUAL(2, property_uint64->value());
     property_size->fromString("150x150");
-    BOOST_CHECK_EQUAL(150, property_size->value().width);
-    BOOST_CHECK_EQUAL(150, property_size->value().height);
+    BOOST_CHECK_EQUAL(150, property_size->value().width());
+    BOOST_CHECK_EQUAL(150, property_size->value().height());
     property_map->fromString("{\"Alice\":100,\"Bob\":85,\"Rob\":65}");
 
     auto map_property = property_map->value();
@@ -547,35 +547,35 @@ struct SizeTest
 BOOST_FIXTURE_TEST_CASE(default_constructor, SizeTest)
 {
 
-    BOOST_CHECK_EQUAL(0, size_default_constructor_integer.width);
-    BOOST_CHECK_EQUAL(0, size_default_constructor_integer.height);
+    BOOST_CHECK_EQUAL(0, size_default_constructor_integer.width());
+    BOOST_CHECK_EQUAL(0, size_default_constructor_integer.height());
 
 
-    BOOST_CHECK_EQUAL(0., size_default_constructor_double.width);
-    BOOST_CHECK_EQUAL(0., size_default_constructor_double.height);
+    BOOST_CHECK_EQUAL(0., size_default_constructor_double.width());
+    BOOST_CHECK_EQUAL(0., size_default_constructor_double.height());
 
-    BOOST_CHECK_EQUAL(0.f, size_default_constructor_float.width);
-    BOOST_CHECK_EQUAL(0.f, size_default_constructor_float.height);
+    BOOST_CHECK_EQUAL(0.f, size_default_constructor_float.width());
+    BOOST_CHECK_EQUAL(0.f, size_default_constructor_float.height());
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_constructor, SizeTest)
 {
-    BOOST_CHECK_EQUAL(size_integer->width, size_integer_copy->width);
-    BOOST_CHECK_EQUAL(size_integer->height, size_integer_copy->height);
+    BOOST_CHECK_EQUAL(size_integer->width(), size_integer_copy->width());
+    BOOST_CHECK_EQUAL(size_integer->height(), size_integer_copy->height());
 
-    BOOST_CHECK_EQUAL(size_double->width, size_double_copy->width);
-    BOOST_CHECK_EQUAL(size_double->height, size_double_copy->height);
+    BOOST_CHECK_EQUAL(size_double->width(), size_double_copy->width());
+    BOOST_CHECK_EQUAL(size_double->height(), size_double_copy->height());
 
-    BOOST_CHECK_EQUAL(size_float->width, size_float_copy->width);
-    BOOST_CHECK_EQUAL(size_float->height, size_float_copy->height);
+    BOOST_CHECK_EQUAL(size_float->width(), size_float_copy->width());
+    BOOST_CHECK_EQUAL(size_float->height(), size_float_copy->height());
 }
 
 BOOST_FIXTURE_TEST_CASE(move_constructor, SizeTest)
 {
     Size<int> size(100, 100);
     Size<int> size2(std::move(size));
-    BOOST_CHECK_EQUAL(100, size2.width);
-    BOOST_CHECK_EQUAL(100, size2.height);
+    BOOST_CHECK_EQUAL(100, size2.width());
+    BOOST_CHECK_EQUAL(100, size2.height());
 }
 
 BOOST_FIXTURE_TEST_CASE(copy_assignment, SizeTest)
@@ -583,28 +583,28 @@ BOOST_FIXTURE_TEST_CASE(copy_assignment, SizeTest)
     Size<int> size(100, 100);
     Size<int> size2(50, 50);
     size2 = size;
-    BOOST_CHECK_EQUAL(100, size2.width);
-    BOOST_CHECK_EQUAL(100, size2.height);
+    BOOST_CHECK_EQUAL(100, size2.width());
+    BOOST_CHECK_EQUAL(100, size2.height());
 }
 
 BOOST_FIXTURE_TEST_CASE(move_assignment, SizeTest)
 {
     Size<int> size2;
     size2 = Size<int>(100, 100);
-    BOOST_CHECK_EQUAL(100, size2.width);
-    BOOST_CHECK_EQUAL(100, size2.height);
+    BOOST_CHECK_EQUAL(100, size2.width());
+    BOOST_CHECK_EQUAL(100, size2.height());
 }
 
 BOOST_FIXTURE_TEST_CASE(constructor_width_height, SizeTest)
 {
-    BOOST_CHECK_EQUAL(100, size_constructor_integer_width_height->width);
-    BOOST_CHECK_EQUAL(100, size_constructor_integer_width_height->height);
+    BOOST_CHECK_EQUAL(100, size_constructor_integer_width_height->width());
+    BOOST_CHECK_EQUAL(100, size_constructor_integer_width_height->height());
 
-    BOOST_CHECK_EQUAL(100.4, size_constructor_double_width_height->width);
-    BOOST_CHECK_EQUAL(100.2, size_constructor_double_width_height->height);
+    BOOST_CHECK_EQUAL(100.4, size_constructor_double_width_height->width());
+    BOOST_CHECK_EQUAL(100.2, size_constructor_double_width_height->height());
 
-    BOOST_CHECK_EQUAL(100.4f, size_constructor_float_width_height->width);
-    BOOST_CHECK_EQUAL(100.2f, size_constructor_float_width_height->height);
+    BOOST_CHECK_EQUAL(100.4f, size_constructor_float_width_height->width());
+    BOOST_CHECK_EQUAL(100.2f, size_constructor_float_width_height->height());
 }
 
 BOOST_FIXTURE_TEST_CASE(isEmpty, SizeTest)
@@ -620,12 +620,12 @@ BOOST_FIXTURE_TEST_CASE(isEmpty, SizeTest)
 BOOST_FIXTURE_TEST_CASE(cast, SizeTest)
 {
     Size<int> size = static_cast<Size<int>>(*size_double);
-    BOOST_CHECK_EQUAL(100, size.width);
-    BOOST_CHECK_EQUAL(100, size.height);
+    BOOST_CHECK_EQUAL(100, size.width());
+    BOOST_CHECK_EQUAL(100, size.height());
 
     Size<double> size2 = static_cast<Size<double>>(*size_integer);
-    BOOST_CHECK_EQUAL(100., size2.width);
-    BOOST_CHECK_EQUAL(100., size2.height);
+    BOOST_CHECK_EQUAL(100., size2.width());
+    BOOST_CHECK_EQUAL(100., size2.height());
 }
 
 BOOST_FIXTURE_TEST_CASE(is_equal, SizeTest)
@@ -645,8 +645,8 @@ BOOST_FIXTURE_TEST_CASE(add1, SizeTest)
     Size<int> size1(50, 50);
     Size<int> size2(20, 30);
     Size<int> size3 = size1 + size2;
-    BOOST_CHECK_EQUAL(70, size3.width);
-    BOOST_CHECK_EQUAL(80, size3.height);
+    BOOST_CHECK_EQUAL(70, size3.width());
+    BOOST_CHECK_EQUAL(80, size3.height());
 }
 
 BOOST_FIXTURE_TEST_CASE(add2, SizeTest)
@@ -654,8 +654,8 @@ BOOST_FIXTURE_TEST_CASE(add2, SizeTest)
     Size<int> size1(50, 50);
     Size<int> size2(20, 30);
     size2 += size1;
-    BOOST_CHECK_EQUAL(70, size2.width);
-    BOOST_CHECK_EQUAL(80, size2.height);
+    BOOST_CHECK_EQUAL(70, size2.width());
+    BOOST_CHECK_EQUAL(80, size2.height());
 }
 
 BOOST_FIXTURE_TEST_CASE(minus1, SizeTest)
@@ -663,8 +663,8 @@ BOOST_FIXTURE_TEST_CASE(minus1, SizeTest)
     Size<int> size1(50, 50);
     Size<int> size2(20, 30);
     Size<int> size3 = size1 - size2;
-    BOOST_CHECK_EQUAL(30, size3.width);
-    BOOST_CHECK_EQUAL(20, size3.height);
+    BOOST_CHECK_EQUAL(30, size3.width());
+    BOOST_CHECK_EQUAL(20, size3.height());
 }
 
 BOOST_FIXTURE_TEST_CASE(minus2, SizeTest)
@@ -672,40 +672,40 @@ BOOST_FIXTURE_TEST_CASE(minus2, SizeTest)
     Size<int> size1(50, 50);
     Size<int> size2(20, 30);
     size2 -= size1;
-    BOOST_CHECK_EQUAL(-30, size2.width);
-    BOOST_CHECK_EQUAL(-20, size2.height);
+    BOOST_CHECK_EQUAL(-30, size2.width());
+    BOOST_CHECK_EQUAL(-20, size2.height());
 }
 
 BOOST_FIXTURE_TEST_CASE(mul1, SizeTest)
 {
     Size<int> size1(14, 23);
     Size<int> size2 = size1 * 10;
-    BOOST_CHECK_EQUAL(140, size2.width);
-    BOOST_CHECK_EQUAL(230, size2.height);
+    BOOST_CHECK_EQUAL(140, size2.width());
+    BOOST_CHECK_EQUAL(230, size2.height());
 }
 
 BOOST_FIXTURE_TEST_CASE(mul2, SizeTest)
 {
     Size<int> size1(14, 23);
     size1 *= 10;
-    BOOST_CHECK_EQUAL(140, size1.width);
-    BOOST_CHECK_EQUAL(230, size1.height);
+    BOOST_CHECK_EQUAL(140, size1.width());
+    BOOST_CHECK_EQUAL(230, size1.height());
 }
 
 BOOST_FIXTURE_TEST_CASE(div1, SizeTest)
 {
     Size<double> size1(14., 23.);
     Size<double> size2 = size1 / 10.;
-    BOOST_CHECK_EQUAL(1.4, size2.width);
-    BOOST_CHECK_EQUAL(2.3, size2.height);
+    BOOST_CHECK_EQUAL(1.4, size2.width());
+    BOOST_CHECK_EQUAL(2.3, size2.height());
 }
 
 BOOST_FIXTURE_TEST_CASE(div2, SizeTest)
 {
     Size<double> size1(14., 23.);
     size1 /= 10.;
-    BOOST_CHECK_EQUAL(1.4, size1.width);
-    BOOST_CHECK_EQUAL(2.3, size1.height);
+    BOOST_CHECK_EQUAL(1.4, size1.width());
+    BOOST_CHECK_EQUAL(2.3, size1.height());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

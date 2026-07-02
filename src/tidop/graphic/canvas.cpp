@@ -275,8 +275,8 @@ CanvasCV &CanvasCV::operator =(const CanvasCV &canvas)
 
 void CanvasCV::update()
 {
-    if (mCanvas.rows != mSize.height || mCanvas.cols != mSize.width) {
-        mCanvas = cv::Mat(mSize.height, mSize.width, CV_MAKETYPE(CV_8U, 3));
+    if (mCanvas.rows != mSize.height() || mCanvas.cols != mSize.width()) {
+        mCanvas = cv::Mat(mSize.height(), mSize.width(), CV_MAKETYPE(CV_8U, 3));
     }
 
     // Always apply the current background color.

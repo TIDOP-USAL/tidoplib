@@ -29,15 +29,15 @@ namespace tl
 
 Resize::Resize(const Size<int> &size)
   : ImageProcess(ProcessType::resize),
-    mWidth(size.width),
-    mHeight(size.height),
+    mWidth(size.width()),
+    mHeight(size.height()),
     mScaleX(0.),
     mScaleY(0.)
 {
 }
 
 Resize::Resize(int width, int height)
-    : ImageProcess(ProcessType::resize),
+  : ImageProcess(ProcessType::resize),
     mWidth(width),
     mHeight(height),
     mScaleX(0.),

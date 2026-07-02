@@ -345,23 +345,23 @@ private:
 
 inline auto CanvasCV::width() const -> int
 {
-    return mSize.width;
+    return mSize.width();
 }
 
 inline void CanvasCV::setWidth(int width)
 {
-    mSize.width = width;
+    mSize.setWidth(width);
     update();
 }
 
 inline auto CanvasCV::height() const -> int
 {
-    return mSize.height;
+    return mSize.height();
 }
 
 inline void CanvasCV::setHeight(int height)
 {
-    mSize.height = height;
+    mSize.setHeight(height);
     update();
 }
 
@@ -389,8 +389,8 @@ inline void CanvasCV::setSize(const Size<int> &size)
 
 inline void CanvasCV::setSize(int width, int height)
 {
-    mSize.width = width;
-    mSize.height = height;
+    mSize.setWidth(width);
+    mSize.setHeight(height);
     update();
 }
 

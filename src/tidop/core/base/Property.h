@@ -297,7 +297,7 @@ public:
     auto toString() const -> std::string override
     {
         try {
-            return std::to_string(mValue.width) + "x" + std::to_string(mValue.height);
+            return std::to_string(mValue.width()) + "x" + std::to_string(mValue.height());
         } catch (...) {
             TL_THROW_EXCEPTION_WITH_NESTED("Error converting Size<T> to string");
         }

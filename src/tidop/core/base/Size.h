@@ -64,6 +64,7 @@
 
 #include <limits>
 #include <numeric>
+#include <array>
 
 #include "tidop/core/base/Exception.h"
 #include "tidop/geometry/primitives/Point.h"
@@ -91,10 +92,9 @@ public:
 
     using value_type = T;
 
-public:
+private:
 
-    T width = 0;
-    T height = 0;
+    std::array<T, 2> mDimensions{0, 0};
 
 public:
 
@@ -138,6 +138,15 @@ public:
      */
     constexpr auto operator = (Size &&size) noexcept -> Size& = default;
 
+    [[nodiscard]]
+    constexpr auto width() const noexcept -> T;
+
+    [[nodiscard]]
+    constexpr auto height() const noexcept -> T;
+
+    constexpr void setWidth(T width) noexcept;
+    constexpr void setHeight(T height) noexcept;
+
     /*!
      * \brief Check if Size object is empty
      * \return Returns true if either of the width and height is less than or equal to 0; otherwise returns false.
@@ -159,6 +168,25 @@ public:
     [[nodiscard]]
     constexpr auto area() const noexcept -> T;
 
+    constexpr auto operator += (const Size<T> &other) noexcept -> Size<T> &;
+    constexpr auto operator -= (const Size<T> &other) noexcept -> Size<T> &;
+    constexpr auto operator *= (T scalar) noexcept -> Size &;
+    constexpr auto operator /= (T scalar) -> Size &;
+
+    template<typename T>
+    [[nodiscard]]
+    constexpr auto operator == (const Size<T> &other) -> bool
+    {
+        return (this->mDimensions == other.mDimensions);
+    }
+
+    template<typename T>
+    [[nodiscard]]
+    constexpr auto operator != (const Size<T> &other) -> bool
+    {
+        return (this->mDimensions != other.mDimensions);
+    }
+
     /*!
      * \brief Type conversion
      */
@@ -176,122 +204,124 @@ using Sized = Size<double>;
 
 template<typename T>
 constexpr Size<T>::Size(T width, T height)
-  : width(width),
-    height(height)
+  : mDimensions{width, height}
 {
+}
+
+template<typename T>
+[[nodiscard]]
+constexpr auto Size<T>::width() const noexcept -> T
+{
+    return mDimensions[0];
+}
+
+template<typename T>
+[[nodiscard]]
+constexpr auto Size<T>::height() const noexcept -> T
+{
+    return mDimensions[1];
+}
+
+template<typename T>
+constexpr void Size<T>::setWidth(T width) noexcept
+{ 
+    mDimensions[0] = width;
+}
+
+template<typename T>
+constexpr void Size<T>::setHeight(T height) noexcept {
+    mDimensions[1] = height;
 }
 
 template<typename T>
 constexpr auto Size<T>::isEmpty() const noexcept -> bool
 {
-    return width <= static_cast<T>(0) || height <= static_cast<T>(0);
+    return mDimensions[0] <= static_cast<T>(0) || mDimensions[1] <= static_cast<T>(0);
 }
 
 template<typename T>
 constexpr auto Size<T>::isValid() const noexcept -> bool
 {
-    return width > static_cast<T>(0) && height > static_cast<T>(0);
+    return mDimensions[0] > static_cast<T>(0) && mDimensions[1] > static_cast<T>(0);
 }
 
 template<typename T>
 constexpr auto Size<T>::area() const noexcept -> T
 {
-    return width * height;
+    return mDimensions[0] * mDimensions[1];
+}
+
+template<typename T>
+constexpr auto Size<T>::operator += (const Size<T> &other) noexcept -> Size<T> &
+{
+    mDimensions[0] += other.mDimensions[0];
+    mDimensions[1] += other.mDimensions[1];
+    return *this;
+}
+
+template<typename T>
+constexpr auto Size<T>::operator -= (const Size<T> &other) noexcept -> Size<T> &
+{
+    mDimensions[0] -= other.mDimensions[0];
+    mDimensions[1] -= other.mDimensions[1];
+    return *this;
+}
+
+template<typename T>
+constexpr auto Size<T>::operator *= (T scalar) noexcept -> Size<T> &
+{
+    mDimensions[0] *= scalar;
+    mDimensions[1] *= scalar;
+    return *this;
+}
+
+template<typename T>
+constexpr auto Size<T>::operator /= (T scalar) -> Size<T> &
+{
+    TL_ASSERT(scalar != static_cast<T>(0), "Division by zero: scalar cannot be zero");
+
+    mDimensions[0] /= scalar;
+    mDimensions[1] /= scalar;
+    return *this;
 }
 
 template<typename T> template<typename T2>
 Size<T>::operator Size<T2>() const
 {
-    Size<T2> size;
-
-    size.width = numberCast<T2>(this->width);
-    size.height = numberCast<T2>(this->height);
-
+    Size<T2> size(numberCast<T2>(this->mDimensions[0]), 
+                  numberCast<T2>(this->mDimensions[1]));
     return size;
 }
 
 
 
-/*!
- * \brief Equality comparison operator for Size objects.
- * \param[in] size1 First size to compare
- * \param[in] size2 Second size to compare
- * \return True if both width and height are equal; otherwise false.
- */
-template<typename T>
-bool operator == (const Size<T> &size1, const Size<T> &size2)
-{
-    return (size1.width == size2.width &&
-            size1.height == size2.height);
-}
-
-/*!
- * \brief Inequality comparison operator for Size objects.
- * \param[in] size1 First size to compare
- * \param[in] size2 Second size to compare
- * \return True if either width or height differs; otherwise false.
- */
-template<typename T>
-bool operator != (const Size<T> &size1, const Size<T> &size2)
-{
-    return (size1.width != size2.width ||
-            size1.height != size2.height);
-}
-
-/*!
- * \brief Addition assignment operator for Size objects.
- * \param[in,out] size1 First size to modify
- * \param[in] size2 Second size to add
- * \return Reference to the modified size1
- */
-template<typename T>
-Size<T> &operator += (Size<T> &size1, const Size<T> &size2)
-{
-    size1.width += size2.width;
-    size1.height += size2.height;
-
-    return size1;
-}
-
-/*!
- * \brief Subtraction assignment operator for Size objects.
- * \param[in,out] size1 First size to modify
- * \param[in] size2 Second size to subtract
- * \return Reference to the modified size1
- */
-template<typename T>
-Size<T> &operator -= (Size<T> &size1, const Size<T> &size2)
-{
-    size1.width -= size2.width;
-    size1.height -= size2.height;
-
-    return size1;
-}
 
 /*!
  * \brief Addition operator for Size objects.
- * \param[in] size1 First size
- * \param[in] size2 Second size to add
+ * \param[in] lhs First size
+ * \param[in] rhs Second size to add
  * \return A new Size object with summed dimensions
  */
 template<typename T>
-Size<T> operator + (const Size<T> &size1, const Size<T> &size2)
+[[nodiscard]]
+constexpr auto operator + (Size<T> lhs, const Size<T> &rhs) noexcept -> Size<T>
 {
-    return Size<T>(size1.width + size2.width,
-                   size1.height + size2.height);
+    lhs += rhs;
+    return lhs;
 }
 
 /*!
  * \brief Subtraction operator for Size objects.
- * \param[in] size1 First size
- * \param[in] size2 Second size to subtract
+ * \param[in] lhs First size
+ * \param[in] rhs Second size to subtract
  * \return A new Size object with subtracted dimensions
  */
 template<typename T>
-Size<T> operator - (const Size<T> &size1, const Size<T> &size2)
+[[nodiscard]]
+constexpr auto operator - (Size<T> lhs, const Size<T> &rhs) noexcept -> Size<T>
 {
-    return Size<T>(size1.width - size2.width,
-                   size1.height - size2.height);
+    lhs -= rhs;
+    return lhs;
 }
 
 /*!
@@ -301,44 +331,24 @@ Size<T> operator - (const Size<T> &size1, const Size<T> &size2)
  * \return A new Size object with scaled dimensions
  */
 template<typename T>
-Size<T> operator * (const Size<T> &size, T scalar)
+[[nodiscard]]
+constexpr auto operator * (Size<T> size, T scalar) noexcept -> Size<T>
 {
-    return Size<T>(size.width * scalar,
-                   size.height * scalar);
-}
-
-/*!
- * \brief Scalar multiplication assignment operator for Size objects.
- * \param[in,out] size The size to modify
- * \param[in] scalar The scalar value to multiply by
- * \return Reference to the modified size
- */
-template<typename T>
-Size<T> &operator *= (Size<T> &size, T scalar)
-{
-    size.width *= scalar;
-    size.height *= scalar;
-
+    size *= scalar;
     return size;
 }
 
 /*!
- * \brief Scalar division assignment operator for Size objects.
- * \param[in,out] size The size to modify
- * \param[in] scalar The scalar value to divide by (must not be zero)
- * \return Reference to the modified size
- * \exception std::invalid_argument If scalar is zero
+ * \brief Scalar multiplication operator for Size objects.
+ * \param[in] scalar The scalar value to multiply by
+ * \param[in] size The size to scale
+ * \return A new Size object with scaled dimensions
  */
 template<typename T>
-Size<T> &operator /= (Size<T> &size, T scalar)
+[[nodiscard]] 
+constexpr auto operator * (T scalar, Size<T> size) noexcept -> Size<T>
 {
-    if (scalar == static_cast<T>(0)) {
-        TL_THROW_EXCEPTION("Division by zero: scalar cannot be zero");
-    }
-    
-    size.width /= scalar;
-    size.height /= scalar;
-
+    size *= scalar;
     return size;
 }
 
@@ -350,16 +360,13 @@ Size<T> &operator /= (Size<T> &size, T scalar)
  * \exception std::invalid_argument If scalar is zero
  */
 template<typename T>
-Size<T> operator / (const Size<T> &size, T scalar)
+[[nodiscard]]
+constexpr auto operator / (Size<T> size, T scalar) -> Size<T>
 {
-    if (scalar == static_cast<T>(0)) {
-        TL_THROW_EXCEPTION("Division by zero: scalar cannot be zero");
-    }
-    
-    return Size<T>(size.width / scalar,
-                   size.height / scalar);
+    size /= scalar;
+    return size;
 }
 
 /*! \} */ // end of geometry
 
-} // End namespace tl
+} // namespace tl

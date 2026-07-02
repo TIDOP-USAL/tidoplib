@@ -28,7 +28,8 @@
 
 #include "tidop/geometry/primitives/Point.h"
 #include "tidop/geometry/spatial/BoundingBox.h"
-#include "tidop/core/base/size.h"
+#include "tidop/core/base/Size.h"
+#include "tidop/core/base/Concepts.h"
 
 namespace tl
 {
@@ -44,17 +45,17 @@ namespace tl
 template<typename T>
 class Rect
 {
+    static_assert(Arithmetic<T>,
+        "Point requires an arithmetic type (integral or floating-point)");
 
 public:
 
     using value_type = T;
 
-public:
+private:
 
-    T x;
-    T y;
-    T width;
-    T height;
+    Point<T> mOrigin;
+    Size<T> mSize;
 
 public:
 
@@ -63,7 +64,7 @@ public:
      * Constructs a empty Rect object. isValid() returns false
      * and isEmpty() return true.
      */
-    constexpr Rect();
+    constexpr Rect() = default;
     
     /*!
      * \brief Constructs a rectangle with top-left corner (x, y) and width and height
@@ -72,7 +73,7 @@ public:
      * \param[in] width Rectangle width
      * \param[in] height Rectangle height
      */
-    constexpr Rect(T x, T y, T width, T height);
+    constexpr Rect(T x, T y, T width, T height) noexcept;
     
     /*!
      * \brief Constructs a rectangle with top-left and bottom-right corners
@@ -80,7 +81,7 @@ public:
      * \param[in] bottomRight Rectangle bottom-right corner
      */
     constexpr Rect(const Point<T> &topLeft,
-                   const Point<T> &bottomRight);
+                   const Point<T> &bottomRight) noexcept;
     
     /*!
      * \brief Constructs a rectangle with top-left corner and size (width==height)
@@ -88,7 +89,7 @@ public:
      * \param[in] size Rectangle width and height size
      */
     constexpr Rect(const Point<T> &topLeft,
-                   const Size<T> &size);
+                   const Size<T> &size) noexcept;
     
     /*!
      * \brief Constructs a rectangle with top-left corner and dimensions (width and height)
@@ -98,7 +99,7 @@ public:
      */
     constexpr Rect(const Point<T> &topLeft,
                    T width, 
-                   T height);
+                   T height) noexcept;
     
     /*!
      * \brief Copy constructor
@@ -126,49 +127,64 @@ public:
      */
     constexpr auto operator = (Rect &&rect) noexcept -> Rect& = default;
     
+    [[nodiscard]]
+    constexpr auto origin() const noexcept -> const Point<T> &;
+
+    /*!
+     * \brief Returns the size of the rectangle.
+     */
+    [[nodiscard]]
+    constexpr auto size() const noexcept -> Size<T>;
+
+    [[nodiscard]] 
+    constexpr auto x() const noexcept -> T;
+
+    [[nodiscard]] 
+    constexpr auto y() const noexcept -> T;
+
+    [[nodiscard]] 
+    constexpr auto width() const noexcept -> T;
+
+    [[nodiscard]] 
+    constexpr auto height() const noexcept -> T;
+
     /*!
      * \brief Return top-left corner
      */
     [[nodiscard]]
-    auto topLeft() const -> Point<T>;
+    constexpr auto topLeft() const noexcept -> Point<T>;
     
     /*!
      * \brief Return top-right corner
      */
     [[nodiscard]]
-    auto topRight() const -> Point<T>;
+    constexpr auto topRight() const noexcept -> Point<T>;
     
     /*!
      * \brief Return bottom-right corner
      */
     [[nodiscard]] 
-    auto bottomRight() const -> Point<T>;
+    constexpr auto bottomRight() const noexcept -> Point<T>;
     
     /*!
      * \brief Return bottom-left corner
      */
     [[nodiscard]]
-    auto bottomLeft() const -> Point<T>;
-    
-    /*!
-     * \brief Returns the size of the rectangle.
-     */
-    [[nodiscard]]
-    auto size() const -> Size<T>;
+    constexpr auto bottomLeft() const noexcept -> Point<T>;
     
     /*!
      * \brief Check if Rect object is empty. 
      * \return Returns true if the rectangle is empty, otherwise returns false. 
      */
     [[nodiscard]]
-    auto isEmpty() const -> bool;
+    constexpr auto isEmpty() const noexcept -> bool;
     
     /*!
      * \brief Check if Rect object is valid.
      * \return Returns true if the rectangle is valid, otherwise returns false.
      */
     [[nodiscard]]
-    auto isValid() const -> bool;
+    constexpr auto isValid() const noexcept -> bool;
     
     /*!
      * \brief Check if a point is contained in the rectangle.
@@ -176,7 +192,7 @@ public:
      * \return Returns true if the rectangle contains the point.
     */
     [[nodiscard]]
-    constexpr auto contains(const Point<T> &pt) const -> bool;
+    constexpr auto contains(const Point<T> &pt) const noexcept -> bool;
     
     /*!
      * \brief Transform a Rect object to a BoundingBox object
@@ -187,13 +203,30 @@ public:
     /*!
      * \brief Normalize the rectangle.
      */
-    void normalized();
+    constexpr void normalize() noexcept;
     
+    [[nodiscard]] 
+    constexpr auto normalized() const noexcept -> Rect;
+
     /*!
      * \brief Type conversion
      */
     template<typename T2> operator Rect<T2>() const;
 
+    template<typename T>
+    [[nodiscard]]
+    constexpr auto operator == (const Rect<T> &other) -> bool
+    {
+        return (mOrigin == other.mOrigin &&
+                mSize == other.mSize);
+    }
+
+    template<typename T>
+    [[nodiscard]]
+    constexpr auto operator != (const Rect<T> &other) -> bool
+    {
+        return !(*this == other);
+    }
 };
 
 
@@ -201,174 +234,169 @@ using Recti = Rect<int>;
 using Rectf = Rect<float>;
 using Rectd = Rect<double>;
 
-
 template<typename T> 
-constexpr Rect<T>::Rect()
-  : x{0},
-    y{0},
-    width{0},
-    height{0}
-{
-}
-
-template<typename T> 
-constexpr Rect<T>::Rect(T x, T y, T width, T height)
-  : x(x), 
-    y(y), 
-    width(width), 
-    height(height)
+constexpr Rect<T>::Rect(T x, T y, T width, T height) noexcept
+  : mOrigin{x, y},
+    mSize{width, height}
 {
 }
 
 template<typename T> 
 constexpr Rect<T>::Rect(const Point<T> &topLeft,
-                        const Point<T> &bottomRight)
-  : x(topLeft.x()), 
-    y(topLeft.y()), 
-    width(bottomRight.x() - topLeft.x()),
-    height(bottomRight.y() - topLeft.y())
+                        const Point<T> &bottomRight) noexcept
+  : mOrigin(topLeft),
+    mSize{bottomRight.x() - topLeft.x(), bottomRight.y() - topLeft.y()}
 {
 }
 
 template<typename T> 
 constexpr Rect<T>::Rect(const Point<T> &topLeft,
-                        const Size<T> &size)
-  : x(topLeft.x()), 
-    y(topLeft.y()), 
-    width(size.width), 
-    height(size.height)
+                        const Size<T> &size) noexcept
+  : mOrigin(topLeft),
+    mSize(size)
 {
 }
 
 template<typename T> 
 constexpr Rect<T>::Rect(const Point<T> &topLeft,
-                        T width, T height)
-  : x(topLeft.x()), 
-    y(topLeft.y()), 
-    width(width), 
-    height(height)
+                        T width, T height) noexcept
+  : mOrigin(topLeft),
+    mSize{width, height}
 {
 }
 
 template<typename T>
-auto Rect<T>::topLeft() const -> Point<T>
+constexpr auto Rect<T>::origin() const noexcept -> const Point<T> &
 {
-    return Point<T>(this->x, this->y);
+    return mOrigin;
 }
 
 template<typename T>
-auto Rect<T>::topRight() const -> Point<T>
+constexpr auto Rect<T>::size() const noexcept -> Size<T>
 {
-    return Point<T>(this->x + this->width, this->y);
+    return mSize;
 }
 
 template<typename T>
-auto Rect<T>::bottomRight() const -> Point<T>
-{
-    return Point<T>(this->x + this->width, 
-                    this->y + this->height);
+constexpr auto Rect<T>::x() const noexcept -> T
+{ 
+    return mOrigin.x();
 }
 
 template<typename T>
-auto Rect<T>::bottomLeft() const -> Point<T>
+constexpr auto Rect<T>::y() const noexcept -> T
 {
-    return Point<T>(this->x, this->y + this->height);
+    return mOrigin.y(); 
 }
 
 template<typename T>
-auto Rect<T>::size() const -> Size<T>
-{
-    return Size<T>(this->width, this->height);
+constexpr auto Rect<T>::width() const noexcept -> T
+{ 
+    return mSize.width();
 }
 
 template<typename T>
-auto Rect<T>::isEmpty() const -> bool
+constexpr auto Rect<T>::height() const noexcept -> T 
 {
-    return width <= static_cast<T>(0) || height <= static_cast<T>(0);
+    return mSize.height(); 
 }
 
 template<typename T>
-auto Rect<T>::isValid() const -> bool
+constexpr auto Rect<T>::topLeft() const noexcept -> Point<T>
 {
-    return width > static_cast<T>(0) && height > static_cast<T>(0);
+    return mOrigin;
 }
 
 template<typename T>
-constexpr auto Rect<T>::contains(const Point<T> &pt) const -> bool
+constexpr auto Rect<T>::topRight() const noexcept -> Point<T>
 {
-    return (this->x <= pt.x() &&
-            pt.x() < this->x + this->width &&
-            this->y <= pt.y() &&
-            pt.y() < this->y + this->height);
+    return Point<T>(mOrigin.x() + mSize.width(), mOrigin.y());
+}
+
+template<typename T>
+constexpr auto Rect<T>::bottomRight() const noexcept -> Point<T>
+{
+    return Point<T>(mOrigin.x() + mSize.width(), 
+                    mOrigin.y() + mSize.height());
+}
+
+template<typename T>
+constexpr auto Rect<T>::bottomLeft() const noexcept -> Point<T>
+{
+    return Point<T>(mOrigin.x(), mOrigin.y() + mSize.height());
+}
+
+template<typename T>
+constexpr auto Rect<T>::isEmpty() const noexcept -> bool
+{
+    return mSize.isEmpty();
+}
+
+template<typename T>
+constexpr auto Rect<T>::isValid() const noexcept -> bool
+{
+    return mSize.isValid();
+}
+
+template<typename T>
+constexpr auto Rect<T>::contains(const Point<T> &pt) const noexcept -> bool
+{
+    return (this->x() <= pt.x() &&
+            pt.x() < this->x() + this->width() &&
+            this->y() <= pt.y() &&
+            pt.y() < this->y() + this->height());
 }
 
 template<typename T>
 auto Rect<T>::boundingBox() const -> BoundingBox<Point<T>>
 {
-    return BoundingBox<Point<T>>(Point<T>(this->x, this->y),
-                                 Point<T>(this->x + this->width,
-                                          this->y + this->height));
+    return BoundingBox<Point<T>>(mOrigin, bottomRight());
 }
 
 template<typename T>
-void Rect<T>::normalized()
+constexpr void Rect<T>::normalize() noexcept
 {
-    if (!this->isValid()) {
-        if (this->width < static_cast<T>(0)) {
-            this->x += this->width;
-            this->width = -this->width;
-        }
-        if (this->height < static_cast<T>(0)) {
-            this->y += this->height;
-            this->height = -this->height;
-        }
+    if (mSize.width() < static_cast<T>(0)) {
+        mOrigin.x() += mSize.width();
+        mSize.setWidth(-mSize.width());
     }
+    if (mSize.height() < static_cast<T>(0)) {
+        mOrigin.y() += mSize.height();
+        mSize.setHeight(-mSize.height());
+    }
+}
+
+template<typename T>
+constexpr auto Rect<T>::normalized() const noexcept -> Rect
+{
+    Rect r = *this;
+    r.normalize();
+    return r;
 }
 
 template<typename T> template<typename T2>
 Rect<T>::operator Rect<T2>() const
 {
-    Rect<T2> rect(numberCast<T2>(this->x),
-                  numberCast<T2>(this->y),
-                  numberCast<T2>(this->width),
-                  numberCast<T2>(this->height));
-
+    Rect<T2> rect(static_cast<Point<T2>>(this->mOrigin),
+                  static_cast<Size<T2>>(this->mSize));
     return rect;
-}
-
-template<typename T>
-auto operator == (const Rect<T> &rect1, const Rect<T> &rect2) -> bool
-{
-    return (rect1.x == rect2.x &&
-            rect1.y == rect2.y &&
-            rect1.width == rect2.width &&
-            rect1.height == rect2.height);
-}
-
-template<typename T>
-auto operator != (const Rect<T> &rect1, const Rect<T> &rect2) -> bool
-{
-    return (rect1.x != rect2.x ||
-            rect1.y != rect2.y ||
-            rect1.width != rect2.width ||
-            rect1.height != rect2.height);
 }
 
 template<typename T> 
-auto intersect(const Rect<T> &rect1, const Rect<T> &rect2) -> Rect<T>
+[[nodiscard]] 
+constexpr auto intersect(const Rect<T> &rect1, const Rect<T> &rect2) noexcept -> Rect<T>
 {
-    Rect<T> rect;
+    const T x1 = std::max(rect1.x(), rect2.x());
+    const T y1 = std::max(rect1.y(), rect2.y());
 
-    rect.x = std::max(rect1.x, rect2.x);
-    rect.y = std::max(rect1.y, rect2.y);
-    Point<T> bottomRight1 = rect1.bottomRight();
-    Point<T> bottomRight2 = rect2.bottomRight();
-    rect.width = std::min(bottomRight1.x(), bottomRight2.x()) - rect.x;
-    rect.height = std::min(bottomRight1.y(), bottomRight2.y()) - rect.y;
-    if (rect.width < 0) rect.width = 0;
-    if (rect.height < 0) rect.height = 0;
+    const T x2 = std::min(rect1.x() + rect1.width(), rect2.x() + rect2.width());
+    const T y2 = std::min(rect1.y() + rect1.height(), rect2.y() + rect2.height());
 
-    return rect;
+    if (x2 <= x1 || y2 <= y1) {
+        return Rect<T>{};
+    }
+
+    return Rect<T>{x1, y1, x2 - x1, y2 - y1};
 }
 
 /*! \} */ 

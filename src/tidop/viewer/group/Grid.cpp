@@ -39,17 +39,17 @@ void Grid::computeGrid()
 	Vector3f min{3, std::numeric_limits<float>::infinity()};
 	Vector3f max = Vector3f::zero();
 
-	const float totalWidth = static_cast<float>(dim.width) * squareSize;
-	const float totalDepth = static_cast<float>(dim.height) * squareSize;
+	const float totalWidth = static_cast<float>(dim.width()) * squareSize;
+	const float totalDepth = static_cast<float>(dim.height()) * squareSize;
 
-	for(int i = 0; i <= dim.width; i ++)
+	for(int i = 0; i <= dim.width(); i ++)
 	{
 		float x = origin.x() + i * squareSize - totalWidth / 2.0f;
 		points.emplace_back(Vector3f{ x, 0, -totalDepth / 2.0f }, Vector4f{ 0.1f, 0.1f, 0.1f, 1.0f });
 		points.emplace_back(Vector3f{ x, 0, totalDepth / 2.0f }, Vector4f{ 0.1f, 0.1f, 0.1f, 1.0f });
 	}
 
-	for(int k = 0; k <= dim.height; k ++)
+	for(int k = 0; k <= dim.height(); k ++)
 	{
 		float z = origin.z() + k * squareSize - totalDepth / 2.0f;
 		points.emplace_back(Vector3f{ -totalWidth / 2.0f, 0, z }, Vector4f{ 0.1f, 0.1f, 0.1f, 1.0f });

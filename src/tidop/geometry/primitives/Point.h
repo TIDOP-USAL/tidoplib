@@ -633,7 +633,8 @@ auto operator*(const Mat &mat, const P &p)
 }
 
 template<typename T, typename Tag>
-auto operator == (const Point<T, Tag> &pt1, const Point<T, Tag> &pt2) -> bool
+[[nodiscard]]
+constexpr auto operator == (const Point<T, Tag> &pt1, const Point<T, Tag> &pt2) -> bool
 {
     static constexpr size_t size = point_traits<Point<T, Tag>>::storage_size;
 
@@ -644,7 +645,8 @@ auto operator == (const Point<T, Tag> &pt1, const Point<T, Tag> &pt2) -> bool
 }
 
 template<typename T, typename Tag>
-auto operator != (const Point<T, Tag> &pt1, const Point<T, Tag> &pt2) -> bool
+[[nodiscard]]
+constexpr auto operator != (const Point<T, Tag> &pt1, const Point<T, Tag> &pt2) -> bool
 {
     return !(pt1 == pt2);
 }

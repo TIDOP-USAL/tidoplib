@@ -189,9 +189,8 @@ auto ImageReaderGdal::read(double scaleX,
 
         Rect<int> rect_full_image(0, 0, this->cols(), this->rows());
         Rect<int> rect_to_read = rect.isEmpty() ? rect_full_image : intersect(rect_full_image, rect);
-        Size<int> size_to_read{roundToInteger(rect_to_read.width * scaleX),
-                               roundToInteger(rect_to_read.height * scaleY)};
-
+        Size<int> size_to_read{roundToInteger(rect_to_read.width() * scaleX),
+                               roundToInteger(rect_to_read.height() * scaleY)};
         return readToMat(rect_to_read, size_to_read);
 
     } catch (...) {
@@ -234,7 +233,7 @@ auto ImageReaderGdal::read(const BoundingBox2d &terrainWindow,
         auto p2 = static_cast<Point2i>(transform_inverse.transform(terrainWindow.max()));
 
         Rect<int> rect_src(p1, p2);
-        rect_src.normalized();
+        rect_src.normalize();
 
         Rect<int> rect_full_image(0, 0, this->cols(), this->rows());
         Rect<int> rect_to_read = intersect(rect_full_image, rect_src);
@@ -309,10 +308,10 @@ void ImageReaderGdal::update(const cv::Mat &image, const Rect<int> &rect)
             //    .rowRange(rect_to_crop_image.y, rect_to_crop_image.bottomLeft().y())
             //    .clone();
 
-            const int offset_x = rect_to_write.x - rect.x;
-            const int offset_y = rect_to_write.y - rect.y;
+            const int offset_x = rect_to_write.x() - rect.x();
+            const int offset_y = rect_to_write.y() - rect.y();
 
-            cv::Rect roi(offset_x, offset_y, rect_to_write.width, rect_to_write.height);
+            cv::Rect roi(offset_x, offset_y, rect_to_write.width(), rect_to_write.height());
             cv::Rect image_bounds(0, 0, image.cols, image.rows);
 
             roi = roi & image_bounds;
@@ -329,8 +328,8 @@ void ImageReaderGdal::update(const cv::Mat &image, const Rect<int> &rect)
         int line_space = pixel_space * image_to_write.cols;
         int band_space = static_cast<int>(image_to_write.elemSize1());
 
-        CPLErr cerr = mDataset->RasterIO(GF_Write, rect_to_write.x, rect_to_write.y,
-            rect_to_write.width, rect_to_write.height, buff,
+        CPLErr cerr = mDataset->RasterIO(GF_Write, rect_to_write.x(), rect_to_write.y(),
+            rect_to_write.width(), rect_to_write.height(), buff,
             image_to_write.cols, image_to_write.rows,
             gdal_data_type, image_to_write.channels(),
             internal::gdalBandOrder(image_to_write.channels()).data(), pixel_space,
@@ -851,7 +850,7 @@ auto ImageReaderGdal::readToMat(const Rect<int> &rectToRead,
         TL_ASSERT(isOpen(), "The file has not been opened. Try to use ImageReaderGdal::open() method");
         TL_ASSERT(rectToRead.isValid(), "The specified window is outside the image");
 
-        image.create(sizeToRead.height, sizeToRead.width,
+        image.create(sizeToRead.height(), sizeToRead.width(),
             internal::DataTypeConverter::toOpenCV(this->gdalDataType(), this->channels()));
 
         TL_ASSERT(!image.empty(), "Image creation failed");
@@ -861,8 +860,8 @@ auto ImageReaderGdal::readToMat(const Rect<int> &rectToRead,
         const int band_space = static_cast<int>(image.elemSize1());
 
         CPLErr cerr = mDataset->RasterIO(
-            GF_Read, rectToRead.x, rectToRead.y, rectToRead.width, rectToRead.height,
-            image.ptr(), sizeToRead.width, sizeToRead.height, this->gdalDataType(),
+            GF_Read, rectToRead.x(), rectToRead.y(), rectToRead.width(), rectToRead.height(),
+            image.ptr(), sizeToRead.width(), sizeToRead.height(), this->gdalDataType(),
             this->channels(), internal::gdalBandOrder(this->channels()).data(),
             pixel_space, line_space, band_space
         );

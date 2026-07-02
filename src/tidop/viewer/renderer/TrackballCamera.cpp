@@ -19,7 +19,7 @@ TrackballCamera::Ptr TrackballCamera::orthoCamera(float left, float right, float
 
 TrackballCamera::Ptr TrackballCamera::orthoCamera(const Rectf& rect, float zNear, float zFar)
 {
-    return orthoCamera(rect.x, rect.x + rect.width, rect.y + rect.height, rect.y, zNear, zFar);
+    return orthoCamera(rect.x(), rect.x() + rect.width(), rect.y() + rect.height(), rect.y(), zNear, zFar);
 }
 
 TrackballCamera::Ptr TrackballCamera::perspectiveCamera(float fovy, float aspect, float zNear, float zFar)
