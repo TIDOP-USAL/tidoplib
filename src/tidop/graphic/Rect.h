@@ -129,38 +129,45 @@ public:
     /*!
      * \brief Return top-left corner
      */
+    [[nodiscard]]
     auto topLeft() const -> Point<T>;
     
     /*!
      * \brief Return top-right corner
      */
-     auto topRight() const -> Point<T>;
+    [[nodiscard]]
+    auto topRight() const -> Point<T>;
     
     /*!
      * \brief Return bottom-right corner
      */
+    [[nodiscard]] 
     auto bottomRight() const -> Point<T>;
     
     /*!
      * \brief Return bottom-left corner
      */
+    [[nodiscard]]
     auto bottomLeft() const -> Point<T>;
     
     /*!
      * \brief Returns the size of the rectangle.
      */
+    [[nodiscard]]
     auto size() const -> Size<T>;
     
     /*!
      * \brief Check if Rect object is empty. 
      * \return Returns true if the rectangle is empty, otherwise returns false. 
      */
+    [[nodiscard]]
     auto isEmpty() const -> bool;
     
     /*!
      * \brief Check if Rect object is valid.
      * \return Returns true if the rectangle is valid, otherwise returns false.
      */
+    [[nodiscard]]
     auto isValid() const -> bool;
     
     /*!
@@ -243,50 +250,6 @@ constexpr Rect<T>::Rect(const Point<T> &topLeft,
 {
 }
 
-//template<typename T> 
-//Rect<T>::Rect(const Rect &rect)
-//  : x(rect.x), 
-//    y(rect.y), 
-//    width(rect.width), 
-//    height(rect.height)
-//{
-//}
-//
-//template<typename T> 
-//Rect<T>::Rect(Rect &&rect) TL_NOEXCEPT
-//  : x(rect.x), 
-//    y(rect.y), 
-//    width(rect.width), 
-//    height(rect.height)
-//{
-//}
-//
-//template<typename T>
-//auto Rect<T>::operator = (const Rect &rect) -> Rect<T>&
-//{
-//    if (this != &rect) {
-//        this->x = rect.x;
-//        this->y = rect.y;
-//        this->width = rect.width;
-//        this->height = rect.height;
-//    }
-//
-//    return *this;
-//}
-//
-//template<typename T>
-//auto Rect<T>::operator = (Rect &&rect) TL_NOEXCEPT -> Rect<T>&
-//{
-//    if (this != &rect) {
-//        this->x = rect.x;
-//        this->y = rect.y;
-//        this->width = rect.width;
-//        this->height = rect.height;
-//    }
-//
-//    return *this;
-//}
-
 template<typename T>
 auto Rect<T>::topLeft() const -> Point<T>
 {
@@ -319,13 +282,13 @@ auto Rect<T>::size() const -> Size<T>
 }
 
 template<typename T>
-auto tl::Rect<T>::isEmpty() const -> bool
+auto Rect<T>::isEmpty() const -> bool
 {
     return width <= static_cast<T>(0) || height <= static_cast<T>(0);
 }
 
 template<typename T>
-auto tl::Rect<T>::isValid() const -> bool
+auto Rect<T>::isValid() const -> bool
 {
     return width > static_cast<T>(0) && height > static_cast<T>(0);
 }
@@ -348,7 +311,7 @@ auto Rect<T>::boundingBox() const -> BoundingBox<Point<T>>
 }
 
 template<typename T>
-void tl::Rect<T>::normalized()
+void Rect<T>::normalized()
 {
     if (!this->isValid()) {
         if (this->width < static_cast<T>(0)) {

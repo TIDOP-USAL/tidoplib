@@ -30,11 +30,11 @@
 #include "opencv2/core/core.hpp"
 #endif // TL_HAVE_OPENCV
 
-#include "tidop/core/base/size.h"
-#include "tidop/graphic/color.h"
-#include "tidop/graphic/styles.h"
-#include "tidop/graphic/entities/linestring.h"
-#include "tidop/graphic/entities/polygon.h"
+#include "tidop/core/base/Size.h"
+#include "tidop/graphic/Color.h"
+#include "tidop/graphic/Styles.h"
+//#include "tidop/graphic/entities/linestring.h"
+//#include "tidop/graphic/entities/polygon.h"
 #include "tidop/geometry/primitives/MultiPoint.h"
 #include "tidop/geometry/primitives/MultiLineString.h"
 #include "tidop/geometry/primitives/MultiPolygon.h"

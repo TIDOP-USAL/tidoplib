@@ -28,9 +28,19 @@
 #include "tidop/core/app/Message.h"
 #include "tidop/core/private/gdalreg.h"
 #include "tidop/graphic/layer.h"
-#include "tidop/graphic/entities/point.h"
-#include "tidop/graphic/entities/linestring.h"
-#include "tidop/graphic/entities/polygon.h"
+#include "tidop/graphic/entities/GPoint.h"
+#include "tidop/graphic/entities/GPoint3D.h"
+#include "tidop/graphic/entities/GLineString.h"
+#include "tidop/graphic/entities/GLineString3D.h"
+#include "tidop/graphic/entities/GPolygon.h"
+#include "tidop/graphic/entities/GPolygon3D.h"
+#include "tidop/graphic/entities/GMultiPoint.h"
+#include "tidop/graphic/entities/GMultiPoint3D.h"
+#include "tidop/graphic/entities/GMultiLineString.h"
+#include "tidop/graphic/entities/GMultiLineString3D.h"
+#include "tidop/graphic/entities/GMultiPolygon.h"
+#include "tidop/graphic/entities/GMultiPolygon3D.h"
+#include "tidop/graphic/styles/LabelAnchor.h"
 #include "tidop/vectortools/io/private/TypeConverter.h"
 #include "tidop/vectortools/io/private/gdal.h"
 
@@ -49,6 +59,141 @@ constexpr auto vector_reader_dpi = 72.;
 constexpr auto inches_to_meters = 39.37;
 constexpr auto cm_to_m = 0.01;
 constexpr auto mm_to_m = 0.001;
+
+
+
+
+//void VectorReaderGdal::readBrushAngle(OGRStyleBrush *ogrStyleBrush, Brush *brush)
+//{
+//    GBool bDefault = false;
+//    double angle = ogrStyleBrush->Angle(bDefault);
+//    if (!bDefault) {
+//        brush->setAngle(angle); //TODO: Mejor como float en radianes??
+//    }
+//}
+
+void readBrushBackColor(OGRStyleBrush *ogrStyleBrush, Brush &brush)
+{
+    GBool bDefault = false;
+    const char *hex_color = ogrStyleBrush->BackColor(bDefault);
+    if (!bDefault) {
+        brush.setBackgroundColor(Color(hex_color + 1));
+    }
+}
+
+void readBrushForeColor(OGRStyleBrush *ogrStyleBrush, Brush &brush)
+{
+    GBool bDefault = false;
+    const char *hex_color = ogrStyleBrush->ForeColor(bDefault);
+    if (!bDefault) {
+        brush.setForegroundColor(Color(hex_color + 1));
+    }
+}
+
+auto readBrushStyle(OGRStyleBrush *ogrStyleBrush) -> std::pair<Brush::Style, BrushPattern::HatchType>
+{
+    Brush::Style style = Brush::Style::solid;
+    BrushPattern::HatchType hatch = BrushPattern::HatchType::horizontal;
+
+    GBool bDefault = false;
+    const char *brush_id = ogrStyleBrush->Id(bDefault);
+    if (!bDefault) {
+        if (strcmp(brush_id, "ogr-pen-1") == 0) {
+            style = Brush::Style::null;
+        } else if (strcmp(brush_id, "ogr-pen-2") == 0) {
+            style = Brush::Style::hatch;
+            hatch = BrushPattern::HatchType::horizontal;
+        } else if (strcmp(brush_id, "ogr-pen-3") == 0) {
+            style = Brush::Style::hatch;
+            hatch = BrushPattern::HatchType::vertical;
+        } else if (strcmp(brush_id, "ogr-pen-4") == 0) {
+            style = Brush::Style::hatch;
+            hatch = BrushPattern::HatchType::fdiagonal;
+        } else if (strcmp(brush_id, "ogr-pen-5") == 0) {
+            style = Brush::Style::hatch;
+            hatch = BrushPattern::HatchType::bdiagonal;
+        } else if (strcmp(brush_id, "ogr-pen-6") == 0) {
+            style = Brush::Style::hatch;
+            hatch = BrushPattern::HatchType::cross;
+        } else if (strcmp(brush_id, "ogr-pen-7") == 0) {
+            style = Brush::Style::hatch;
+            hatch = BrushPattern::HatchType::diagcross;
+        } else {
+            style = Brush::Style::solid;
+        }
+    }
+    return std::make_pair(style, hatch);
+}
+
+auto readBrushAngle(OGRStyleBrush *ogrStyleBrush) -> std::optional<double>
+{
+    GBool bDefault = false;
+    double angle = ogrStyleBrush->Angle(bDefault);
+    if (!bDefault) {
+        return angle;
+    }
+    return std::nullopt;
+}
+
+auto readBrushScalingFactor(OGRStyleBrush *ogrStyleBrush) -> std::optional<double>
+{
+    GBool bDefault = false;
+    double scaling_factor = ogrStyleBrush->Size(bDefault);
+    if (!bDefault) {
+        return scaling_factor;
+    }
+    return std::nullopt;
+}
+
+auto readBrushSpacing(OGRStyleBrush *ogrStyleBrush) -> std::optional<Vector2d>
+{
+    GBool bDefault = false;
+    ///TODO: spacingX y spacingY est?n asociados a un tipo de unidad
+    double spacing_x = ogrStyleBrush->SpacingX(bDefault);
+    GBool bDefault2 = false;
+    double spacing_y = ogrStyleBrush->SpacingY(bDefault2);
+    if (!bDefault && !bDefault2) {
+        return Vector2d(spacing_x, spacing_y);
+    }
+    return std::nullopt;
+}
+
+void readBrushPattern(OGRStyleBrush *ogrStyleBrush, BrushPattern &pattern)
+{
+    auto angle = readBrushAngle(ogrStyleBrush);
+    if (angle.has_value()) {
+        pattern.setAngle(angle.value());
+    }
+
+    auto scaling_factor = readBrushScalingFactor(ogrStyleBrush);
+    if (scaling_factor.has_value()) {
+        pattern.setScalingFactor(scaling_factor.value());
+    }
+
+    auto spacing = readBrushSpacing(ogrStyleBrush);
+    if (spacing.has_value()) {
+        pattern.setSpacing(spacing.value());
+    }
+}
+
+auto readBrush(OGRStyleBrush *ogrStyleBrush) -> Brush
+{
+    Brush brush;
+
+    readBrushBackColor(ogrStyleBrush, brush);
+    readBrushForeColor(ogrStyleBrush, brush);
+
+    auto [style, hatch] = readBrushStyle(ogrStyleBrush);
+    brush.setStyle(style);
+
+    if (style == Brush::Style::hatch) {
+        BrushPattern pattern(hatch);
+        readBrushPattern(ogrStyleBrush, pattern);
+        brush.setPattern(pattern);
+    }
+
+    return brush;
+}
 
 
 VectorReaderGdal::VectorReaderGdal(Path file)
@@ -923,7 +1068,7 @@ auto VectorReaderGdal::readPen(OGRStylePen *ogrStylePen) -> Pen
     readPenName(ogrStylePen, &pen);
     readPenWidth(ogrStylePen, &pen);
     readPenPerpendicularOffset(ogrStylePen, &pen);
-    readPenPriorityLevel(ogrStylePen, &pen);
+    //readPenPriorityLevel(ogrStylePen, &pen);
 
     return pen;
 }
@@ -1050,114 +1195,14 @@ void VectorReaderGdal::readPenPerpendicularOffset(OGRStylePen *ogrStylePen, Pen 
     }
 }
 
-void VectorReaderGdal::readPenPriorityLevel(OGRStylePen *ogrStylePen, Pen *pen)
-{
-    GBool bDefault = false;
-    auto priority = static_cast<uint32_t>(ogrStylePen->Priority(bDefault));
-    if (!bDefault) {
-        pen->setPriorityLevel(priority);
-    }
-}
-
-auto VectorReaderGdal::readBrush(OGRStyleBrush* ogrStyleBrush) -> Brush
-{
-    Brush brush;
-
-    readBrushAngle(ogrStyleBrush, &brush);
-    readBrushBackColor(ogrStyleBrush, &brush);
-    readBrushForeColor(ogrStyleBrush, &brush);
-    readBrushName(ogrStyleBrush, &brush);
-    readBrushPriorityLevel(ogrStyleBrush, &brush);
-    readBrushScalingFactor(ogrStyleBrush, &brush);
-    readBrushSpacing(ogrStyleBrush, &brush);
-
-    return brush;
-}
-
-void VectorReaderGdal::readBrushAngle(OGRStyleBrush *ogrStyleBrush, Brush *brush)
-{
-    GBool bDefault = false;
-    double angle = ogrStyleBrush->Angle(bDefault);
-    if (!bDefault) {
-        brush->setAngle(angle); //TODO: Mejor como float en radianes??
-    }
-}
-
-void VectorReaderGdal::readBrushBackColor(OGRStyleBrush *ogrStyleBrush, Brush *brush)
-{
-    GBool bDefault = false;
-    const char *hex_color = ogrStyleBrush->BackColor(bDefault);
-    if (!bDefault) {
-        brush->setBackgroundColor(Color(hex_color + 1));
-    }
-}
-
-void VectorReaderGdal::readBrushForeColor(OGRStyleBrush *ogrStyleBrush, Brush *brush)
-{
-    GBool bDefault = false;
-    const char *hex_color = ogrStyleBrush->ForeColor(bDefault);
-    if (!bDefault) {
-        brush->setForegroundColor(Color(hex_color + 1));
-    }
-}
-
-void VectorReaderGdal::readBrushName(OGRStyleBrush *ogrStyleBrush, Brush *brush)
-{
-    GBool bDefault = false;
-    const char *brush_id = ogrStyleBrush->Id(bDefault);
-    if (!bDefault) {
-        Brush::Pattern pattern;
-        if (strcmp(brush_id, "ogr-pen-1") == 0) {
-            pattern = Brush::Pattern::null;
-        } else if (strcmp(brush_id, "ogr-pen-2") == 0) {
-            pattern = Brush::Pattern::horizontal_hatch;
-        } else if (strcmp(brush_id, "ogr-pen-3") == 0) {
-            pattern = Brush::Pattern::vertical_hatch;
-        } else if (strcmp(brush_id, "ogr-pen-4") == 0) {
-            pattern = Brush::Pattern::fdiagonal_hatch;
-        } else if (strcmp(brush_id, "ogr-pen-5") == 0) {
-            pattern = Brush::Pattern::bdiagonal_hatch;
-        } else if (strcmp(brush_id, "ogr-pen-6") == 0) {
-            pattern = Brush::Pattern::cross_hatch;
-        } else if (strcmp(brush_id, "ogr-pen-7") == 0) {
-            pattern = Brush::Pattern::diagcross_hatch;
-        } else {
-            pattern = Brush::Pattern::solid;
-        }
-
-        brush->setPattern(pattern);
-    }
-}
-
-void VectorReaderGdal::readBrushPriorityLevel(OGRStyleBrush *ogrStyleBrush, Brush *brush)
-{
-    GBool bDefault = false;
-    uint32_t priority = static_cast<uint32_t>(ogrStyleBrush->Priority(bDefault));
-    if (!bDefault) {
-        brush->setPriorityLevel(priority);
-    }
-}
-
-void VectorReaderGdal::readBrushScalingFactor(OGRStyleBrush *ogrStyleBrush, Brush *brush)
-{
-    GBool bDefault = false;
-    double scaling_factor = ogrStyleBrush->Size(bDefault);
-    if (!bDefault) {
-        brush->setScalingFactor(scaling_factor);
-    }
-}
-
-void VectorReaderGdal::readBrushSpacing(OGRStyleBrush *ogrStyleBrush, Brush *brush)
-{
-    GBool bDefault = false;
-    ///TODO: spacingX y spacingY est?n asociados a un tipo de unidad
-    double spacing_x = ogrStyleBrush->SpacingX(bDefault);
-    GBool bDefault2 = false;
-    double spacing_y = ogrStyleBrush->SpacingY(bDefault);
-    if (!bDefault && !bDefault2) {
-        brush->setSpacing(spacing_x, spacing_y);
-    }
-}
+//void VectorReaderGdal::readPenPriorityLevel(OGRStylePen *ogrStylePen, Pen *pen)
+//{
+//    GBool bDefault = false;
+//    auto priority = static_cast<uint32_t>(ogrStylePen->Priority(bDefault));
+//    if (!bDefault) {
+//        pen->setPriorityLevel(priority);
+//    }
+//}
 
 auto VectorReaderGdal::readSymbol(OGRStyleSymbol *ogrStyleSymbol) -> Symbol
 {
@@ -1168,7 +1213,7 @@ auto VectorReaderGdal::readSymbol(OGRStyleSymbol *ogrStyleSymbol) -> Symbol
     readSymbolName(ogrStyleSymbol, &symbol);
     readSymbolOffset(ogrStyleSymbol, &symbol);
     readSymbolOutlineColor(ogrStyleSymbol, &symbol);
-    readSymbolPriorityLevel(ogrStyleSymbol, &symbol);
+    //readSymbolPriorityLevel(ogrStyleSymbol, &symbol);
     readSymbolScalingFactor(ogrStyleSymbol, &symbol);
 
     return symbol;
@@ -1248,14 +1293,14 @@ void VectorReaderGdal::readSymbolOutlineColor(OGRStyleSymbol *ogrStyleSymbol, Sy
     }
 }
 
-void VectorReaderGdal::readSymbolPriorityLevel(OGRStyleSymbol *ogrStyleSymbol, Symbol *symbol)
-{
-    GBool bDefault = false;
-    uint32_t priority_level = static_cast<uint32_t>(ogrStyleSymbol->Priority(bDefault));
-    if (!bDefault) {
-        symbol->setPriorityLevel(priority_level);
-    }
-}
+//void VectorReaderGdal::readSymbolPriorityLevel(OGRStyleSymbol *ogrStyleSymbol, Symbol *symbol)
+//{
+//    GBool bDefault = false;
+//    uint32_t priority_level = static_cast<uint32_t>(ogrStyleSymbol->Priority(bDefault));
+//    if (!bDefault) {
+//        symbol->setPriorityLevel(priority_level);
+//    }
+//}
 
 void VectorReaderGdal::readSymbolScalingFactor(OGRStyleSymbol *ogrStyleSymbol, Symbol *symbol)
 {
@@ -1290,44 +1335,43 @@ void VectorReaderGdal::readLabelAnchorPosition(OGRStyleLabel *ogrStyleLabel, Lab
     int anchor = ogrStyleLabel->Anchor(bDefault);
 
     if (!bDefault) {
-        Label::AnchorPosition anchor_position = Label::AnchorPosition::vertical_baseline |
-            Label::AnchorPosition::horizontal_left;
+        LabelAnchor anchor_position;
         if (anchor == 1) {
-            anchor_position = Label::AnchorPosition::vertical_baseline |
-                Label::AnchorPosition::horizontal_left;
+            anchor_position.setHorizontal(LabelAnchor::Horizontal::left);
+            anchor_position.setVertical(LabelAnchor::Vertical::baseline);
         } else if (anchor == 2) {
-            anchor_position = Label::AnchorPosition::vertical_baseline |
-                Label::AnchorPosition::horizontal_center;
+            anchor_position.setHorizontal(LabelAnchor::Horizontal::center);
+            anchor_position.setVertical(LabelAnchor::Vertical::baseline);
         } else if (anchor == 3) {
-            anchor_position = Label::AnchorPosition::vertical_baseline |
-                Label::AnchorPosition::horizontal_right;
+            anchor_position.setHorizontal(LabelAnchor::Horizontal::right);
+            anchor_position.setVertical(LabelAnchor::Vertical::baseline);
         } else if (anchor == 4) {
-            anchor_position = Label::AnchorPosition::vertical_center |
-                Label::AnchorPosition::horizontal_left;
+            anchor_position.setHorizontal(LabelAnchor::Horizontal::left);
+            anchor_position.setVertical(LabelAnchor::Vertical::center);
         } else if (anchor == 5) {
-            anchor_position = Label::AnchorPosition::vertical_center |
-                Label::AnchorPosition::horizontal_center;
+            anchor_position.setHorizontal(LabelAnchor::Horizontal::center);
+            anchor_position.setVertical(LabelAnchor::Vertical::center);
         } else if (anchor == 6) {
-            anchor_position = Label::AnchorPosition::vertical_center |
-                Label::AnchorPosition::horizontal_right;
+            anchor_position.setHorizontal(LabelAnchor::Horizontal::right);
+            anchor_position.setVertical(LabelAnchor::Vertical::center);
         } else if (anchor == 7) {
-            anchor_position = Label::AnchorPosition::vertical_top |
-                Label::AnchorPosition::horizontal_left;
+            anchor_position.setHorizontal(LabelAnchor::Horizontal::left);
+            anchor_position.setVertical(LabelAnchor::Vertical::top);
         } else if (anchor == 8) {
-            anchor_position = Label::AnchorPosition::vertical_top |
-                Label::AnchorPosition::horizontal_center;
+            anchor_position.setHorizontal(LabelAnchor::Horizontal::center);
+            anchor_position.setVertical(LabelAnchor::Vertical::top);
         } else if (anchor == 9) {
-            anchor_position = Label::AnchorPosition::vertical_top |
-                Label::AnchorPosition::horizontal_right;
+            anchor_position.setHorizontal(LabelAnchor::Horizontal::right);
+            anchor_position.setVertical(LabelAnchor::Vertical::top);
         } else if (anchor == 10) {
-            anchor_position = Label::AnchorPosition::vertical_bottom |
-                Label::AnchorPosition::horizontal_left;
+            anchor_position.setHorizontal(LabelAnchor::Horizontal::left);
+            anchor_position.setVertical(LabelAnchor::Vertical::bottom);
         } else if (anchor == 11) {
-            anchor_position = Label::AnchorPosition::vertical_bottom |
-                Label::AnchorPosition::horizontal_center;
+            anchor_position.setHorizontal(LabelAnchor::Horizontal::center);
+            anchor_position.setVertical(LabelAnchor::Vertical::bottom);
         } else if (anchor == 12) {
-            anchor_position = Label::AnchorPosition::vertical_bottom |
-                Label::AnchorPosition::horizontal_right;
+            anchor_position.setHorizontal(LabelAnchor::Horizontal::right);
+            anchor_position.setVertical(LabelAnchor::Vertical::bottom);
         }
         label->setAnchorPosition(anchor_position);
     }

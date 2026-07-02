@@ -24,8 +24,8 @@
 
 #pragma once
 
-#include "tidop/core/base/Defs.h"
-#include "tidop/graphic/color.h"
+#include "tidop/config.h"
+#include "tidop/graphic/Color.h"
 
 namespace tl
 {
@@ -69,24 +69,6 @@ public:
         alternate_line      /*!< Alternate line */
     };
 
-#ifdef TL_WARNING_DEPRECATED_METHOD
-    /*!
-     * \brief Pen names
-     */
-    enum class TL_DEPRECATED("PredefinedPattern", "4.0") Name : uint8_t
-    {
-        solid,             /*!< Solid (the default value when no ID is provided) */
-        null,              /*!< Null pen (invisible) */
-        dash,              /*!<  */
-        short_dash,        /*!<  */
-        long_dash,         /*!<  */
-        dot_line,          /*!< Dotted line */
-        dash_dot_line,     /*!< Dash-dot line */
-        dash_dot_dot_line, /*!< Dash-dot-dot line */
-        alternate_line     /*!< Alternate line */
-    };
-#endif // TL_WARNING_DEPRECATED_METHOD
-
     /*!
      * \enum Cap
      * \brief Defines the shape of the line endpoints.
@@ -112,167 +94,216 @@ public:
 private:
 
     Color mColor;
-    uint8_t mWidth;
+    uint8_t mWidth = 1;
     std::string mPattern;
-    PredefinedPattern mPredefinedPattern;
-    Cap mCap;
-    Join mJoin;
-    int32_t mPerpendicularOffset;
-    uint32_t mPriorityLevel;
+    PredefinedPattern mPredefinedPattern = PredefinedPattern::solid;
+    Cap mCap = Cap::butt;
+    Join mJoin = Join::bevel;
+    int32_t mPerpendicularOffset = 0;
 
 public:
 
     /*!
      * \brief Default constructor
      */
-    Pen();
+    constexpr Pen() = default;
 
     /*!
      * \brief Copy constructor
      * \param[in] pen Pen style class being copied
      */
-    Pen(const Pen &pen);
+    constexpr Pen(const Pen &pen) = default;
 
     /*!
      * \brief Move constructor
      */
-    Pen(Pen &&pen) TL_NOEXCEPT;
+    constexpr Pen(Pen &&pen) noexcept = default;
 
     /*!
      * \brief Destructor
      */
-    ~Pen();
-
-    /*!
-     * \brief Returns the pen color.
-     * \return Pen color.
-     */
-    auto color() const -> Color;
-
-    /*!
-     * \brief Sets the pen color.
-     * \param[in] color Pen color.
-     */
-    void setColor(const Color &color);
-
-    /*!
-     * \brief Returns the pen width in pixels or drawing units.
-     * \return Pen width.
-     */
-    auto width() const -> uint8_t;
-
-    /*!
-     * \brief Sets the pen width.
-     * \param[in] width Pen width.
-     */
-    void setWidth(uint8_t width);
-
-    /*!
-     * \brief Returns the custom line pattern string (e.g., for dash arrays).
-     * \return Pattern string.
-     */
-    auto pattern() const -> std::string;
-
-    /*!
-     * \brief Sets a custom line pattern string.
-     * \param[in] pattern Pattern string.
-     */
-    void setPattern(const std::string& pattern);
-
-    /*!
-     * \brief Returns the predefined pattern type.
-     * \return Predefined line pattern.
-     */
-    auto predefinedPattern() const->PredefinedPattern;
-
-    /*!
-     * \brief Sets the predefined pattern type.
-     * \param[in] pattern Predefined line pattern.
-     */
-    void setPredefinedPattern(PredefinedPattern pattern);
-
-    /*!
-     * \brief Returns the cap style for line ends.
-     * \return Cap style.
-     */
-    auto cap() const -> Cap;
-
-    /*!
-     * \brief Sets the cap style for line ends.
-     * \param[in] cap Cap style.
-     */
-    void setCap(Cap pencap);
-
-    /*!
-     * \brief Returns the join style between line segments.
-     * \return Join style.
-     */
-    auto join() const -> Join;
-
-    /*!
-     * \brief Sets the join style between line segments.
-     * \param[in] join Join style.
-     */
-    void setJoin(Join join);
-
-    /*!
-     * \brief Returns the perpendicular offset from the centerline.
-     * \return Offset in drawing units (negative = left).
-     */
-    auto perpendicularOffset() const -> int32_t;
-
-    /*!
-     * \brief Sets the perpendicular offset from the centerline.
-     * \param[in] offset Offset value (negative = left).
-     */
-    void setPerpendicularOffset(int32_t perpendicularoffset);
-
-    /*!
-     * \brief Returns the rendering priority level.
-     * \return Priority level.
-     */
-    auto priorityLevel() const -> uint32_t;
-
-    /*!
-     * \brief Sets the rendering priority level.
-     * \param[in] level Priority level.
-     */
-    void setPriorityLevel(uint32_t priorityLevel);
+    ~Pen() = default;
 
     /*!
      * \brief Assignment operator
      * \param[in] stylePen Pen style
      * \return Reference to the pen style
      */
-    auto operator =(const Pen& stylePen) -> Pen&;
+    constexpr auto operator =(const Pen &stylePen) -> Pen& = default;
 
     /*!
      * \brief Assignment move operator
      * \param[in] stylePen Pen style
      * \return Reference to the pen style
      */
-    auto operator =(Pen &&stylePen) TL_NOEXCEPT -> Pen &;
-
-#ifdef TL_WARNING_DEPRECATED_METHOD
-    /*!
-     * \brief Get the pen name or ID
-     * \return Pen name or ID
-     * \deprecated Use `predefinedPattern()` instead.
-     */
-    TL_DEPRECATED("predefinedPattern()", "4.0")
-    auto name() const->Name;
+    constexpr auto operator =(Pen &&stylePen) noexcept -> Pen& = default;
 
     /*!
-     * \brief Set the pen name or ID
-     * \param[in] name Pen name or ID
-     * \deprecated Use `setPredefinedPattern()` instead.
+     * \brief Returns the pen color.
+     * \return Pen color.
      */
-    TL_DEPRECATED("setPredefinedPattern()", "4.0")
-    void setName(Name name);
-#endif // TL_WARNING_DEPRECATED_METHOD
+    [[nodiscard]]
+    constexpr auto color() const noexcept -> Color;
+
+    /*!
+     * \brief Sets the pen color.
+     * \param[in] color Pen color.
+     */
+    constexpr void setColor(Color color) noexcept;
+
+    /*!
+     * \brief Returns the pen width in pixels or drawing units.
+     * \return Pen width.
+     */
+    [[nodiscard]]
+    constexpr auto width() const noexcept -> uint8_t;
+
+    /*!
+     * \brief Sets the pen width.
+     * \param[in] width Pen width.
+     */
+    constexpr void setWidth(uint8_t width) noexcept;
+
+    /*!
+     * \brief Returns the custom line pattern string (e.g., for dash arrays).
+     * \return Pattern string.
+     */
+    [[nodiscard]]
+    constexpr auto pattern() const noexcept -> std::string;
+
+    /*!
+     * \brief Sets a custom line pattern string.
+     * \param[in] pattern Pattern string.
+     */
+    void setPattern(std::string pattern) noexcept;
+
+    /*!
+     * \brief Returns the predefined pattern type.
+     * \return Predefined line pattern.
+     */
+    [[nodiscard]]
+    constexpr auto predefinedPattern() const noexcept -> PredefinedPattern;
+
+    /*!
+     * \brief Sets the predefined pattern type.
+     * \param[in] pattern Predefined line pattern.
+     */
+    constexpr void setPredefinedPattern(PredefinedPattern pattern) noexcept;
+
+    /*!
+     * \brief Returns the cap style for line ends.
+     * \return Cap style.
+     */
+    [[nodiscard]]
+    constexpr auto cap() const noexcept  -> Cap;
+
+    /*!
+     * \brief Sets the cap style for line ends.
+     * \param[in] cap Cap style.
+     */
+    constexpr void setCap(Cap pencap) noexcept;
+
+    /*!
+     * \brief Returns the join style between line segments.
+     * \return Join style.
+     */
+    [[nodiscard]]
+    constexpr auto join() const noexcept -> Join;
+
+    /*!
+     * \brief Sets the join style between line segments.
+     * \param[in] join Join style.
+     */
+    constexpr void setJoin(Join join) noexcept;
+
+    /*!
+     * \brief Returns the perpendicular offset from the centerline.
+     * \return Offset in drawing units (negative = left).
+     */
+    [[nodiscard]]
+    constexpr auto perpendicularOffset() const noexcept -> int32_t;
+
+    /*!
+     * \brief Sets the perpendicular offset from the centerline.
+     * \param[in] offset Offset value (negative = left).
+     */
+    constexpr void setPerpendicularOffset(int32_t perpendicularoffset) noexcept;
 
 };
 
+
+
+constexpr auto Pen::color() const noexcept -> Color
+{
+    return mColor;
+}
+
+constexpr void Pen::setColor(Color color) noexcept
+{
+    mColor = std::move(color);
+}
+
+constexpr auto Pen::width() const noexcept -> uint8_t
+{
+    return mWidth;
+}
+
+constexpr void Pen::setWidth(uint8_t width) noexcept
+{
+    mWidth = width;
+}
+
+constexpr auto Pen::pattern() const noexcept -> std::string
+{
+    return mPattern;
+}
+
+inline void Pen::setPattern(std::string pattern) noexcept
+{
+    mPattern = std::move(pattern);
+}
+
+constexpr auto Pen::predefinedPattern() const noexcept -> PredefinedPattern
+{
+    return mPredefinedPattern;
+}
+
+constexpr void Pen::setPredefinedPattern(PredefinedPattern pattern) noexcept
+{
+    mPredefinedPattern = pattern;
+}
+
+constexpr auto Pen::cap() const noexcept -> Cap
+{
+    return mCap;
+}
+
+constexpr void Pen::setCap(Cap cap) noexcept
+{
+    mCap = cap;
+}
+
+constexpr auto Pen::join() const noexcept -> Join
+{
+    return mJoin;
+}
+
+constexpr void Pen::setJoin(Join join) noexcept
+{
+    mJoin = join;
+}
+
+constexpr auto Pen::perpendicularOffset() const noexcept -> int32_t
+{
+    return mPerpendicularOffset;
+}
+
+constexpr void Pen::setPerpendicularOffset(int32_t perpendicularoffset) noexcept
+{
+    mPerpendicularOffset = perpendicularoffset;
+}
+
+
 /*! \} */
 
-} // End namespace tl
+} // namespace tl

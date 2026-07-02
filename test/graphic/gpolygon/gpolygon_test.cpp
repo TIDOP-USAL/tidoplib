@@ -24,7 +24,10 @@
 
 #define BOOST_TEST_MODULE Tidop graphic polygon test
 #include <boost/test/unit_test.hpp>
-#include <tidop/graphic/entities/polygon.h>
+#include <tidop/graphic/entities/GPolygon.h>
+#include <tidop/graphic/entities/GPolygon3D.h>
+#include <tidop/graphic/entities/GMultiPolygon.h>
+#include <tidop/graphic/entities/GMultiPolygon3D.h>
 
 
 using namespace tl;

@@ -64,13 +64,9 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, StylePenTest)
     BOOST_CHECK_EQUAL(1, def_style.width());
     BOOST_CHECK_EQUAL("", def_style.pattern());
     BOOST_CHECK(Pen::PredefinedPattern::solid == def_style.predefinedPattern());
-#ifdef TL_WARNING_DEPRECATED_METHOD
-    BOOST_CHECK(Pen::Name::solid == def_style.name());
-#endif // TL_WARNING_DEPRECATED_METHOD
     BOOST_CHECK(Pen::Cap::butt == def_style.cap());
     BOOST_CHECK(Pen::Join::bevel == def_style.join());
     BOOST_CHECK_EQUAL(0, def_style.perpendicularOffset());
-    BOOST_CHECK_EQUAL(0, def_style.priorityLevel());
 }
 
 BOOST_FIXTURE_TEST_CASE(setColor, StylePenTest)
@@ -98,14 +94,6 @@ BOOST_FIXTURE_TEST_CASE(setPredefinedPattern, StylePenTest)
     BOOST_CHECK(Pen::PredefinedPattern::dash_dot_line == style->predefinedPattern());
 }
 
-#ifdef TL_WARNING_DEPRECATED_METHOD
-BOOST_FIXTURE_TEST_CASE(setName, StylePenTest)
-{
-    style->setName(Pen::Name::dash_dot_line);
-    BOOST_CHECK(Pen::Name::dash_dot_line == style->name());
-}
-#endif // TL_WARNING_DEPRECATED_METHOD
-
 BOOST_FIXTURE_TEST_CASE(setCap, StylePenTest)
 {
     style->setCap(Pen::Cap::projective);
@@ -124,12 +112,6 @@ BOOST_FIXTURE_TEST_CASE(setPerpendicularOffset, StylePenTest)
     BOOST_CHECK_EQUAL(25, style->perpendicularOffset());
 }
 
-BOOST_FIXTURE_TEST_CASE(setPriorityLevel, StylePenTest)
-{
-    style->setPriorityLevel(15);
-    BOOST_CHECK_EQUAL(15, style->priorityLevel());
-}
-
 
 
 BOOST_AUTO_TEST_SUITE(StyleBrushTestSuite)
@@ -146,6 +128,11 @@ struct StyleBrushTest
 
     void setup()
     {
+        brush_solid = Brush(Color(Color::Name::azure), Color(Color::Name::deep_pink));
+        brush_hatch = Brush(Color(Color::Name::red), Color(Color::Name::blue), Brush::Style::hatch);
+        brush_null = Brush(Color(Color::Name::green), Color(Color::Name::dark_green), Brush::Style::null);
+        BrushPattern pattern(BrushPattern::HatchType::cross, 0.0, 2.0);
+        brush_hatch_cross = Brush(Color(Color::Name::green), Color(Color::Name::dark_green), pattern);
     }
 
     void teardown()
@@ -153,6 +140,10 @@ struct StyleBrushTest
     }
 
     Brush def_style;
+    Brush brush_solid;
+    Brush brush_hatch;
+    Brush brush_null;
+    Brush brush_hatch_cross;
 };
 
 
@@ -161,15 +152,52 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, StyleBrushTest)
     Color color;
     BOOST_CHECK(color == def_style.foregroundColor());
     BOOST_CHECK(color == def_style.backgroundColor());
-    BOOST_CHECK(Brush::Pattern::solid == def_style.pattern());
-#ifdef TL_WARNING_DEPRECATED_METHOD
-    BOOST_CHECK(Brush::Name::solid == def_style.name());
-#endif // TL_WARNING_DEPRECATED_METHOD
-    BOOST_CHECK_EQUAL(0., def_style.angle());
-    BOOST_CHECK_EQUAL(1., def_style.scalingFactor());
-    BOOST_CHECK_EQUAL(0., def_style.spacingX());
-    BOOST_CHECK_EQUAL(0., def_style.spacingY());
-    BOOST_CHECK_EQUAL(0, def_style.priorityLevel());
+    BOOST_CHECK(Brush::Style::solid == def_style.style());
+    BOOST_CHECK(!def_style.pattern().has_value());
+}
+
+BOOST_FIXTURE_TEST_CASE(brush_solid_constructor, StyleBrushTest)
+{
+    BOOST_CHECK(Color(Color::Name::azure) == brush_solid.foregroundColor());
+    BOOST_CHECK(Color(Color::Name::deep_pink) == brush_solid.backgroundColor());
+    BOOST_CHECK(Brush::Style::solid == brush_solid.style());
+    BOOST_CHECK(!brush_solid.pattern().has_value());
+}
+
+BOOST_FIXTURE_TEST_CASE(brush_hatch_constructor, StyleBrushTest)
+{
+    BOOST_CHECK(Color(Color::Name::red) == brush_hatch.foregroundColor());
+    BOOST_CHECK(Color(Color::Name::blue) == brush_hatch.backgroundColor());
+    BOOST_CHECK(Brush::Style::hatch == brush_hatch.style());
+    auto &brush_pattern = brush_hatch.pattern();
+    BOOST_CHECK(brush_pattern.has_value());
+    BOOST_CHECK(BrushPattern::HatchType::horizontal == brush_pattern->hatchType());
+    BOOST_CHECK_EQUAL(0., brush_pattern->angle());
+    BOOST_CHECK_EQUAL(1., brush_pattern->scalingFactor());
+    BOOST_CHECK_EQUAL(0., brush_pattern->spacing().x());
+    BOOST_CHECK_EQUAL(0., brush_pattern->spacing().y());
+}
+
+BOOST_FIXTURE_TEST_CASE(brush_null_constructor, StyleBrushTest)
+{
+    BOOST_CHECK(Color(Color::Name::green) == brush_null.foregroundColor());
+    BOOST_CHECK(Color(Color::Name::dark_green) == brush_null.backgroundColor());
+    BOOST_CHECK(Brush::Style::null == brush_null.style());
+    BOOST_CHECK(!brush_null.pattern().has_value());
+}
+
+BOOST_FIXTURE_TEST_CASE(brush_hatch_cross_constructor, StyleBrushTest)
+{
+    BOOST_CHECK(Color(Color::Name::green) == brush_hatch_cross.foregroundColor());
+    BOOST_CHECK(Color(Color::Name::dark_green) == brush_hatch_cross.backgroundColor());
+    BOOST_CHECK(Brush::Style::hatch == brush_hatch_cross.style());
+    auto &brush_pattern = brush_hatch_cross.pattern();
+    BOOST_CHECK(brush_pattern.has_value());
+    BOOST_CHECK(BrushPattern::HatchType::cross == brush_pattern->hatchType());
+    BOOST_CHECK_EQUAL(0., brush_pattern->angle());
+    BOOST_CHECK_EQUAL(2., brush_pattern->scalingFactor());
+    BOOST_CHECK_EQUAL(0., brush_pattern->spacing().x());
+    BOOST_CHECK_EQUAL(0., brush_pattern->spacing().y());
 }
 
 BOOST_FIXTURE_TEST_CASE(setForegroundColor, StyleBrushTest)
@@ -186,37 +214,20 @@ BOOST_FIXTURE_TEST_CASE(setBackgroundColor, StyleBrushTest)
     BOOST_CHECK(color == def_style.backgroundColor());
 }
 
-#ifdef TL_WARNING_DEPRECATED_METHOD
-BOOST_FIXTURE_TEST_CASE(setName, StyleBrushTest)
-{
-    def_style.setName(Brush::Name::null);
-    BOOST_CHECK(Brush::Name::null == def_style.name());
-}
-#endif // TL_WARNING_DEPRECATED_METHOD
-
 BOOST_FIXTURE_TEST_CASE(setPattern, StyleBrushTest)
 {
-    def_style.setPattern(Brush::Pattern::null);
-    BOOST_CHECK(Brush::Pattern::null == def_style.pattern());
-}
+    BrushPattern pattern;
+    pattern.setAngle(45.0);
+    pattern.setScalingFactor(2.0);
+    pattern.setHatchType(BrushPattern::HatchType::cross);
+    pattern.setSpacing(2.0, 5.0);
 
-BOOST_FIXTURE_TEST_CASE(setAngle, StyleBrushTest)
-{
-    def_style.setAngle(.45);
-    BOOST_CHECK_EQUAL(0.45, def_style.angle());
-}
+    def_style.setPattern(pattern);
 
-BOOST_FIXTURE_TEST_CASE(setScalingFactor, StyleBrushTest)
-{
-    def_style.setScalingFactor(2.);
-    BOOST_CHECK_EQUAL(2., def_style.scalingFactor());
-}
+    BOOST_CHECK(Brush::Style::hatch == def_style.style());
+    auto &brush_pattern = def_style.pattern();
 
-BOOST_FIXTURE_TEST_CASE(setSpacing, StyleBrushTest)
-{
-    def_style.setSpacing(2., 5.);
-    BOOST_CHECK_EQUAL(2., def_style.spacingX());
-    BOOST_CHECK_EQUAL(5., def_style.spacingY());
+    BOOST_CHECK(pattern == brush_pattern);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -260,16 +271,12 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, StyleSymbolTest)
 {
     BOOST_CHECK_EQUAL(0., def_style.angle());
     BOOST_CHECK(Symbol::Shape::cross == def_style.shape());
-#ifdef TL_WARNING_DEPRECATED_METHOD
-    BOOST_CHECK(Symbol::Name::cross == def_style.name());
-#endif // TL_WARNING_DEPRECATED_METHOD
     Color color;
     BOOST_CHECK(color == def_style.color());
     BOOST_CHECK(color == def_style.outlineColor());
     BOOST_CHECK_EQUAL(1., def_style.scalingFactor());
-    BOOST_CHECK_EQUAL(0., def_style.offsetX());
-    BOOST_CHECK_EQUAL(0., def_style.offsetY());
-    BOOST_CHECK_EQUAL(0, def_style.priorityLevel());
+    BOOST_CHECK_EQUAL(0., def_style.offset().x());
+    BOOST_CHECK_EQUAL(0., def_style.offset().y());
 }
 
 BOOST_FIXTURE_TEST_CASE(setAngle, StyleSymbolTest)
@@ -283,14 +290,6 @@ BOOST_FIXTURE_TEST_CASE(setShape, StyleSymbolTest)
     style->setShape(Symbol::Shape::square);
     BOOST_CHECK(Symbol::Shape::square == style->shape());
 }
-
-#ifdef TL_WARNING_DEPRECATED_METHOD
-BOOST_FIXTURE_TEST_CASE(setName, StyleSymbolTest)
-{
-    style->setName(Symbol::Name::circle);
-    BOOST_CHECK(Symbol::Name::circle == style->name());
-}
-#endif // TL_WARNING_DEPRECATED_METHOD
 
 BOOST_FIXTURE_TEST_CASE(setColor, StyleSymbolTest)
 {
@@ -315,8 +314,8 @@ BOOST_FIXTURE_TEST_CASE(setScalingFactor, StyleSymbolTest)
 BOOST_FIXTURE_TEST_CASE(setOffset, StyleSymbolTest)
 {
     style->setOffset(5., 2.);
-    BOOST_CHECK_EQUAL(5., style->offsetX());
-    BOOST_CHECK_EQUAL(2., style->offsetY());
+    BOOST_CHECK_EQUAL(5., style->offset().x());
+    BOOST_CHECK_EQUAL(2., style->offset().y());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -364,10 +363,11 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, StyleLabelTest)
     BOOST_CHECK(color == def_style.shadowColor());
     BOOST_CHECK_EQUAL(100., def_style.stretchFactor());
     BOOST_CHECK(Label::Placement::point == def_style.placement());
-    BOOST_CHECK((Label::AnchorPosition::vertical_baseline | Label::AnchorPosition::horizontal_left) ==
-        def_style.anchorPosition());
-    BOOST_CHECK_EQUAL(0., def_style.offsetX());
-    BOOST_CHECK_EQUAL(0., def_style.offsetY());
+    auto anchor_pos = def_style.anchorPosition();
+    BOOST_CHECK(anchor_pos.horizontal() == LabelAnchor::Horizontal::left);
+    BOOST_CHECK(anchor_pos.vertical() == LabelAnchor::Vertical::baseline);
+    BOOST_CHECK_EQUAL(0., def_style.offset().x());
+    BOOST_CHECK_EQUAL(0., def_style.offset().y());
     BOOST_CHECK_EQUAL(0., def_style.perpendicularOffset());
 }
 
@@ -425,15 +425,16 @@ BOOST_FIXTURE_TEST_CASE(setPlacement, StyleLabelTest)
 
 BOOST_FIXTURE_TEST_CASE(setAnchorPosition, StyleLabelTest)
 {
-    style->setAnchorPosition(Label::AnchorPosition::vertical_center | Label::AnchorPosition::horizontal_left);
-    BOOST_CHECK((Label::AnchorPosition::vertical_center | Label::AnchorPosition::horizontal_left) == style->anchorPosition());
+    LabelAnchor anchor(LabelAnchor::Horizontal::left, LabelAnchor::Vertical::center);
+    style->setAnchorPosition(anchor);
+    BOOST_CHECK(anchor == style->anchorPosition());
 }
 
 BOOST_FIXTURE_TEST_CASE(setOffset, StyleLabelTest)
 {
     style->setOffset(5., 2.);
-    BOOST_CHECK_EQUAL(5., style->offsetX());
-    BOOST_CHECK_EQUAL(2., style->offsetY());
+    BOOST_CHECK_EQUAL(5., style->offset().x());
+    BOOST_CHECK_EQUAL(2., style->offset().y());
 }
 
 BOOST_FIXTURE_TEST_CASE(setPerpendicularOffset, StyleLabelTest)

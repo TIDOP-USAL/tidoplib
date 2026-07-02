@@ -26,8 +26,9 @@
 
 #include <array>
 
-#include "tidop/core/base/Defs.h"
-#include "tidop/graphic/color.h"
+#include "tidop/config.h"
+#include "tidop/math/algebra/vector/Vector.h"
+#include "tidop/graphic/Color.h"
 
 namespace tl
 {
@@ -67,182 +68,200 @@ public:
         vertical_bar       /*!< | */
     };
 
-#ifdef TL_WARNING_DEPRECATED_METHOD
-    enum class TL_DEPRECATED("Shape", "4.0") Name
-    {
-        cross,             /*!< + */
-        diagonal_cross,    /*!< x */
-        circle,            /*!< Circle */
-        circle_filled,     /*!< Filled circle */
-        square,            /*!< Square */
-        square_filled,     /*!< Filled square */
-        triangle,          /*!< Triangle */
-        triangle_filled,   /*!< Filled triangle */
-        star,              /*!< Star */
-        star_filled,       /*!< Filled star */
-        vertical_bar       /*!< | */
-    };
-#endif // TL_WARNING_DEPRECATED_METHOD
-
 private:
 
-    Shape mShape;
-    double mAngle;
+    Shape mShape = Shape::cross;
+    double mAngle = 0.0;
     Color mColor;
     Color mOutlineColor;
-    double mScalingFactor;
-    std::array<double, 2> mOffset;
-    uint32_t mPriorityLevel;
+    double mScalingFactor = 1.0;
+    Vector2d mOffset = {0., 0.};
 
 public:
 
     /*!
      * \brief Default constructor
      */
-    Symbol();
+    constexpr Symbol() = default;
 
     /*!
      * \brief Copy constructor
      * \param[in] symbol Symbol style object to copy
      */
-    Symbol(const Symbol &symbol);
+    constexpr Symbol(const Symbol &symbol) = default;
 
     /*!
      * \brief Move constructor
      * \param[in] symbol Symbol style object to move
      */
-    Symbol(Symbol &&symbol) TL_NOEXCEPT;
+    constexpr Symbol(Symbol &&symbol) noexcept = default;
 
     /*!
      * \brief Destructor
      */
-    ~Symbol();
+    ~Symbol() = default;
+
+    /*!
+     * \brief Assignment operator
+     * \param symbol Symbol style
+     * \return Reference to the symbol style
+     */
+    constexpr auto operator =(const Symbol &symbol) -> Symbol & = default;
+
+    /*!
+     * \brief Assignment operator
+     * \param symbol Symbol style
+     * \return Reference to the symbol style
+     */
+    constexpr auto operator =(Symbol &&symbol) noexcept -> Symbol & = default;
 
     /*!
      * \brief Gets the rotation angle of the symbol.
      * \return Rotation angle in decimal degrees.
      */
-    auto angle() const -> double;
+    [[nodiscard]] 
+    constexpr auto angle() const noexcept -> double;
 
     /*!
      * \brief Sets the rotation angle of the symbol.
      * \param[in] angle Rotation angle in decimal degrees.
      */
-    void setAngle(double angle);
+    constexpr void setAngle(double angle) noexcept;
 
     /*!
      * \brief Returns the symbol shape.
      * \return Symbol shape.
      */
-    auto shape() const -> Shape;
+    [[nodiscard]]
+    constexpr auto shape() const noexcept -> Shape;
 
     /*!
      * \brief Sets the symbol shape.
      * \param[in] shape The shape to use for rendering the symbol.
      */
-    void setShape(Shape shape);
+    constexpr void setShape(Shape shape) noexcept;
 
     /*!
      * \brief Gets the fill color of the symbol.
      * \return Symbol fill color.
      */
-    auto color() const -> Color;
+    [[nodiscard]]
+    constexpr auto color() const noexcept -> Color;
 
     /*!
      * \brief Set the color
      * \param[in] color Color
      * \see Color
      */
-    void setColor(const Color &color);
+    constexpr void setColor(Color color) noexcept;
 
     /*!
      * \brief Gets the outline color of the symbol.
      * \return Outline color.
      */
-    auto outlineColor() const -> Color;
+    [[nodiscard]]
+    constexpr auto outlineColor() const noexcept -> Color;
 
     /*!
      * \brief Set the outline color
      * \param[in] outlinecolor Outline color
      * \see Color
      */
-    void setOutlineColor(const Color &outlinecolor);
+    constexpr void setOutlineColor(Color outlinecolor) noexcept;
 
     /*!
      * \brief Gets the scale factor applied to the symbol.
      * \return Scaling factor (1.0 = no scaling).
      */
-    auto scalingFactor() const -> double;
+    [[nodiscard]]
+    constexpr auto scalingFactor() const noexcept -> double;
 
     /*!
      * \brief Sets the scale factor of the symbol.
      * \param[in] scalingFactor Factor to scale the symbol size.
      */
-    void setScalingFactor(double scalingFactor);
+    constexpr void setScalingFactor(double scalingFactor) noexcept;
 
-    /*!
-     * \brief Gets the offset in X direction from the insertion point.
-     * \return X offset in drawing units.
-     */
-    auto offsetX() const -> double;
-
-    /*!
-     * \brief Gets the offset in Y direction from the insertion point.
-     * \return Y offset in drawing units.
-     */
-    auto offsetY() const -> double;
+    [[nodiscard]]
+    constexpr auto offset() const noexcept -> Vector2d;
 
     /*!
      * \brief Sets the offset from the insertion point.
      * \param[in] dx Horizontal offset.
      * \param[in] dy Vertical offset.
      */
-    void setOffset(double dx, double dy);
+    constexpr void setOffset(double dx, double dy) noexcept;
 
-    /*!
-     * \brief Gets the rendering priority level.
-     * \return Priority level.
-     */
-    auto priorityLevel() const -> uint32_t;
+    constexpr void setOffset(Vector2d offset) noexcept;
 
-    /*!
-     * \brief Sets the rendering priority level.
-     * \param[in] priorityLevel Rendering priority.
-     */
-    void setPriorityLevel(uint32_t priorityLevel);
-
-    /*!
-     * \brief Assignment operator
-     * \param symbol Symbol style
-     * \return Reference to the symbol style
-     */
-    auto operator =(const Symbol& symbol) -> Symbol&;
-
-    /*!
-     * \brief Assignment operator
-     * \param symbol Symbol style
-     * \return Reference to the symbol style
-     */
-    auto operator =(Symbol&& symbol) TL_NOEXCEPT -> Symbol&;
-
-#ifdef TL_WARNING_DEPRECATED_METHOD
-    /*!
-     * \brief Get the name or id of the symbol
-     * \return Name or id of the symbol
-     * \deprecated Use `shape()` instead.
-     */
-    TL_DEPRECATED("shape()", "4.0")
-    auto name() const->Name;
-
-    /*!
-     * \brief Set the name or id of the symbol
-     * \param[in] name Name or id of the symbol
-     * \deprecated Use `setShape()` instead.
-     */
-    TL_DEPRECATED("setShape()", "4.0")
-    void setName(Name name);
-#endif // TL_WARNING_DEPRECATED_METHOD
 };
+
+
+constexpr auto Symbol::angle() const noexcept -> double
+{
+    return mAngle;
+}
+
+constexpr void Symbol::setAngle(double angle) noexcept
+{
+    mAngle = angle;
+}
+
+constexpr auto Symbol::shape() const noexcept -> Shape
+{
+    return mShape;
+}
+
+constexpr void Symbol::setShape(Shape shape) noexcept
+{
+    mShape = shape;
+}
+
+constexpr auto Symbol::color() const noexcept -> Color
+{
+    return mColor;
+}
+
+constexpr void Symbol::setColor(Color color) noexcept
+{
+    mColor = std::move(color);
+}
+
+constexpr auto Symbol::outlineColor() const noexcept -> Color
+{
+    return mOutlineColor;
+}
+
+constexpr void Symbol::setOutlineColor(Color outlineColor) noexcept
+{
+    mOutlineColor = std::move(outlineColor);
+}
+
+constexpr auto Symbol::scalingFactor() const noexcept -> double
+{
+    return mScalingFactor;
+}
+
+constexpr void Symbol::setScalingFactor(double scalingFactor) noexcept
+{
+    mScalingFactor = scalingFactor;
+}
+
+constexpr auto Symbol::offset() const noexcept -> Vector2d
+{
+    return mOffset;
+}
+
+constexpr void Symbol::setOffset(double dx, double dy) noexcept
+{
+    mOffset[0] = dx;
+    mOffset[1] = dy;
+}
+
+constexpr void Symbol::setOffset(Vector2d offset) noexcept
+{
+    mOffset = std::move(offset);
+}
 
 
 /*! \} */ 

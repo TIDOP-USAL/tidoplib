@@ -149,7 +149,7 @@ public:
 
 private:
 
-    Type flag;
+    Type flag = static_cast<Type>(0);
 
 public:
 
@@ -158,8 +158,8 @@ public:
      *
      * Initializes EnumFlags with no flags set (all bits cleared).
      */
-    EnumFlags();
-    
+    constexpr EnumFlags() = default;
+
     /*!
      * \brief Copy constructor.
      * 
@@ -167,7 +167,7 @@ public:
      *
      * \param[in] enumFlag The EnumFlags object to copy
      */
-    EnumFlags(const EnumFlags<T> &enumFlag);
+    constexpr EnumFlags(const EnumFlags<T> &enumFlag) = default;
     
     /*!
      * \brief Move constructor.
@@ -176,7 +176,7 @@ public:
      *
      * \param[in] enumFlag The EnumFlags object to move from
      */
-    EnumFlags(EnumFlags<T> &&enumFlag) TL_NOEXCEPT;
+    constexpr EnumFlags(EnumFlags<T> &&enumFlag) noexcept = default;
     
     /*!
      * \brief Constructor from enum value.
@@ -190,7 +190,7 @@ public:
      * EnumFlags<Permission> perms(Permission::read | Permission::write);
      * \endcode
      */
-    explicit EnumFlags(T flag);
+    constexpr explicit EnumFlags(T flag) noexcept;
     
     /*!
      * \brief Destructor
@@ -203,7 +203,7 @@ public:
      * \param[in] enumFlag EnumFlags object to copy from
      * \return Reference to this object
      */
-    auto operator = (const EnumFlags<T> &enumFlag) -> EnumFlags&;
+    constexpr auto operator = (const EnumFlags<T> &enumFlag) -> EnumFlags& = default;
     
     /*!
      * \brief Move assignment operator.
@@ -211,7 +211,7 @@ public:
      * \param[in] enumFlag EnumFlags object to move from
      * \return Reference to this object
      */
-    auto operator = (EnumFlags<T> &&enumFlag) TL_NOEXCEPT -> EnumFlags&;
+    constexpr auto operator = (EnumFlags<T> &&enumFlag) noexcept -> EnumFlags& = default;
     
     /*!
      * \brief Enum assignment operator.
@@ -227,159 +227,124 @@ public:
      * perms = Permission::read;  // Set only read flag
      * \endcode
      */
-    auto operator = (T flag) -> EnumFlags&;
-    
+    constexpr auto operator=(T flag) noexcept -> EnumFlags &;
+
     /*!
      * \brief Check if the flag is enabled
      * \param[in] flag Flag to be checked
      * \return True if enabled and false otherwise
      */
-    auto isEnabled(T flag) const -> bool;
+    [[nodiscard]] 
+    constexpr auto isEnabled(T flag) const noexcept -> bool;
     
     /*!
      * \brief Check if the flag is disabled
      * \param[in] flag Flag to be checked
      * \return True if disabled and false otherwise
      */
-    auto isDisabled(T flag) const -> bool;
+    [[nodiscard]] 
+    constexpr auto isDisabled(T flag) const noexcept -> bool;
     
     /*!
      * \brief Enable a flag
      * \param[in] flag Flag to activate
      */
-    void enable(T flag);
+    constexpr void enable(T flag) noexcept;
     
     /*!
      * \brief Disable a flag
      * \param[in] flag Flag to disable
      */
-    void disable(T flag);
+    constexpr void disable(T flag) noexcept;
     
     /*!
      * \brief Enables or disables a flag
      * \param[in] flag Flag to enable/disable
      * \param[in] active True to activate the flag
      */
-    void activeFlag(T flag, bool active);
+    constexpr void activeFlag(T flag, bool active) noexcept;
     
     /*!
      * \brief Switch a flag
      * \param[in] flag Flag to switch
      */
-    void switchFlag(T flag);
+    constexpr void switchFlag(T flag) noexcept;
     
     /*!
      * \brief Deactivate all flags
      */
-    void clear();
+    constexpr void clear() noexcept;
     
     /*!
      * \brief Get the current flags value.
      *
      * \return The combined flags as the enum type
-     */    
-    auto flags() const -> T;
+     */  
+    [[nodiscard]]
+    constexpr auto flags() const noexcept -> T;
 
 };
 
-template<typename T>
-EnumFlags<T>::EnumFlags() 
-  : flag(0) 
-{
-}
 
-template<typename T>
-EnumFlags<T>::EnumFlags(const EnumFlags<T> &enumFlag)
-  : flag(enumFlag.flag) 
-{
-
-}
-
-template<typename T>
-EnumFlags<T>::EnumFlags(EnumFlags<T> &&enumFlag) TL_NOEXCEPT
-  : flag(std::move(enumFlag.flag)) 
-{
-
-}
 
 
 template<typename T>
-EnumFlags<T>::EnumFlags(T flag) 
+constexpr EnumFlags<T>::EnumFlags(T flag) noexcept
   : flag(static_cast<Type>(flag))
 {
 }
 
 template<typename T>
-auto EnumFlags<T>::operator = (const EnumFlags<T> &enumFlag) -> EnumFlags&
-{
-    if (this != &enumFlag) {
-        this->flag = enumFlag.flag;
-    }
-
-    return *this;
-}
-
-template<typename T>
-auto EnumFlags<T>::operator = (EnumFlags<T> &&enumFlag) TL_NOEXCEPT -> EnumFlags&
-{
-    if (this != &enumFlag) {
-        this->flag = std::move(enumFlag.flag);
-    }
-
-    return *this;
-}
-
-template<typename T>
-auto EnumFlags<T>::operator = (T flag) -> EnumFlags&
+constexpr auto EnumFlags<T>::operator = (T flag) noexcept -> EnumFlags&
 {
     this->flag = static_cast<Type>(flag);
     return *this;
 }
 
 template<typename T>
-auto EnumFlags<T>::isEnabled(T flag) const -> bool
+constexpr auto EnumFlags<T>::isEnabled(T flag) const noexcept -> bool
 {
     return 0 != (this->flag & static_cast<Type>(flag));
 }
 
 template<typename T>
-auto EnumFlags<T>::isDisabled(T flag) const -> bool
+constexpr auto EnumFlags<T>::isDisabled(T flag) const noexcept -> bool
 {
     return 0 == (this->flag & static_cast<Type>(flag));
 }
 
 template<typename T>
-void EnumFlags<T>::enable(T flag)
+constexpr void EnumFlags<T>::enable(T flag) noexcept
 {
     this->flag |= static_cast<Type>(flag);
 }
 
 template<typename T>
-void EnumFlags<T>::disable(T flag)
+constexpr void EnumFlags<T>::disable(T flag) noexcept
 {
     this->flag &= ~static_cast<Type>(flag);
 }
 
 template<typename T>
-void EnumFlags<T>::activeFlag(T flag, bool active)
+constexpr void EnumFlags<T>::activeFlag(T flag, bool active) noexcept
 {
     active ? enable(flag) : disable(flag);
 }
 
 template<typename T>
-void EnumFlags<T>::switchFlag(T flag)
+constexpr void EnumFlags<T>::switchFlag(T flag) noexcept
 {
     isEnabled(flag) ? disable(flag) : enable(flag);
 }
 
 template<typename T>
-void EnumFlags<T>::clear()
+constexpr void EnumFlags<T>::clear() noexcept
 {
     this->flag = static_cast<Type>(0);
 }
 
 template<typename T>
-auto EnumFlags<T>::flags() const -> T
+constexpr auto EnumFlags<T>::flags() const noexcept -> T
 {
     return static_cast<T>(this->flag);
 }
@@ -529,13 +494,15 @@ template<typename T>
 class Flags
 {
 
+    static_assert(std::is_integral<T>::value, "Type not supported. Flags only supports integer types");
+
 public:
 
     using Type = T; 
 
 private:
 
-  Type _flags;
+    Type _flags = 0;
 
 public:
 
@@ -545,7 +512,7 @@ public:
      * Initializes Flags with all bits cleared (value = 0).
      * Also enforces compile-time check that T is an integral type.
      */
-    Flags();
+    constexpr Flags() = default;
 
     /*!
      * \brief Copy constructor.
@@ -554,7 +521,7 @@ public:
      *
      * \param[in] flags The Flags object to copy
      */    
-    Flags(const Flags &flags);
+    constexpr Flags(const Flags &flags) = default;
 
     /*!
      * \brief Move constructor.
@@ -563,7 +530,7 @@ public:
      *
      * \param[in] flags The Flags object to move from
      */    
-    Flags(Flags &&flags) TL_NOEXCEPT;
+    constexpr Flags(Flags &&flags) noexcept = default;
 
     /*!
      * \brief Constructor with initializer list of bit positions.
@@ -584,7 +551,7 @@ public:
      * - Duplicate indices in the list result in the bit being enabled once
      * - Also enforces compile-time check that T is an integral type
      */    
-    Flags(std::initializer_list<T> flags);
+    constexpr Flags(std::initializer_list<T> flags);
 
     /*!
      * \brief Destructor.
@@ -597,7 +564,7 @@ public:
      * \param[in] flags Flags object to copy from
      * \return Reference to this object
      */    
-    auto operator = (const Flags<T> &flags) -> Flags&;
+    constexpr auto operator = (const Flags<T> &flags) -> Flags& = default;
 
     /*!
      * \brief Move assignment operator.
@@ -605,33 +572,35 @@ public:
      * \param[in] flags Flags object to move from
      * \return Reference to this object
      */    
-    auto operator = (Flags<T> &&flags) TL_NOEXCEPT -> Flags&;
+    constexpr auto operator = (Flags<T> &&flags) noexcept -> Flags& = default;
     
     /*!
      * \brief Check if the flag is enabled
      * \param[in] flag Flag to be checked
      * \return True if enabled and false otherwise
      */
-    auto isEnabled(T flag) const -> bool;
+    [[nodiscard]]
+    constexpr auto isEnabled(T flag) const noexcept  -> bool;
     
     /*!
      * \brief Check if the flag is disabled
      * \param[in] flag Flag to be checked
      * \return True if disabled and false otherwise
      */
-    auto isDisabled(T flag) const -> bool;
+    [[nodiscard]]
+    constexpr auto isDisabled(T flag) const noexcept -> bool;
     
     /*!
      * \brief Enable a flag
      * \param flag Flag to activate
      */
-    void enable(T flag);
+    constexpr void enable(T flag) noexcept;
     
     /*!
      * \brief Disable a flag
      * \param flag Flag to disable
      */
-    void disable(T flag);
+    constexpr void disable(T flag) noexcept;
     
     /*!
      * \brief Enables or disables a flag based on a boolean condition.
@@ -649,25 +618,26 @@ public:
      *
      * \see enable(), disable(), switchFlag()
      */
-    void activeFlag(T flag, bool active);
+    constexpr void activeFlag(T flag, bool active) noexcept;
     
     /*!
      * \brief Switch a flag
      * \param[in] flag Flag to switch
      */
-    void switchFlag(T flag);
+    constexpr void switchFlag(T flag) noexcept;
     
     /*!
      * \brief Deactivate all flags
      */
-    void clear();
+    constexpr void clear() noexcept;
 
     /*!
      * \brief Get the current flags value.
      *
      * \return The integer value containing all enabled bits
-     */     
-    auto flags() const -> T;
+     */    
+    [[nodiscard]]
+    constexpr auto flags() const noexcept -> T;
 
 };
 
@@ -697,101 +667,60 @@ using Flags_32 = Flags<uint32_t>;
 using Flags_64 = Flags<uint64_t>;
 
 
-template<typename T>
-Flags<T>::Flags()
-  : _flags(0)
-{
-    static_assert(std::is_integral<T>::value, "Type not supported. Flags only supports integer types");
-}
 
 template<typename T> 
-Flags<T>::Flags(const Flags &flags) 
-  : _flags(flags._flags)
-{
-    static_assert(std::is_integral<T>::value, "Type not supported. Flags only supports integer types");
-}
-
-template<typename T>
-Flags<T>::Flags(Flags &&flags) TL_NOEXCEPT
-  : _flags(flags._flags)
-{
-    static_assert(std::is_integral<T>::value, "Type not supported. Flags only supports integer types");
-}
-
-template<typename T> 
-Flags<T>::Flags(std::initializer_list<T> flags)
+constexpr Flags<T>::Flags(std::initializer_list<T> flags)
     : _flags(0)
 {
-    static_assert(std::is_integral<T>::value, "Flags only supports integral types");
     for (auto flg : flags) {
         this->enable(flg);
     }
 }
 
 template<typename T>
-auto Flags<T>::operator = (const Flags<T> &flags) -> Flags&
-{
-    if (this != &flags) {
-        this->_flags = flags._flags;
-    }
-
-    return *this;
-}
-
-template<typename T>
-auto Flags<T>::operator = (Flags<T> &&flags) TL_NOEXCEPT -> Flags&
-{
-    if (this != &flags) {
-        this->_flags = flags._flags;
-    }
-
-    return *this;
-}
-
-template<typename T>
-auto Flags<T>::isEnabled(T flag) const -> bool
+constexpr auto Flags<T>::isEnabled(T flag) const noexcept -> bool
 {
     return 0 != (this->_flags & T{1} << flag);
 }
 
 template<typename T>
-auto Flags<T>::isDisabled(T flag) const -> bool
+constexpr auto Flags<T>::isDisabled(T flag) const noexcept -> bool
 {
     return 0 == (this->_flags & T{1} << flag);
 }
 
 template<typename T>
-void Flags<T>::enable(T flag)
+constexpr void Flags<T>::enable(T flag) noexcept
 {
     this->_flags |= (T{1} << flag);
 }
 
 template<typename T> 
-void Flags<T>::disable(T flag)
+constexpr void Flags<T>::disable(T flag) noexcept
 {
     this->_flags &= ~(T{1} << flag);
 }
 
 template<typename T> 
-void Flags<T>::activeFlag(T flag, bool active)
+constexpr void Flags<T>::activeFlag(T flag, bool active) noexcept
 {
     active ? enable(flag) : disable(flag);
 }
 
 template<typename T> 
-void Flags<T>::switchFlag(T flag)
+constexpr void Flags<T>::switchFlag(T flag) noexcept
 {
     isEnabled(flag) ? disable(flag) : enable(flag);
 }
 
 template<typename T> 
-void Flags<T>::clear()
+constexpr void Flags<T>::clear() noexcept
 {
     this->_flags = T{0};
 }
 
 template<typename T> 
-auto Flags<T>::flags() const -> T
+constexpr auto Flags<T>::flags() const noexcept -> T
 {
     return this->_flags;
 }

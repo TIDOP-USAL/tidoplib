@@ -31,7 +31,7 @@
 
 #include "tidop/core/base/Defs.h"
 #include "tidop/rastertools/process/ImgProcess.h"
-#include "tidop/graphic/color.h"
+#include "tidop/graphic/Color.h"
 
 namespace tl
 {

@@ -208,7 +208,7 @@ public:
     /*!
      * \brief Default constructor
      */
-    Color() noexcept = default;
+    constexpr Color() noexcept = default;
 
     /*!
      * \brief Copy constructor
@@ -221,15 +221,6 @@ public:
      * \param[in] color Color object
      */
     constexpr Color(Color &&color) noexcept = default;
-
-    /*!
-     * \brief Constructor
-     * \param[in] color Color as an integer
-     */
-    //constexpr explicit Color(uint32_t color) noexcept
-    //  : mValue(color)
-    //{
-    //}
     
     /*!
      * \brief Constructor
@@ -246,13 +237,6 @@ public:
       : mValue(0xFF000000u | static_cast<uint32_t>(color))
     {
     }
-
-    /*!
-     * \brief Constructor
-     * \param[in] colorModel Color model
-     * \see ColorModel
-     */
-    //explicit Color(const ColorModel &colorModel);
     
     constexpr Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255)
       : mValue((uint32_t(a) << 24) | (uint32_t(r) << 16) |(uint32_t(g) << 8) |uint32_t(b))

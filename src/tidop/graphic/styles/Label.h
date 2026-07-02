@@ -26,9 +26,11 @@
 
 #include <array>
 
-#include "tidop/core/base/Defs.h"
-#include "tidop/graphic/font.h"
-#include "tidop/graphic/color.h"
+#include "tidop/config.h"
+#include "tidop/math/algebra/vector/Vector.h"
+#include "tidop/graphic/styles/Font.h"
+#include "tidop/graphic/Color.h"
+#include "tidop/graphic/styles/LabelAnchor.h"
 
 namespace tl
 {
@@ -72,214 +74,197 @@ public:
         stretched_to_segment  /*!< Every word of text attached to polyline is stretched to fit the segment of polyline and placed along that segment. The anchor point is a start of a segment. */
     };
 
-    /*!
-     * \enum AnchorPosition
-     * \brief Defines alignment of the label relative to its insertion point.
-     *
-     * Can be combined using bitwise operators to define horizontal and vertical alignment.
-     * For example: `horizontal_center | vertical_top`.
-     */
-    enum class AnchorPosition : uint8_t
-    {
-        vertical_baseline = 1 << 0,   /*!<  */
-        vertical_center = 1 << 1,     /*!<  */
-        vertical_top = 1 << 2,        /*!<  */
-        vertical_bottom = 1 << 3,     /*!<  */
-        horizontal_left = 1 << 4,     /*!<  */
-        horizontal_center = 1 << 5,   /*!<  */
-        horizontal_right = 1 << 6     /*!<  */
-    };
-
 private:
 
     Font mFont;
     std::string mText;
-    double mAngle;
+    double mAngle = 0.0;
     Color mForegroundColor;
     Color mBackgroundColor;
     Color mOutlineColor;
     Color mShadowColor;
-    double mStretch;
-    Placement mPlacement;
-    AnchorPosition mAnchorPosition;
-    std::array<double, 2> mOffset;
-    int mPerpendicularOffset;
-    bool mStrikeout;
-    uint32_t mPriorityLevel;
+    double mStretch = 100.;
+    Placement mPlacement = Placement::point;
+    LabelAnchor mAnchor;
+    Vector2d mOffset = {0.0, 0.0};
+    int mPerpendicularOffset = 0;
+    bool mStrikeout = false;
 
 public:
 
-    Label();
-    Label(const Label &label);
-    Label(Label &&label) TL_NOEXCEPT;
-    ~Label();
-
-    /*!
-     * \brief Get the label text
-     * \return The label text
-     */
-    auto text() const -> std::string;
-
-    /*!
-     * \brief Set the label text
-     * \param[in] text The label text
-     */
-    void setText(const std::string &text);
-
-    /*!
-     * \brief Get the rotation angle
-     * \return The rotation angle in decimal sexagesimal degrees
-     * \see angleConversion
-     */
-    auto angle() const -> double;
-
-    /*!
-     * \brief Set the rotation angle
-     * \param[in] angle The rotation angle in decimal sexagesimal degrees
-     * \see angleConversion
-     */
-    void setAngle(double angle);
-
-    /*!
-     * \brief Get the foreground color
-     * \return The foreground color
-     * \see Color
-     */
-    auto foregroundColor() const -> Color;
-
-    /*!
-     * \brief Set the foreground color
-     * \param[in] color The foreground color
-     * \see Color
-     */
-    void setForegroundColor(const Color &color);
-
-    /*!
-     * \brief Get the background color
-     * \return The background color
-     * \see Color
-     */
-    auto backgroundColor() const -> Color;
-
-    /*!
-     * \brief Set the background color
-     * \param[in] color The background color
-     * \see Color
-     */
-    void setBackgroundColor(const Color &color);
-
-    /*!
-     * \brief Get the outline color
-     * \return The outline color
-     * \see Color
-     */
-    auto outlineColor() const -> Color;
-
-    /*!
-     * \brief Set the outline color
-     * \param[in] color The outline color
-     * \see Color
-     */
-    void setOutlineColor(const Color &color);
-
-    /*!
-     * \brief Get the shadow color
-     * \return The shadow color
-     * \see Color
-     */
-    auto shadowColor() const -> Color;
-
-    /*!
-     * \brief Set the shadow color
-     * \param[in] color The shadow color
-     * \see Color
-     */
-    void setShadowColor(const Color &color);
-
-    /*!
-     * \brief Gets the horizontal stretch factor of the text.
-     * \return Stretch factor in percentage (e.g. 100 = no stretch, 200 = 2× wider).
-     */
-    auto stretchFactor() const -> double;
-
-    /*!
-     * \brief Set the stretch factor
-     * \param[in] stretch The stretch factor
-     */
-    void setStretchFactor(double stretch);
-
-    /*!
-     * \brief Get the label placement mode
-     * \return The label placement mode
-     * \see Placement
-     */
-    auto placement() const -> Placement;
-
-    /*!
-     * \brief Set the label placement mode
-     * \param[in] placement The label placement mode
-     * \see Placement
-     */
-    void setPlacement(Placement placement);
-
-    /*!
-     * \brief Get the label anchor position
-     * \return The label anchor position
-     * \see AnchorPosition
-     */
-    auto anchorPosition() const -> AnchorPosition;
-
-    /*!
-     * \brief Set the label anchor position
-     * \param[in] anchorPosition The label anchor position
-     * \see AnchorPosition
-     */
-    void setAnchorPosition(AnchorPosition anchorPosition);
-
-    /*!
-     * \brief Get the X offset of the label insertion point
-     * \return The X offset of the label insertion point
-     */
-    auto offsetX() const -> double;
-
-    /*!
-     * \brief Get the Y offset of the label insertion point
-     * \return The Y offset of the label insertion point
-     */
-    auto offsetY() const -> double;
-
-    /*!
-     * \brief Set the offset of the label insertion point
-     * \param[in] dx The X offset of the label insertion point
-     * \param[in] dy The Y offset of the label insertion point
-     */
-    void setOffset(double dx, double dy);
+    Label() = default;
+    Label(const Label &label) = default;
+    Label(Label &&label) noexcept = default;
+    ~Label() = default;
 
     /*!
      * \brief Assignment operator
      * \param label The label style
      * \return Reference to the label style
      */
-    auto operator =(const Label& label) -> Label&;
+    auto operator =(const Label &label) -> Label & = default;
 
     /*!
      * \brief Assignment move operator
      * \param label The label style
      * \return Reference to the label style
      */
-    auto operator =(Label &&label) TL_NOEXCEPT -> Label &;
+    auto operator =(Label &&label) noexcept -> Label & = default;
+
+    /*!
+     * \brief Get the label text
+     * \return The label text
+     */
+    [[nodiscard]]
+    auto text() const noexcept -> std::string;
+
+    /*!
+     * \brief Set the label text
+     * \param[in] text The label text
+     */
+    void setText(std::string text) noexcept;
+
+    /*!
+     * \brief Get the rotation angle
+     * \return The rotation angle in decimal sexagesimal degrees
+     * \see angleConversion
+     */
+    [[nodiscard]]
+    constexpr auto angle() const noexcept -> double;
+
+    /*!
+     * \brief Set the rotation angle
+     * \param[in] angle The rotation angle in decimal sexagesimal degrees
+     * \see angleConversion
+     */
+    constexpr void setAngle(double angle) noexcept;
+
+    /*!
+     * \brief Get the foreground color
+     * \return The foreground color
+     * \see Color
+     */
+    [[nodiscard]]
+    constexpr auto foregroundColor() const noexcept -> Color;
+
+    /*!
+     * \brief Set the foreground color
+     * \param[in] color The foreground color
+     * \see Color
+     */
+    constexpr void setForegroundColor(Color color) noexcept;
+
+    /*!
+     * \brief Get the background color
+     * \return The background color
+     * \see Color
+     */
+    [[nodiscard]]
+    constexpr auto backgroundColor() const noexcept -> Color;
+
+    /*!
+     * \brief Set the background color
+     * \param[in] color The background color
+     * \see Color
+     */
+    constexpr void setBackgroundColor(Color color) noexcept;
+
+    /*!
+     * \brief Get the outline color
+     * \return The outline color
+     * \see Color
+     */
+    [[nodiscard]]
+    constexpr auto outlineColor() const noexcept -> Color;
+
+    /*!
+     * \brief Set the outline color
+     * \param[in] color The outline color
+     * \see Color
+     */
+    constexpr void setOutlineColor(Color color) noexcept;
+
+    /*!
+     * \brief Get the shadow color
+     * \return The shadow color
+     * \see Color
+     */
+    [[nodiscard]]
+    constexpr auto shadowColor() const noexcept -> Color;
+
+    /*!
+     * \brief Set the shadow color
+     * \param[in] color The shadow color
+     * \see Color
+     */
+    constexpr void setShadowColor(Color color) noexcept;
+
+    /*!
+     * \brief Gets the horizontal stretch factor of the text.
+     * \return Stretch factor in percentage (e.g. 100 = no stretch, 200 = 2× wider).
+     */
+    [[nodiscard]]
+    constexpr auto stretchFactor() const noexcept -> double;
+
+    /*!
+     * \brief Set the stretch factor
+     * \param[in] stretch The stretch factor
+     */
+    constexpr void setStretchFactor(double stretch) noexcept;
+
+    /*!
+     * \brief Get the label placement mode
+     * \return The label placement mode
+     * \see Placement
+     */
+    [[nodiscard]]
+    constexpr auto placement() const noexcept -> Placement;
+
+    /*!
+     * \brief Set the label placement mode
+     * \param[in] placement The label placement mode
+     * \see Placement
+     */
+    constexpr void setPlacement(Placement placement) noexcept;
+
+    /*!
+     * \brief Get the label anchor position
+     * \return The label anchor position
+     * \see LabelAnchor
+     */
+    [[nodiscard]]
+    constexpr auto anchorPosition() const noexcept -> LabelAnchor;
+
+    /*!
+     * \brief Set the label anchor position
+     * \param[in] anchorPosition The label anchor position
+     * \see LabelAnchor
+     */
+    constexpr void setAnchorPosition(LabelAnchor anchor) noexcept;
+
+    [[nodiscard]]
+    constexpr auto offset() const noexcept -> Vector2d;
+
+    /*!
+     * \brief Set the offset of the label insertion point
+     * \param[in] dx The X offset of the label insertion point
+     * \param[in] dy The Y offset of the label insertion point
+     */
+    constexpr void setOffset(double dx, double dy) noexcept;
+
 
     /*!
      * \brief Sets the font of the label text.
      * \param[in] font Font to be used.
      */
-    void setFont(const Font &font);
+    void setFont(Font font) noexcept;
 
     /*!
      * \brief Gets the font used to render the label text.
      * \return Font definition.
      */
-    auto font() const -> Font;
+    [[nodiscard]]
+    constexpr auto font() const noexcept -> Font;
 
     /*!
      * \brief Gets the perpendicular offset from the geometry.
@@ -287,48 +272,139 @@ public:
      * Useful to move the label away from the feature when drawing along a line.
      * \return Perpendicular offset in pixels or drawing units.
      */
-    auto perpendicularOffset() const -> int;
+    [[nodiscard]]
+    constexpr auto perpendicularOffset() const noexcept -> int;
 
     /*!
      * \brief Sets the perpendicular offset from the geometry.
      * \param[in] offset Offset value.
      */
-    void setPerpendicularOffset(int perpendicularOffset);
-
-    /*!
-     * \brief Gets the rendering priority of the label.
-     * \return Priority level (higher = drawn on top).
-     */
-    auto priorityLevel() const -> uint32_t;
-
-    /*!
-     * \brief Sets the rendering priority of the label.
-     * \param[in] level Priority level.
-     */
-    void setPriorityLevel(uint32_t level);
-
-#ifdef TL_WARNING_DEPRECATED_METHOD
-    /*!
-     * \brief Get the stretch factor
-     * \return The stretch factor
-     * \deprecated This method is deprecated (v4.0), use stretchFactor() instead.
-     */
-    TL_DEPRECATED("stretchFactor()", "4.0")
-    auto stretch() const -> double;
-
-    /*!
-     * \brief Set the stretch factor
-     * \param[in] stretch The stretch factor
-     * \deprecated This method is deprecated (v4.0), use setStretchFactor() instead.
-     */
-    TL_DEPRECATED("setStretchFactor(double stretch)", "4.0")
-    void setStretch(double stretch);
-#endif // TL_WARNING_DEPRECATED_METHOD
+    constexpr void setPerpendicularOffset(int perpendicularOffset) noexcept;
 
 };
-ALLOW_BITWISE_FLAG_OPERATIONS(Label::AnchorPosition)
 
 
+
+inline auto Label::text() const noexcept -> std::string
+{
+    return mText;
+}
+
+inline void Label::setText(std::string text) noexcept
+{
+    mText = std::move(text);
+}
+
+constexpr auto Label::angle() const noexcept -> double
+{
+    return mAngle;
+}
+
+constexpr void Label::setAngle(double angle) noexcept
+{
+    mAngle = angle;
+}
+
+constexpr auto Label::foregroundColor() const noexcept -> Color
+{
+    return mForegroundColor;
+}
+
+constexpr void Label::setForegroundColor(Color color) noexcept
+{
+    mForegroundColor = std::move(color);
+}
+
+constexpr auto Label::backgroundColor() const noexcept -> Color
+{
+    return mBackgroundColor;
+}
+
+constexpr void Label::setBackgroundColor(Color color) noexcept
+{
+    mBackgroundColor = std::move(color);
+}
+
+constexpr auto Label::outlineColor() const noexcept -> Color
+{
+    return mOutlineColor;
+}
+
+constexpr void Label::setOutlineColor(Color color) noexcept
+{
+    mOutlineColor = std::move(color);
+}
+
+constexpr auto Label::shadowColor() const noexcept -> Color
+{
+    return mShadowColor;
+}
+
+constexpr void Label::setShadowColor(Color color) noexcept
+{
+    mShadowColor = std::move(color);
+}
+
+constexpr auto Label::stretchFactor() const noexcept -> double
+{
+    return mStretch;
+}
+
+constexpr void Label::setStretchFactor(double stretch) noexcept
+{
+    mStretch = stretch;
+}
+
+constexpr auto Label::placement() const noexcept -> Label::Placement
+{
+    return mPlacement;
+}
+
+constexpr void Label::setPlacement(Placement placement) noexcept
+{
+    mPlacement = placement;
+}
+
+constexpr auto Label::anchorPosition() const noexcept -> LabelAnchor
+{
+    return mAnchor;
+}
+
+constexpr void Label::setAnchorPosition(LabelAnchor anchor) noexcept
+{
+    mAnchor = anchor;
+}
+
+constexpr auto Label::offset() const noexcept -> Vector2d
+{
+    return mOffset;
+}
+
+constexpr void Label::setOffset(double dx, double dy) noexcept
+{
+    mOffset[0] = dx;
+    mOffset[1] = dy;
+}
+
+inline void Label::setFont(Font font) noexcept
+{
+    mFont = std::move(font);
+}
+
+constexpr auto Label::font() const noexcept -> Font
+{
+    return mFont;
+}
+
+constexpr auto Label::perpendicularOffset() const noexcept -> int
+{
+    return mPerpendicularOffset;
+}
+
+constexpr void Label::setPerpendicularOffset(int perpendicularOffset) noexcept
+{
+    mPerpendicularOffset = perpendicularOffset;
+}
 
 /*! \} */ 
 

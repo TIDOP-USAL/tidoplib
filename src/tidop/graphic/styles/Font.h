@@ -71,30 +71,30 @@ public:
 
 private:
 
-    std::string mName;
-    int mSize;
+    std::string mName = "Arial";
+    int mSize = 10;
     EnumFlags<Style> mStyle;
-    bool mUnderline;
-    bool mStrikethrough;
+    bool mUnderline = false;
+    bool mStrikethrough = false;
 
 public:
 
     /*!
      * \brief Default constructor
      */
-    Font();
+    constexpr Font() = default;
 
     /*!
      * \brief Copy constructor
      * \param[in] font Font to copy.
      */
-    Font(const Font &font);
+    constexpr Font(const Font &font) = default;
 
     /*!
      * \brief Move constructor
      * \param[in] font Font to move.
      */
-    Font(Font &&font) TL_NOEXCEPT;
+    constexpr Font(Font &&font) noexcept = default;
 
     /*!
      * \brief Constructs a font with custom parameters.
@@ -105,114 +105,194 @@ public:
      * \param[in] strikethrough Whether the font is struck through.
      * \see Style
      */
-    explicit Font(std::string name, 
-                  int size = 10, 
-                  Style style = Style::normal, 
-                  bool underline = false, 
-                  bool strikethrough = false);
-
-    /*!
-     * \brief Destructor.
-     */
-    ~Font() = default;
-
-    /*!
-     * \brief Returns the font family name.
-     * \return Font name.
-     */
-    auto name() const -> std::string;
-
-    /*!
-     * \brief Sets the font family name.
-     * \param[in] name Font name.
-     */
-    void setName(const std::string &name);
-
-    /*!
-     * \brief Returns the font size (in points).
-     * \return Font size.
-     */
-    auto size() const -> int;
-
-    /*!
-     * \brief Sets the font size (in points).
-     * \param[in] size Font size.
-     */
-    void setSize(int size);
-
-    /*!
-     * \brief Checks if the font is bold.
-     * \return True if bold.
-     */
-    auto isBold() const -> bool;
-
-    /*!
-     * \brief Enables or disables bold style.
-     * \param[in] active True to enable bold.
-     */
-    void setBold(bool active);
-
-    /*!
-     * \brief Checks if the font is italic.
-     * \return True if italic.
-     */
-    auto isItalic() const -> bool;
-
-    /*!
-     * \brief Enables or disables italic style.
-     * \param[in] active True to enable italic.
-     */
-    void setItalic(bool active);
-
-    /*!
-     * \brief Checks if the font is underlined.
-     * \return True if underlined.
-     */
-    auto isUnderline() const -> bool;
-
-    /*!
-     * \brief Enables or disables underline.
-     * \param[in] active True to enable underline.
-     */
-    void setUnderline(bool active);
-
-    /*!
-     * \brief Checks if the font has strikethrough.
-     * \return True if strikethrough is enabled.
-     */
-    auto isStrikethrough() const -> bool;
-
-    /*!
-     * \brief Enables or disables strikethrough.
-     * \param[in] active True to enable strikethrough.
-     */
-    void setStrikethrough(bool active);
-
-    /*!
-     * \brief Sets the font style.
-     * \param[in] style Bitwise combination of Style flags.
-     */
-    void setStyle(Style style);
+    explicit constexpr Font(std::string name,
+                            int size = 10, 
+                            Style style = Style::normal, 
+                            bool underline = false, 
+                            bool strikethrough = false);
 
     /*!
      * \brief Copy assignment operator.
      * \param[in] font Font to assign.
      * \return Reference to this object.
      */
-    auto operator =(const Font& font) -> Font&;
+    constexpr auto operator =(const Font &font) -> Font & = default;
 
     /*!
      * \brief Move assignment operator.
      * \param[in] font Font to move.
      * \return Reference to this object.
      */
-    auto operator =(Font&& font) TL_NOEXCEPT -> Font&;
+    constexpr auto operator =(Font &&font) noexcept -> Font & = default;
+
+    /*!
+     * \brief Returns the font family name.
+     * \return Font name.
+     */
+    [[nodiscard]]
+    constexpr auto name() const noexcept -> std::string;
+
+    /*!
+     * \brief Sets the font family name.
+     * \param[in] name Font name.
+     */
+    void setName(const std::string &name) noexcept;
+
+    /*!
+     * \brief Returns the font size (in points).
+     * \return Font size.
+     */
+    [[nodiscard]]
+    constexpr auto size() const noexcept -> int;
+
+    /*!
+     * \brief Sets the font size (in points).
+     * \param[in] size Font size.
+     */
+    constexpr void setSize(int size) noexcept;
+
+    /*!
+     * \brief Checks if the font is bold.
+     * \return True if bold.
+     */
+    [[nodiscard]]
+    constexpr auto isBold() const noexcept -> bool;
+
+    /*!
+     * \brief Enables or disables bold style.
+     * \param[in] active True to enable bold.
+     */
+    constexpr void setBold(bool active) noexcept;
+
+    /*!
+     * \brief Checks if the font is italic.
+     * \return True if italic.
+     */
+    [[nodiscard]] 
+    constexpr auto isItalic() const noexcept -> bool;
+
+    /*!
+     * \brief Enables or disables italic style.
+     * \param[in] active True to enable italic.
+     */
+    constexpr void setItalic(bool active) noexcept;
+
+    /*!
+     * \brief Checks if the font is underlined.
+     * \return True if underlined.
+     */
+    [[nodiscard]] 
+    constexpr auto isUnderline() const noexcept -> bool;
+
+    /*!
+     * \brief Enables or disables underline.
+     * \param[in] active True to enable underline.
+     */
+    constexpr void setUnderline(bool active) noexcept;
+
+    /*!
+     * \brief Checks if the font has strikethrough.
+     * \return True if strikethrough is enabled.
+     */
+    [[nodiscard]] 
+    constexpr auto isStrikethrough() const noexcept -> bool;
+
+    /*!
+     * \brief Enables or disables strikethrough.
+     * \param[in] active True to enable strikethrough.
+     */
+    constexpr void setStrikethrough(bool active) noexcept;
+
+    /*!
+     * \brief Sets the font style.
+     * \param[in] style Bitwise combination of Style flags.
+     */
+    constexpr void setStyle(Style style) noexcept;
 
 
 };
 ALLOW_BITWISE_FLAG_OPERATIONS(Font::Style)
 
-/*! \} */ // end of GraphicEntities
 
-} // End namespace tl
+constexpr Font::Font(std::string name,
+                     int size,
+                     Style style,
+                     bool underline,
+                     bool strikethrough)
+  : mName(std::move(name)),
+    mSize(size),
+    mStyle(style),
+    mUnderline(underline),
+    mStrikethrough(strikethrough)
+{
+}
+
+constexpr auto Font::name() const noexcept -> std::string
+{
+    return mName;
+}
+
+inline void Font::setName(const std::string &name) noexcept
+{
+    mName = name;
+}
+
+constexpr auto Font::size() const noexcept -> int
+{
+    return mSize;
+}
+
+constexpr void Font::setSize(int size) noexcept
+{
+    mSize = size;
+}
+
+constexpr auto Font::isBold() const noexcept -> bool
+{
+    return mStyle.isEnabled(Style::bold);
+}
+
+constexpr void Font::setBold(bool active) noexcept
+{
+    mStyle.activeFlag(Style::bold, active);
+}
+
+constexpr auto Font::isItalic() const noexcept -> bool
+{
+    return mStyle.isEnabled(Style::italic);
+}
+
+constexpr void Font::setItalic(bool active) noexcept
+{
+    mStyle.activeFlag(Style::italic, active);
+}
+
+constexpr auto Font::isUnderline() const noexcept -> bool
+{
+    return mUnderline;
+}
+
+constexpr void Font::setUnderline(bool active) noexcept
+{
+    mUnderline = active;
+}
+
+constexpr auto Font::isStrikethrough() const noexcept -> bool
+{
+    return mStrikethrough;
+}
+
+constexpr void Font::setStrikethrough(bool active) noexcept
+{
+    mStrikethrough = active;
+}
+
+constexpr void Font::setStyle(Style style) noexcept
+{
+    mStyle = style;
+}
+
+/*! \} */
+
+} // namespace tl
 

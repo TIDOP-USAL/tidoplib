@@ -23,7 +23,6 @@
  **************************************************************************/
 
 #include "tidop/graphic/color/Color.h"
-//#include "tidop/graphic/color/ColorModel.h"
 
 #include <random>
 #include <utility>
@@ -56,11 +55,6 @@ Color::Color(std::string_view color) noexcept
         break;
     }
 }
-
-//Color::Color(const ColorModel &colorModel)
-//{
-//    *this = colorModel.toColor();
-//}
 
 auto Color::toHexRGB() const -> std::string
 {

@@ -28,10 +28,10 @@
 #include <optional>
 
 #include "tidop/core/base/Defs.h"
-#include "tidop/graphic/styles/label.h"
-#include "tidop/graphic/styles/pen.h"
-#include "tidop/graphic/styles/symbol.h"
-#include "tidop/graphic/styles/brush.h"
+#include "tidop/graphic/styles/Label.h"
+#include "tidop/graphic/styles/Pen.h"
+#include "tidop/graphic/styles/Symbol.h"
+#include "tidop/graphic/styles/Brush.h"
 
 namespace tl
 {

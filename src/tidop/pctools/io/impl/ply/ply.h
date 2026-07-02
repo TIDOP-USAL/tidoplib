@@ -32,7 +32,7 @@
 #include "tidop/core/base/Path.h"
 #include "tidop/core/base/endian.h"
 #include "tidop/geometry/primitives/Point.h"
-#include "tidop/graphic/color.h"
+#include "tidop/graphic/Color.h"
 
 #include <fstream>
 #include <memory>

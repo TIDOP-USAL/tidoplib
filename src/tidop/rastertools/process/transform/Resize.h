@@ -25,7 +25,7 @@
 #pragma once
 
 #include "tidop/config.h"
-#include "tidop/graphic/color.h"
+#include "tidop/graphic/Color.h"
 
 #include <opencv2/imgproc.hpp>
 #include <opencv2/core.hpp>

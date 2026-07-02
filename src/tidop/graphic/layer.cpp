@@ -26,10 +26,10 @@
 
 #include "tidop/graphic/layer.h"
 
-#include "tidop/graphic/entities/entity.h"
-#include "tidop/graphic/entities/point.h"
-#include "tidop/graphic/entities/linestring.h"
-#include "tidop/graphic/entities/polygon.h"
+#include "tidop/graphic/entities/GraphicEntity.h"
+//#include "tidop/graphic/entities/GPoint.h"
+//#include "tidop/graphic/entities/GLineString.h"
+//#include "tidop/graphic/entities/GPolygon.h"
 #include "tidop/geometry/algorithms/spatial/Envelope.h"
 
 namespace tl

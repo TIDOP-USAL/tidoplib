@@ -24,7 +24,10 @@
 
 #define BOOST_TEST_MODULE Tidop graphic linestring test
 #include <boost/test/unit_test.hpp>
-#include <tidop/graphic/entities/linestring.h>
+#include <tidop/graphic/entities/GLineString.h>
+#include <tidop/graphic/entities/GLineString3D.h>
+#include <tidop/graphic/entities/GMultiLineString.h>
+#include <tidop/graphic/entities/GMultiLineString3D.h>
 
 
 using namespace tl;

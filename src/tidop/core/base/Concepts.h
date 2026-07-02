@@ -1,4 +1,4 @@
-﻿/**************************************************************************
+/**************************************************************************
  *                                                                        *
  * Copyright (C) 2021 by Tidop Research Group                             *
  * Copyright (C) 2021 by Esteban Ruiz de Oña Crespo                       *
@@ -27,6 +27,7 @@
 #include <tidop/config.h>
 
 #include <concepts>
+#include <ranges>
 
 namespace tl
 {

@@ -22,7 +22,7 @@
  *                                                                        *
  **************************************************************************/
 
-#include "tidop/graphic/styles/gstyle.h"
+#include "tidop/graphic/styles/GraphicStyle.h"
 
 
 namespace tl

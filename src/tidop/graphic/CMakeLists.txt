@@ -36,7 +36,6 @@ if (BUILD_TL_GRAPHIC)
 
     add_files_to_project(${PROJECT_NAME} 
                         SOURCE_FILES 
-                            font.cpp
                             linealgorithms.cpp
                             layer.cpp
                             canvas.cpp
@@ -46,20 +45,24 @@ if (BUILD_TL_GRAPHIC)
                             color/ColorConversion.cpp
                             color/ColorHSL.cpp
                             color/ColorHSV.cpp
-                            entities/entity.cpp
-                            entities/point.cpp
-                            entities/polygon.cpp
-                            entities/linestring.cpp
-                            styles/brush.cpp
-                            styles/gstyle.cpp
-                            styles/label.cpp
-                            styles/pen.cpp
-                            styles/symbol.cpp
+                            entities/GLineString.cpp
+                            entities/GLineString3D.cpp
+                            entities/GMultiLineString.cpp
+                            entities/GMultiLineString3D.cpp
+                            entities/GMultiPoint.cpp
+                            entities/GMultiPoint3D.cpp
+                            entities/GMultiPolygon.cpp
+                            entities/GMultiPolygon3D.cpp
+                            entities/GPoint.cpp
+                            entities/GPoint3D.cpp
+                            entities/GPolygon.cpp
+                            entities/GPolygon3D.cpp
+                            entities/GraphicEntity.cpp
+                            styles/GraphicStyle.cpp
                         HEADER_FILES
-                            color.h
-                            font.h
+                            Color.h
                             linealgorithms.h
-                            styles.h
+                            Styles.h
                             layer.h
                             canvas.h
                             painter.h
@@ -73,15 +76,27 @@ if (BUILD_TL_GRAPHIC)
                             color/ColorRGB.h
                             color/ColorRGBA.h
                             color/Concepts.h
-                            entities/entity.h
-                            entities/point.h
-                            entities/polygon.h
-                            entities/linestring.h
-                            styles/brush.h
-                            styles/gstyle.h
-                            styles/label.h
-                            styles/pen.h
-                            styles/symbol.h)
+                            entities/GLineString.h
+                            entities/GLineString3D.h
+                            entities/GMultiLineString.h
+                            entities/GMultiLineString3D.h
+                            entities/GMultiPoint.h
+                            entities/GMultiPoint3D.h
+                            entities/GMultiPolygon.h
+                            entities/GMultiPolygon3D.h
+                            entities/GPoint.h
+                            entities/GPoint3D.h
+                            entities/GPolygon.h
+                            entities/GPolygon3D.h
+                            entities/GraphicEntity.h
+                            styles/Brush.h
+                            styles/BrushPattern.h
+                            styles/Font.h
+                            styles/GraphicStyle.h
+                            styles/Label.h
+                            styles/LabelAnchor.h
+                            styles/Pen.h
+                            styles/Symbol.h)
 
     add_library(${PROJECT_NAME} ${LIB_TYPE}
                 ${PROJECT_SOURCE_FILES}

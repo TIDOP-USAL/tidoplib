@@ -24,7 +24,7 @@
 
 #define BOOST_TEST_MODULE Tidop graphic font test
 #include <boost/test/unit_test.hpp>
-#include <tidop/graphic/font.h>
+#include <tidop/graphic/styles/Font.h>
 
 using namespace tl;
 

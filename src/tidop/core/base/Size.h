@@ -85,14 +85,16 @@ template<typename T>
 class Size
 {
 
+    static_assert(std::is_arithmetic<T>::value, "Only arithmetic types are allowed");
+
 public:
 
     using value_type = T;
 
 public:
 
-    T width;
-    T height;
+    T width = 0;
+    T height = 0;
 
 public:
 
@@ -101,7 +103,7 @@ public:
      * Constructs a empty Size object. isValid() returns false
      * and isEmpty() return true.
      */
-    constexpr Size();
+    constexpr Size() = default;
 
     /*!
      * \brief Constructs a size with the given width and height.
@@ -114,13 +116,13 @@ public:
      * \brief Copy constructor
      * \param[in] size Size object to copy
      */
-    Size(const Size &size);
+    constexpr Size(const Size &size) = default;
 
     /*!
      * \brief Move constructor
      * \param[in] size Size object to move
      */
-    Size(Size &&size) TL_NOEXCEPT;
+    constexpr Size(Size &&size) noexcept = default;
 
     ~Size() = default;
 
@@ -128,31 +130,34 @@ public:
      * \brief Copy assignment operator
      * \param[in] size Size object to copy
      */
-    auto operator = (const Size &size) -> Size&;
+    constexpr auto operator = (const Size &size) -> Size& = default;
 
     /*!
      * \brief Move assignment operator
      * \param[in] size Size object to move
      */
-    auto operator = (Size &&size) TL_NOEXCEPT -> Size&;
+    constexpr auto operator = (Size &&size) noexcept -> Size& = default;
 
     /*!
      * \brief Check if Size object is empty
      * \return Returns true if either of the width and height is less than or equal to 0; otherwise returns false.
      */
-    constexpr auto isEmpty() const -> bool;
+    [[nodiscard]]
+    constexpr auto isEmpty() const noexcept -> bool;
 
     /*!
      * \brief Check if Size object is valid
      * \return Returns true if both the width and height is equal to or greater than 0; otherwise returns false.
      */
-    constexpr auto isValid() const -> bool;
+    [[nodiscard]]
+    constexpr auto isValid() const noexcept -> bool;
 
     /*!
      * \brief Calculates the area of the size.
      * \return The product of width and height.
      */
-    constexpr auto area() const -> T;
+    [[nodiscard]]
+    constexpr auto area() const noexcept -> T;
 
     /*!
      * \brief Type conversion
@@ -168,73 +173,28 @@ using Sized = Size<double>;
 
 
 
-template<typename T>
-constexpr Size<T>::Size()
-  : width{0},
-    height{0}
-{
-    static_assert(std::is_arithmetic<T>::value, "Only arithmetic types are allowed");
-}
 
 template<typename T>
 constexpr Size<T>::Size(T width, T height)
   : width(width),
     height(height)
 {
-    static_assert(std::is_arithmetic<T>::value, "Only arithmetic types are allowed");
 }
 
 template<typename T>
-Size<T>::Size(const Size &size)
-  : width(size.width),
-    height(size.height)
-{
-    static_assert(std::is_arithmetic<T>::value, "Only arithmetic types are allowed");
-}
-
-template<typename T>
-Size<T>::Size(Size &&size) TL_NOEXCEPT
-  : width(size.width),
-    height(size.height)
-{
-}
-
-template<typename T>
-auto Size<T>::operator = (const Size &size) -> Size<T>&
-{
-    if (this != &size) {
-        this->width = size.width;
-        this->height = size.height;
-    }
-
-    return *this;
-}
-
-template<typename T>
-auto Size<T>::operator = (Size &&size) TL_NOEXCEPT -> Size<T>&
-{
-    if (this != &size) {
-        this->width = size.width;
-        this->height = size.height;
-    }
-
-    return *this;
-}
-
-template<typename T>
-constexpr auto Size<T>::isEmpty() const -> bool
+constexpr auto Size<T>::isEmpty() const noexcept -> bool
 {
     return width <= static_cast<T>(0) || height <= static_cast<T>(0);
 }
 
 template<typename T>
-constexpr auto Size<T>::isValid() const -> bool
+constexpr auto Size<T>::isValid() const noexcept -> bool
 {
     return width > static_cast<T>(0) && height > static_cast<T>(0);
 }
 
 template<typename T>
-constexpr auto Size<T>::area() const -> T
+constexpr auto Size<T>::area() const noexcept -> T
 {
     return width * height;
 }

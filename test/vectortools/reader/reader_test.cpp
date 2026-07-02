@@ -26,9 +26,12 @@
 #include <boost/test/unit_test.hpp>
 #include <tidop/vectortools/io/Reader.h>
 #include <tidop/graphic/layer.h>
-#include <tidop/graphic/entities/point.h>
-#include <tidop/graphic/entities/linestring.h>
-#include <tidop/graphic/entities/polygon.h>
+#include <tidop/graphic/entities/GPoint.h>
+#include <tidop/graphic/entities/GLineString.h>
+#include <tidop/graphic/entities/GPolygon.h>
+#include <tidop/graphic/entities/GMultiPoint.h>
+#include <tidop/graphic/entities/GMultiPolygon.h>
+#include <tidop/graphic/entities/GMultiLineString.h>
 
 
 #include <array>

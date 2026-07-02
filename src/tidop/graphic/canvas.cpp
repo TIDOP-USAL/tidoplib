@@ -62,8 +62,8 @@ void CanvasCV::draw(const Point2d &point, const GraphicStyle &style)
     const auto style_pen = style.pen();
     Color c = style_pen->color();
     cv::Scalar color = colorToCvScalar(c);
-    Vector<double, 2> offset{style_symbol->offsetX(), style_symbol->offsetY()};
-    Point2i pt = static_cast<Point2i>(point + offset);
+
+    Point2i pt = static_cast<Point2i>(point + style_symbol->offset());
 
     switch (style_symbol->shape()) {
     case Symbol::Shape::cross:

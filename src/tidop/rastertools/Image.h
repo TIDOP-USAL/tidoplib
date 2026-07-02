@@ -26,7 +26,7 @@
 
 #include "tidop/rastertools/DataType.h"
 #include "tidop/core/base/size.h"
-#include "tidop/graphic/color.h"
+#include "tidop/graphic/Color.h"
 
 namespace tl
 {

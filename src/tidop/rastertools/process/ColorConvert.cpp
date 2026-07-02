@@ -24,7 +24,7 @@
 
 #include "tidop/rastertools/process/ColorConvert.h"
 
-#include "tidop/graphic/color.h"
+#include "tidop/graphic/Color.h"
 #include "tidop/core/concurrency/Parallel.h"
 #include "tidop/core/base/Exception.h"
 
