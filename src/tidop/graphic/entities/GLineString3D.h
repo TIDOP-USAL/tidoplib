@@ -24,119 +24,95 @@
 
 #pragma once
 
-#include <numeric>
-
-#include "tidop/geometry/entities/entity.h"
 #include "tidop/geometry/primitives/Point.h"
-#include "tidop/graphic/base/Rect.h"
+#include "tidop/geometry/primitives/LineString.h"
+#include "tidop/geometry/algorithms/spatial/Envelope.h"
+#include "tidop/graphic/entities/GraphicEntity.h"
 
 namespace tl
 {
 
-/*! \addtogroup Shapes
+/*! \addtogroup GraphicEntities
  *  \{
  */
 
 
 /*!
- * \brief Square class
- *
- * The `Square` class represents a square, a 2D geometric shape where 
- * all sides are of equal length.
+ * \brief 3D polyline graphic class
  */
-template<typename T>
-class Square
-  : public Shape
+class TL_EXPORT GLineString3D
+  : public GraphicEntity
 {
-
-public:
-
-    using value_type = T;
 
 private:
 
-    T side;
+    LineString<Point3d> mGeometry;
 
 public:
 
     /*!
      * \brief Default constructor
-     *
-     * Creates a square with side length 0.
      */
-    constexpr Square() = default;
+    GLineString3D() = default;
+
+    explicit GLineString3D(size_t size);
 
     /*!
-     * \brief Constructor with parameter
-     * \param[in] side The length of one side of the square
-     *
-     * Creates a square with the specified side length.
+     * \brief Constructor from a 3D polyline
+     * Represents a 3D polyline without style
+     * \param[in] gLineString3D LineString3D class object
+     * \see LineString3D
      */
-    constexpr Square(T side);
-
-    constexpr Square(const Square<T> &square) = default;
-    constexpr Square(Square<T> &&square) noexcept = default;
-
-    constexpr auto operator=(const Square<T> &square) -> Square<T> & = default;
-    constexpr auto operator=(Square<T> &&square) noexcept -> Square<T> & = default;
-
+    explicit GLineString3D(const LineString<Point3d> &gLineString3D);
 
     /*!
-     * \brief Get the area of the square
-     * \return The area of the square
-     *
-     * The area of a square is simply the side length squared.
+     * \brief Copy constructor
      */
-    [[nodiscard]]
-    constexpr auto area() const noexcept -> double override;
+    GLineString3D(const GLineString3D &gLineString3D) = default;
 
     /*!
-     * \brief Set the side length
-     * \param[in] side The length of the square's side
+     * \brief Move constructor
      */
-    constexpr void setSide(T side);
+    GLineString3D(GLineString3D &&gLineString3D) noexcept = default;
+
+    ~GLineString3D() override = default;
 
     /*!
-     * \brief Get the side length
-     * \return The length of the square's side
+     * \brief Assignment copy operator
+     * \param[in] gLineString3D GLineString3D object to be copied
+     * \return Object reference
      */
-    [[nodiscard]]
-    constexpr auto getSide() const noexcept  -> T;
+    auto operator =(const GLineString3D& gLineString3D) -> GLineString3D& = default;
+
+    /*!
+     * \brief Assignment move operator
+     * \param[in] gLineString3D GLineString3D object that moves
+     * \return Object reference
+     */
+    auto operator =(GLineString3D&& gLineString3D) noexcept -> GLineString3D& = default;
+
+    auto geometry() const -> const LineString<Point3d> & { return mGeometry; }
+    auto geometry() -> LineString<Point3d> & { return mGeometry; }
+
+    auto isMultiEntity() const -> bool override;
+    auto isSimpleEntity() const -> bool override;
+
+    void draw(Painter &painter) const override;
+    auto window() const -> BoundingBox<Point2d> override;
+    auto clone() const -> std::unique_ptr<GraphicEntity> override;
 };
 
 
 
-//template<typename T>
-//Square<T>::Square()
-//  : side(0)
-//{
-//}
-
-template<typename T>
-constexpr Square<T>::Square(T side)
-  : side(side)
+inline auto GLineString3D::isMultiEntity() const -> bool
 {
+    return false;
 }
 
-template<typename T>
-constexpr auto Square<T>::area() const noexcept -> double
+inline auto GLineString3D::isSimpleEntity() const -> bool
 {
-    return static_cast<double>(side * side);
-}
-
-template<typename T>
-constexpr void Square<T>::setSide(T side)
-{
-    this->side = side;
-}
-
-template<typename T>
-constexpr auto Square<T>::getSide() const noexcept -> T
-{
-    return side;
+    return true;
 }
 
 
-/*! \} */ 
-
-}
+} // namespace tl

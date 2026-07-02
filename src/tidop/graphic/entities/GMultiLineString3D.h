@@ -24,119 +24,82 @@
 
 #pragma once
 
-#include <numeric>
-
-#include "tidop/geometry/entities/entity.h"
 #include "tidop/geometry/primitives/Point.h"
-#include "tidop/graphic/base/Rect.h"
+#include "tidop/geometry/primitives/MultiLineString.h"
+#include "tidop/geometry/algorithms/spatial/Envelope.h"
+#include "tidop/graphic/entities/GraphicEntity.h"
 
 namespace tl
 {
 
-/*! \addtogroup Shapes
+/*! \addtogroup GraphicEntities
  *  \{
  */
 
 
 /*!
- * \brief Square class
- *
- * The `Square` class represents a square, a 2D geometric shape where 
- * all sides are of equal length.
+ * \brief 3D multi-polyline graphic class
  */
-template<typename T>
-class Square
-  : public Shape
+class TL_EXPORT GMultiLineString3D
+  : public GraphicEntity
 {
-
-public:
-
-    using value_type = T;
-
 private:
 
-    T side;
+    MultiLineString<Point3d> mGeometry;
 
 public:
 
     /*!
      * \brief Default constructor
-     *
-     * Creates a square with side length 0.
      */
-    constexpr Square() = default;
+    GMultiLineString3D() = default;
+
+    explicit GMultiLineString3D(size_t size);
+
+    explicit GMultiLineString3D(const MultiLineString<Point3d> &gMultiLineString3D);
 
     /*!
-     * \brief Constructor with parameter
-     * \param[in] side The length of one side of the square
-     *
-     * Creates a square with the specified side length.
+     * \brief Copy constructor
      */
-    constexpr Square(T side);
-
-    constexpr Square(const Square<T> &square) = default;
-    constexpr Square(Square<T> &&square) noexcept = default;
-
-    constexpr auto operator=(const Square<T> &square) -> Square<T> & = default;
-    constexpr auto operator=(Square<T> &&square) noexcept -> Square<T> & = default;
-
+    GMultiLineString3D(const GMultiLineString3D &gMultiLineString3D) = default;
 
     /*!
-     * \brief Get the area of the square
-     * \return The area of the square
-     *
-     * The area of a square is simply the side length squared.
+     * \brief Move constructor
      */
-    [[nodiscard]]
-    constexpr auto area() const noexcept -> double override;
+    GMultiLineString3D(GMultiLineString3D &&gMultiLineString3D) noexcept = default;
+
+    ~GMultiLineString3D() override = default;
 
     /*!
-     * \brief Set the side length
-     * \param[in] side The length of the square's side
+     * \brief Assignment copy operator
      */
-    constexpr void setSide(T side);
+    auto operator =(const GMultiLineString3D &gMultiLineString3D) -> GMultiLineString3D& = default;
 
     /*!
-     * \brief Get the side length
-     * \return The length of the square's side
+     * \brief Assignment move operator
      */
-    [[nodiscard]]
-    constexpr auto getSide() const noexcept  -> T;
+    auto operator =(GMultiLineString3D &&gMultiLineString3D) noexcept -> GMultiLineString3D& = default;
+
+    auto geometry() const -> const MultiLineString<Point3d> & { return mGeometry; }
+    auto geometry() -> MultiLineString<Point3d> & { return mGeometry; }
+
+    auto isMultiEntity() const -> bool override;
+    auto isSimpleEntity() const -> bool override;
+    auto window() const -> BoundingBox<Point2d> override;
+    void draw(Painter &painter) const override;
+    auto clone() const -> std::unique_ptr<GraphicEntity> override;
 };
 
 
-
-//template<typename T>
-//Square<T>::Square()
-//  : side(0)
-//{
-//}
-
-template<typename T>
-constexpr Square<T>::Square(T side)
-  : side(side)
+inline auto GMultiLineString3D::isMultiEntity() const -> bool
 {
+    return true;
 }
 
-template<typename T>
-constexpr auto Square<T>::area() const noexcept -> double
+inline auto GMultiLineString3D::isSimpleEntity() const -> bool
 {
-    return static_cast<double>(side * side);
-}
-
-template<typename T>
-constexpr void Square<T>::setSide(T side)
-{
-    this->side = side;
-}
-
-template<typename T>
-constexpr auto Square<T>::getSide() const noexcept -> T
-{
-    return side;
+    return false;
 }
 
 
-/*! \} */ 
-
-}
+} // namespace tl

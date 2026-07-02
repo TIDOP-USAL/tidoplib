@@ -22,35 +22,40 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
-
-#include "tidop/core/base/Defs.h"
-
-#ifdef TL_HAVE_GDAL
-TL_DISABLE_WARNINGS
-#include "ogrsf_frmts.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
-
-#include "tidop/graphic/model/TableField.h"
+#include "tidop/graphic/entities/GPolygon.h"
+#include "tidop/graphic/render/Painter.h"
+#include "tidop/geometry/algorithms/spatial/Envelope.h"
 
 namespace tl
 {
 
-/*! \addtogroup VectorTools
- *  \{
- */
+
+GPolygon::GPolygon(size_t size)
+  : mGeometry(size),
+    GraphicEntity(GraphicEntity::Type::polygon_2d)
+{
+}
+
+GPolygon::GPolygon(const Polygon<Point2d> &polygon)
+  : mGeometry(polygon),
+    GraphicEntity(GraphicEntity::Type::polygon_2d)
+{
+}
+
+auto GPolygon::window() const -> BoundingBox<Point2d>
+{
+    return tl::envelope(this->geometry());
+}
+
+void GPolygon::draw(Painter &painter) const
+{
+    painter.drawPolygon(*this);
+}
+
+auto GPolygon::clone() const -> std::unique_ptr<GraphicEntity>
+{
+    return std::make_unique<GPolygon>(*this);
+}
 
 
-
-#ifdef TL_HAVE_GDAL
-TL_EXPORT TableField::Type typeFromGdal(OGRFieldType ogrType);
-TL_EXPORT OGRFieldType typeToGdal(TableField::Type type);
-#endif // TL_HAVE_GDAL
-
-
-/*! \} */ // end of vector
-
-
-} // End namespace tl
-
+} // namespace tl

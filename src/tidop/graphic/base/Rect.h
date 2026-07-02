@@ -22,6 +22,18 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file Rect.h
+ * \brief 2D rectangle class.
+ *
+ * This file defines the `Rect` class template, which represents an axis-aligned
+ * rectangle in 2D space defined by its top-left corner (origin) and its size
+ * (width and height). The rectangle provides methods for geometry queries such as
+ * containment, corner access, normalization, and conversion to a `BoundingBox`.
+ *
+ * \ingroup Geometry
+ * \see tl::Point, tl::Size, tl::BoundingBox
+ */
+
 #pragma once
 
 #include <limits>
@@ -39,8 +51,24 @@ namespace tl
  */
 
 /*!
- * \brief Class for 2D rectangles.
+ * \class Rect
+ * \brief 2D axis-aligned rectangle defined by an origin point and a size.
  *
+ * \tparam T Coordinate type (must be arithmetic, e.g., `int`, `float`, `double`).
+ *
+ * A rectangle is represented by its top-left corner (origin) and its dimensions
+ * (width and height). The class provides methods to access corners, test
+ * containment, normalize (ensure positive width and height), and convert to
+ * a `BoundingBox`. Rectangles can be empty or invalid if width or height
+ * is less than or equal to zero.
+ *
+ * ### Example
+ * \code
+ * Rect<int> r(10, 20, 100, 50);  // (x=10, y=20, width=100, height=50)
+ * auto tl = r.topLeft();         // (10, 20)
+ * auto br = r.bottomRight();     // (110, 70)
+ * bool contains = r.contains(Point<int>(50, 40)); // true
+ * \endcode
  */
 template<typename T>
 class Rect
@@ -126,25 +154,43 @@ public:
      * \param[in] rect Rect object to move
      */
     constexpr auto operator = (Rect &&rect) noexcept -> Rect& = default;
-    
+
+    /*!
+     * \brief Returns the origin (top-left corner).
+     * \return Const reference to the origin point.
+     */
     [[nodiscard]]
     constexpr auto origin() const noexcept -> const Point<T> &;
 
     /*!
      * \brief Returns the size of the rectangle.
+     * \return Size object containing width and height.
      */
     [[nodiscard]]
     constexpr auto size() const noexcept -> Size<T>;
 
+    /*!
+     * \brief Returns the X-coordinate of the top-left corner.
+     */
     [[nodiscard]] 
     constexpr auto x() const noexcept -> T;
 
+    /*!
+     * \brief Returns the Y-coordinate of the top-left corner.
+     */
     [[nodiscard]] 
     constexpr auto y() const noexcept -> T;
 
+    /*!
+     * \brief Returns the width of the rectangle.
+     */
     [[nodiscard]] 
     constexpr auto width() const noexcept -> T;
 
+
+    /*!
+     * \brief Returns the height of the rectangle.
+     */
     [[nodiscard]] 
     constexpr auto height() const noexcept -> T;
 
@@ -195,16 +241,22 @@ public:
     constexpr auto contains(const Point<T> &pt) const noexcept -> bool;
     
     /*!
-     * \brief Transform a Rect object to a BoundingBox object
-     * \return BoundingBox
+     * \brief Converts the rectangle to a `BoundingBox`.
+     * \return A `BoundingBox<Point<T>>` spanning the rectangle area.
      */
     auto boundingBox() const -> BoundingBox<Point<T>>;
     
     /*!
-     * \brief Normalize the rectangle.
+     * \brief Normalizes the rectangle in-place.
+     * Ensures that width and height are positive by swapping the origin
+     * and bottom-right corner if necessary.
      */
     constexpr void normalize() noexcept;
-    
+
+    /*!
+     * \brief Returns a normalized copy of the rectangle.
+     * \return A new `Rect` with positive width and height.
+     */
     [[nodiscard]] 
     constexpr auto normalized() const noexcept -> Rect;
 

@@ -25,7 +25,7 @@
 #define BOOST_TEST_MODULE Tidop vector reader test
 #include <boost/test/unit_test.hpp>
 #include <tidop/vectortools/io/Reader.h>
-#include <tidop/graphic/layer.h>
+#include <tidop/graphic/model/GLayer.h>
 #include <tidop/graphic/entities/GPoint.h>
 #include <tidop/graphic/entities/GLineString.h>
 #include <tidop/graphic/entities/GPolygon.h>
@@ -107,6 +107,7 @@ BOOST_AUTO_TEST_CASE(read_geojson)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 }
@@ -182,6 +183,7 @@ BOOST_AUTO_TEST_CASE(read_gml)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 }
@@ -251,6 +253,7 @@ BOOST_AUTO_TEST_CASE(read_kml)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 }
@@ -322,6 +325,7 @@ BOOST_AUTO_TEST_CASE(read_kmz)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 }
@@ -512,7 +516,7 @@ struct VectorReaderTest
         lakes_data_name = "Blue Lake";
 
 
-        lakes_with_elevations_name = "LakesWithElevation";
+        lakes_with_elevations_name = "LakesWithElevations";
         lakes_with_elevations.push_back({Point<double>(0.0006, -0.0018),
                          Point<double>(0.0010, -0.0006),
                          Point<double>(0.0024, -0.0001),
@@ -638,6 +642,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_point, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 
@@ -671,6 +676,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_point, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 
@@ -705,6 +711,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_point, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 
@@ -738,6 +745,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_point, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 }
@@ -771,6 +779,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_point, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 
@@ -804,6 +813,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_point, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 
@@ -820,24 +830,42 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_point, VectorReaderTest)
 
         BOOST_CHECK_EQUAL(buildings_name, layer->name());
 
-        int i = 0;
+        int ipoint = 0;
+        int ipoly = 0;
         for (auto &entity : *layer) {
 
-            GPoint* point = dynamic_cast<GPoint*>(entity.get());
+            auto type = entity->type();
+            if (type == GraphicEntity::Type::point_2d) {
+                GPoint *point = dynamic_cast<GPoint *>(entity.get());
 
-            BOOST_CHECK_EQUAL(buildings_point.at(i).x(), point->geometry().x());
-            BOOST_CHECK_EQUAL(buildings_point.at(i).y(), point->geometry().y());
+                BOOST_CHECK_EQUAL(buildings_point.at(ipoint).x(), point->geometry().x());
+                BOOST_CHECK_EQUAL(buildings_point.at(ipoint).y(), point->geometry().y());
 
-            auto data = point->attributes();
-            BOOST_CHECK_EQUAL(buildings_data_ids.at(i), data.value(0));
-            BOOST_CHECK_EQUAL(buildings_data_names.at(i), data.value(1));
+                auto data = point->attributes();
+                BOOST_CHECK_EQUAL(buildings_data_ids.at(ipoint), data.value(0));
+                BOOST_CHECK_EQUAL(buildings_data_names.at(ipoint), data.value(1));
+                ipoint++;
 
-            i++;
+            } else if (type == GraphicEntity::Type::polygon_2d) {
+                GPolygon *polygon = dynamic_cast<GPolygon *>(entity.get());
+                auto &poly_geom = polygon->geometry();
+                auto &building = buildings.at(ipoly);
+                for (size_t j = 0; j < poly_geom.outer().size(); j++) {
+                    BOOST_CHECK_EQUAL(building.at(j).x(), poly_geom.outer().at(j).x());
+                    BOOST_CHECK_EQUAL(building.at(j).y(), poly_geom.outer().at(j).y());
+                }
+                auto data = polygon->attributes();
+                BOOST_CHECK_EQUAL(buildings_data_ids.at(ipoly), data.value(0));
+                BOOST_CHECK_EQUAL(buildings_data_names.at(ipoly), data.value(1));
+
+                ipoly++;
+            }
         }
 
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 }
@@ -882,6 +910,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_linestring, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 
@@ -921,6 +950,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_linestring, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 }
@@ -963,6 +993,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_linestring, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 
@@ -1002,6 +1033,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_linestring, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 
@@ -1045,6 +1077,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_linestring, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 
@@ -1083,6 +1116,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_linestring, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 }
@@ -1123,6 +1157,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 
@@ -1157,6 +1192,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 
@@ -1199,6 +1235,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 
@@ -1237,6 +1274,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 
@@ -1284,6 +1322,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 
@@ -1299,7 +1338,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
 
         std::shared_ptr<GLayer> layer = vector_reader.read(0);
 
-        BOOST_CHECK_EQUAL(lakes_with_elevations_name, layer->name());
+        BOOST_CHECK_EQUAL("LakesWithElevation", layer->name());
 
         int i = 0;
 
@@ -1335,6 +1374,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 }
@@ -1378,6 +1418,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 
@@ -1411,6 +1452,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 
@@ -1453,6 +1495,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 
@@ -1490,6 +1533,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 
@@ -1536,6 +1580,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 
@@ -1586,6 +1631,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_polygon, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 }
@@ -1625,6 +1671,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 
@@ -1659,6 +1706,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 
@@ -1700,6 +1748,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 
@@ -1740,6 +1789,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 
@@ -1787,12 +1837,13 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 
     try {
 
-        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\mapinfo\\LakesWithElevation.mif"));
+        tl::Path file(tl::Path(TL_DATA_PATH).append("OGC_WMS_TEST\\mapinfo\\LakesWithElevations.mif"));
         VectorReader vector_reader(file);
         if (!vector_reader.isOpen()) return;
 
@@ -1827,7 +1878,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
             }
 
             auto data = polygon->attributes();
-            BOOST_CHECK_EQUAL(lakes_with_elevations_data_id_shape, data.value(0));
+            BOOST_CHECK_EQUAL(lakes_with_elevations_data_ids.at(i), data.value(0));
             BOOST_CHECK_EQUAL(lakes_with_elevations_data_name, data.value(1));
             BOOST_CHECK_EQUAL(tl::convertStringTo<int>(lakes_with_elevations_data_elevations[i]), tl::convertStringTo<int>(data.value(2)));
 
@@ -1837,6 +1888,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_polygon, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 }
@@ -1881,6 +1933,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_multilinestring, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 }
@@ -1923,6 +1976,7 @@ BOOST_FIXTURE_TEST_CASE(read_gml_multilinestring, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 }
@@ -1966,6 +2020,7 @@ BOOST_FIXTURE_TEST_CASE(read_mapinfo_multilinestring, VectorReaderTest)
         vector_reader.close();
 
     } catch (std::exception &e) {
+        BOOST_CHECK(false);
         tl::printException(e);
     }
 

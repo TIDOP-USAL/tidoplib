@@ -22,35 +22,48 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
-
-#include "tidop/core/base/Defs.h"
-
-#ifdef TL_HAVE_GDAL
-TL_DISABLE_WARNINGS
-#include "ogrsf_frmts.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
-
-#include "tidop/graphic/model/TableField.h"
+#include "tidop/graphic/entities/GMultiLineString3D.h"
+#include "tidop/graphic/render/Painter.h"
 
 namespace tl
 {
 
-/*! \addtogroup VectorTools
- *  \{
- */
+GMultiLineString3D::GMultiLineString3D(size_t size)
+  : mGeometry(size),
+    GraphicEntity(GraphicEntity::Type::multiline_3d)
+{
+}
+
+GMultiLineString3D::GMultiLineString3D(const MultiLineString<Point3d> &gMultiLineString3D)
+  : mGeometry(gMultiLineString3D),
+    GraphicEntity(GraphicEntity::Type::multiline_3d)
+{
+}
+
+auto GMultiLineString3D::window() const -> BoundingBox<Point2d>
+{
+    auto bbox = tl::envelope(this->mGeometry);
+    return BoundingBox<Point2d>(static_cast<Point2d>(bbox.min()), static_cast<Point2d>(bbox.max()));
+}
+
+void GMultiLineString3D::draw(Painter &painter) const
+{
+    size_t n = mGeometry.size();
+    MultiLineString<Point2d> tmp(n);
+    for (size_t i = 0; i < n; ++i) {
+        const auto &ln = this->mGeometry[i];
+        LineString<Point2d> ls(ln.size());
+        for (size_t j = 0; j < ln.size(); ++j)
+            ls[j] = Point2d(ln[j].x(), ln[j].y());
+        tmp[i] = ls;
+    }
+    painter.drawMultiLineString(tmp);
+}
+
+auto GMultiLineString3D::clone() const -> std::unique_ptr<GraphicEntity>
+{
+    return std::make_unique<GMultiLineString3D>(*this);
+}
 
 
-
-#ifdef TL_HAVE_GDAL
-TL_EXPORT TableField::Type typeFromGdal(OGRFieldType ogrType);
-TL_EXPORT OGRFieldType typeToGdal(TableField::Type type);
-#endif // TL_HAVE_GDAL
-
-
-/*! \} */ // end of vector
-
-
-} // End namespace tl
-
+} // namespace tl

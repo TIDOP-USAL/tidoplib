@@ -22,8 +22,8 @@
  *                                                                        *
  **************************************************************************/
 
-#include "tidop/graphic/canvas.h"
-#include "tidop/graphic/painter.h"
+#include "tidop/graphic/render/Canvas.h"
+#include "tidop/graphic/render/Painter.h"
 #include "tidop/geometry/primitives/Point.h"
 #include "tidop/geometry/algorithms/spatial/Envelope.h"
 #include "tidop/core/base/TypeConversions.h"

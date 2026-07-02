@@ -22,35 +22,33 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
-
-#include "tidop/core/base/Defs.h"
-
-#ifdef TL_HAVE_GDAL
-TL_DISABLE_WARNINGS
-#include "ogrsf_frmts.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
-
-#include "tidop/graphic/model/TableField.h"
+#include "tidop/graphic/model/RegisterValue.h"
+#include "tidop/core/base/Meta.h"
 
 namespace tl
 {
 
-/*! \addtogroup VectorTools
- *  \{
- */
+RegisterValue::RegisterValue(const TableField &field)
+  : mField(field)
+{
+}
 
+RegisterValue::RegisterValue(const TableField &field,
+                             std::string value)
+  : mField(field),
+    mValue(std::move(value))
+{
+}
 
+auto RegisterValue::value() const -> std::string
+{
+    return mValue;
+}
 
-#ifdef TL_HAVE_GDAL
-TL_EXPORT TableField::Type typeFromGdal(OGRFieldType ogrType);
-TL_EXPORT OGRFieldType typeToGdal(TableField::Type type);
-#endif // TL_HAVE_GDAL
+void RegisterValue::setValue(const std::string &value)
+{
+    TL_TODO("Usar TableField para comprobar que el valor introducido es correcto")
+    mValue = value;
+}
 
-
-/*! \} */ // end of vector
-
-
-} // End namespace tl
-
+} // namespace tl

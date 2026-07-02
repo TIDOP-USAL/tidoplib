@@ -25,7 +25,7 @@
 #include "tidop/vectortools/io/impl/GdalWriter.h"
 
 #include "tidop/core/private/gdalreg.h"
-#include "tidop/graphic/layer.h"
+#include "tidop/graphic/model/GLayer.h"
 #include "tidop/graphic/entities/GPoint.h"
 #include "tidop/graphic/entities/GPoint3D.h"
 #include "tidop/graphic/entities/GLineString.h"

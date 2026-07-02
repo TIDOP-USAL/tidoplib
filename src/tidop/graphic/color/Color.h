@@ -22,12 +22,25 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file Color.h
+ * \brief Color representation with RGBA channels.
+ *
+ * This file defines the `Color` class, which represents a color using 8‑bit
+ * red, green, blue, and alpha channels, stored as a 32‑bit unsigned integer
+ * in ARGB format (alpha in the most significant byte). The class provides
+ * constructors from various formats, channel accessors, conversion to
+ * hexadecimal strings, and luminance computation.
+ *
+ * \ingroup Core
+ * \see tl::Color::Name
+ */
+
 #pragma once
 
 #include <string>
 #include <string_view>
 
-#include "tidop/core/base/Defs.h"
+#include "tidop/config.h"
 #include "tidop/core/base/TypeConversions.h"
 #include "tidop/graphic/color/Concepts.h"
 
@@ -39,7 +52,26 @@ namespace tl
  */
 
 /*!
- * \brief Class representing a color with various utility functions.
+ * \class Color
+ * \brief RGBA color representation.
+ *
+ * A color is stored internally as a 32‑bit unsigned integer in ARGB format:
+ * `0xAARRGGBB`. The alpha channel is stored in the most significant byte,
+ * followed by red, green, and blue.
+ *
+ * The class supports construction from:
+ * - Separate RGBA components (default alpha = 255)
+ * - A 32‑bit ARGB value
+ * - A hexadecimal string (e.g., `"#FF00FF"`)
+ * - A predefined color name (via `Color::Name` enum)
+ *
+ * ### Example
+ * \code
+ * Color c1(255, 0, 0);           // red, opaque
+ * Color c2("#00FF00");           // green from hex string
+ * Color c3(Color::Name::Blue);   // blue from named color
+ * auto hex = c1.toHexRGB();      // "#FF0000"
+ * \endcode
  */
 class TL_EXPORT Color
 {
@@ -206,25 +238,29 @@ public:
 public:
 
     /*!
-     * \brief Default constructor
+     * \brief Default constructor.
+     * Constructs an opaque black color `#000000` (alpha = 255).
      */
     constexpr Color() noexcept = default;
 
     /*!
-     * \brief Copy constructor
-     * \param[in] color Color object
+     * \brief Copy constructor.
+     * \param[in] color Color object to copy.
      */
     constexpr Color(const Color &color) noexcept = default;
 
     /*!
-     * \brief Move constructor
-     * \param[in] color Color object
+     * \brief Move constructor.
+     * \param[in] color Color object to move.
      */
     constexpr Color(Color &&color) noexcept = default;
     
     /*!
-     * \brief Constructor
-     * \param[in] color Color as a string (hexadecimal)
+     * \brief Constructs a color from a hexadecimal string.
+     * \param[in] color String representing the color.
+     *              Supported formats:
+     *              - `"#RRGGBB"` or `"RRGGBB"`
+     *              - `"#AARRGGBB"` or `"AARRGGBB"`
      */
     explicit Color(std::string_view color) noexcept;
     
@@ -237,12 +273,25 @@ public:
       : mValue(0xFF000000u | static_cast<uint32_t>(color))
     {
     }
-    
+      
+    /*!
+     * \brief Constructs a color from RGBA components.
+     * \param[in] r Red component (0–255).
+     * \param[in] g Green component (0–255).
+     * \param[in] b Blue component (0–255).
+     * \param[in] a Alpha component (0–255, default = 255).
+     */  
     constexpr Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255)
       : mValue((uint32_t(a) << 24) | (uint32_t(r) << 16) |(uint32_t(g) << 8) |uint32_t(b))
     {
     }
 
+    /*!
+     * \brief Constructs a color from any type that can be converted to `Color`.
+     * \tparam T A type satisfying the `ColorConvertible` concept (must have
+     *           a `toColor()` member function).
+     * \param[in] color The convertible object.
+     */
     template<ColorConvertible T>
     constexpr explicit Color(const T &color)
         : Color(color.toColor())
@@ -252,93 +301,109 @@ public:
     ~Color() = default;
     
     /*!
-     * \brief Assignment operator
-     * \param[in] color Color to assign
-     * \return Reference to this Color object
+     * \brief Copy assignment operator.
+     * \param[in] color Color to assign.
+     * \return Reference to this object.
      */
     constexpr auto operator =(const Color &color) noexcept -> Color & = default;
 
     /*!
-     * \brief Move assignment operator
-     * \param[in] color Color to assign
-     * \return Reference to this Color object
+     * \brief Move assignment operator.
+     * \param[in] color Color to move.
+     * \return Reference to this object.
      */
     constexpr auto operator =(Color &&color) noexcept -> Color & = default;
 
     /*!
-     * \brief Returns the blue component
-     * \return Blue component
+     * \brief Returns the blue component.
+     * \return Blue value (0–255).
      */
     [[nodiscard]]
     constexpr auto blue() const noexcept -> int;
     
     /*!
-     * \brief Returns the green component
-     * \return Green component
+     * \brief Returns the green component.
+     * \return Green value (0–255).
      */
     [[nodiscard]]
     constexpr auto green() const noexcept -> int;
-    
+
     /*!
-     * \brief Returns the red component
-     * \return Red component
+     * \brief Returns the red component.
+     * \return Red value (0–255).
      */
     [[nodiscard]]
     constexpr auto red() const noexcept -> int;
-    
+
     /*!
-     * \brief Returns the alpha channel
-     * \return Alpha channel
+     * \brief Returns the alpha component.
+     * \return Alpha value (0–255).
      */
     [[nodiscard]]
     constexpr auto alpha() const noexcept -> int;
 
     /*!
-     * \brief Sets the alpha channel
-     * \param[in] alpha Alpha value
+     * \brief Sets the alpha component.
+     * \param[in] alpha New alpha value (0–255).
      */
     constexpr void setAlpha(int alpha) noexcept;
     
     /*!
-     * \brief Computes the luminance value of a color
-     * \return Luminance value
+     * \brief Computes the luminance (perceived brightness) of the color.
+     * \return Luminance value (0–255) using the ITU-R BT.709 formula:
+     *         `0.2126 * R + 0.7152 * G + 0.0722 * B`.
      */
     [[nodiscard]]
     constexpr auto luminance() const -> int;
     
     /*!
-     * \brief Converts the color to a hexadecimal string
-     * \return Hexadecimal string representation of the color
+     * \brief Converts the color to a hexadecimal string in `RRGGBB` format.
+     * \return String like `"FF00FF"`.
      */
     [[nodiscard]]
     auto toHexRGB() const -> std::string;
 
+    /*!
+     * \brief Converts the color to a hexadecimal string in `AARRGGBB` format.
+     * \return String like `"FF00FF00"`.
+     */
     [[nodiscard]]
     auto toHexARGB() const -> std::string;
 
+    /*!
+     * \brief Converts the color to a hexadecimal string in `RRGGBBAA` format.
+     * \return String like `"FF00FF00"`.
+     */
     [[nodiscard]]
     auto toHexRGBA() const -> std::string;
 
     /*!
-     * \brief Generates a random color
-     * \return Randomly generated Color object
-     */ 
-    [[nodiscard]]
-    static auto randomColor() -> Color;
-    
+     * \brief Returns the raw 32‑bit ARGB value.
+     * \return The ARGB value as `uint32_t`.
+     */
     [[nodiscard]]
     constexpr auto argb() const noexcept -> uint32_t
     {
         return mValue;
     }
 
+    /*!
+     * \brief Returns the RGB value (alpha masked out).
+     * \return The RGB value as `uint32_t` (alpha = 0).
+     */
     [[nodiscard]]
     constexpr auto rgb() const noexcept -> uint32_t
     {
         return mValue & 0x00FFFFFF;
     }
 
-    
+    /*!
+     * \brief Generates a random color with full opacity (alpha = 255).
+     * \return A random `Color` object.
+     */
+    [[nodiscard]]
+    static auto randomColor() -> Color;
+
     auto operator<=>(const Color &) const = default;
 
 };

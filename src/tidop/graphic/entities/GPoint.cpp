@@ -22,35 +22,41 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
+#include "tidop/graphic/entities/GPoint.h"
+#include "tidop/graphic/render/Painter.h"
 
-#include "tidop/core/base/Defs.h"
-
-#ifdef TL_HAVE_GDAL
-TL_DISABLE_WARNINGS
-#include "ogrsf_frmts.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
-
-#include "tidop/graphic/model/TableField.h"
+#include <memory>
 
 namespace tl
 {
 
-/*! \addtogroup VectorTools
- *  \{
- */
+
+GPoint::GPoint(double x, double y)
+  : mGeometry(x, y),
+    GraphicEntity(GraphicEntity::Type::point_2d)
+{
+}
+
+GPoint::GPoint(const Point2d &pt)
+  : mGeometry(pt),
+    GraphicEntity(GraphicEntity::Type::point_2d)
+{
+}
+
+auto GPoint::window() const -> BoundingBox<Point2d>
+{
+    return {this->geometry(), this->geometry()};
+}
+
+void GPoint::draw(Painter &painter) const
+{
+    painter.drawPoint(*this);
+}
+
+auto GPoint::clone() const -> std::unique_ptr<GraphicEntity>
+{
+    return std::make_unique<GPoint>(*this);
+}
 
 
-
-#ifdef TL_HAVE_GDAL
-TL_EXPORT TableField::Type typeFromGdal(OGRFieldType ogrType);
-TL_EXPORT OGRFieldType typeToGdal(TableField::Type type);
-#endif // TL_HAVE_GDAL
-
-
-/*! \} */ // end of vector
-
-
-} // End namespace tl
-
+} // namespace tl

@@ -22,76 +22,11 @@
  *                                                                        *
  **************************************************************************/
 
-#include "tidop/graphic/datamodel.h"
+#include "tidop/graphic/model/TableRegister.h"
 #include "tidop/core/base/Meta.h"
 
 namespace tl
 {
-
-
-
-TableField::TableField(const std::string &name,
-                       Type type,
-                       int size)
-  : mName(name),
-    mType(type),
-    mSize(size)
-{
-}
-
-TableField::~TableField() = default;
-
-auto TableField::name() const -> std::string
-{
-    return mName;
-}
-
-auto TableField::type() const -> TableField::Type
-{
-    return mType;
-}
-
-auto TableField::size() const -> int
-{
-    return mSize;
-}
-
-
-
-
-
-
-
-
-
-RegisterValue::RegisterValue(const TableField &field)
-  : mField(field)
-{
-}
-
-RegisterValue::RegisterValue(const TableField &field,
-                             std::string value)
-  : mField(field),
-    mValue(std::move(value))
-{
-}
-
-RegisterValue::~RegisterValue() = default;
-
-auto RegisterValue::value() const -> std::string
-{
-    return mValue;
-}
-
-void RegisterValue::setValue(const std::string &value)
-{
-    TL_TODO("Usar TableField para comprobar que el valor introducido es correcto")
-        mValue = value;
-}
-
-
-
-
 
 
 TableRegister::TableRegister(const std::vector<TableField> &fields)
@@ -102,13 +37,6 @@ TableRegister::TableRegister(const std::vector<TableField> &fields)
         mRegisterValues.push_back(RegisterValue(fields[i]));
     }
 }
-
-TableRegister::TableRegister(const TableRegister &_register)
-  : mRegisterValues(_register.mRegisterValues)
-{
-}
-
-TableRegister::~TableRegister() = default;
 
 auto TableRegister::value(size_t idx) const -> std::string
 {
@@ -130,72 +58,4 @@ auto TableRegister::size() const -> size_t
 }
 
 
-
-
-
-
-DataTable::DataTable(const std::string &tableName,
-                     const std::vector<TableField> &tableField)
-  : mTableName(tableName),
-    mTableFields(tableField)
-{
-}
-
-auto DataTable::begin() -> iterator
-{
-    return mRegister.begin();
-}
-
-auto DataTable::end() -> iterator
-{
-    return mRegister.end();
-}
-
-auto DataTable::name() const -> std::string
-{
-    return mTableName;
-}
-
-auto DataTable::createRegister(int index) const -> TableRegister
-{
-    ///TODO: Completar
-    unusedParameter(index);
-    return TableRegister(mTableFields);
-}
-
-auto DataTable::fields() const -> std::vector<TableField>
-{
-    return mTableFields;
-}
-
-
-void DataTable::setName(const char *name)
-{
-    mTableName = name;
-}
-
-auto DataTable::size() const -> size_t
-{
-    return mRegister.size();
-}
-
-
-
-
-
-
-
-void DataModel::createTable(const std::string &tableName,
-                            const std::vector<TableField> &fields)
-{
-    mDataTables.push_back(DataTable(tableName, fields));
-}
-
-void DataModel::addTable(const DataTable &table)
-{
-    mDataTables.push_back(table);
-}
-
-
-
-} // End namespace tl
+} // namespace tl

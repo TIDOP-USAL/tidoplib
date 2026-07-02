@@ -24,33 +24,62 @@
 
 #pragma once
 
-#include "tidop/core/base/Defs.h"
-
-#ifdef TL_HAVE_GDAL
-TL_DISABLE_WARNINGS
-#include "ogrsf_frmts.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
-
-#include "tidop/graphic/model/TableField.h"
+#include "tidop/geometry/primitives/MultiPoint.h"
+#include "tidop/geometry/spatial/BoundingBox.h"
+#include "tidop/graphic/entities/GraphicEntity.h"
 
 namespace tl
 {
 
-/*! \addtogroup VectorTools
- *  \{
+class Painter;
+
+
+/*!
+ * \brief Multi-point 3D graphic class
  */
+class TL_EXPORT GMultiPoint3D
+  : public GraphicEntity
+{
+
+private:
+
+    MultiPoint<Point3d> mGeometry;
+
+public:
+
+    GMultiPoint3D() = default;
+    explicit GMultiPoint3D(size_t size);
+    explicit GMultiPoint3D(const MultiPoint<Point3d> &multiPoint);
+    GMultiPoint3D(const GMultiPoint3D &gMultiPoint3D) = default;
+    GMultiPoint3D(GMultiPoint3D &&gMultiPoint3D) noexcept = default;
+    ~GMultiPoint3D() override = default;
+
+    auto operator =(const GMultiPoint3D &gMultiPoint3D) -> GMultiPoint3D& = default;
+    auto operator =(GMultiPoint3D &&gMultiPoint3D) noexcept -> GMultiPoint3D& = default;
+    
+    auto geometry() const -> const MultiPoint<Point3d> & { return mGeometry; }
+    auto geometry() -> MultiPoint<Point3d> & { return mGeometry; }
+
+    auto isMultiEntity() const -> bool override;
+    auto isSimpleEntity() const -> bool override;
+    auto window() const ->BoundingBox<Point2d> override;
+    void draw(Painter &painter) const override;
+    auto clone() const -> std::unique_ptr<GraphicEntity> override;
+};
 
 
+inline auto GMultiPoint3D::isMultiEntity() const -> bool
+{
+    return true;
+}
 
-#ifdef TL_HAVE_GDAL
-TL_EXPORT TableField::Type typeFromGdal(OGRFieldType ogrType);
-TL_EXPORT OGRFieldType typeToGdal(TableField::Type type);
-#endif // TL_HAVE_GDAL
+inline auto GMultiPoint3D::isSimpleEntity() const -> bool
+{
+    return false;
+}
 
 
-/*! \} */ // end of vector
+/*! \} */ // Fin GraphicEntities
 
-
-} // End namespace tl
+} // namespace tl
 

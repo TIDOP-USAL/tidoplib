@@ -27,7 +27,7 @@
 #include "tidop/core/base/Exception.h"
 #include "tidop/core/app/Message.h"
 #include "tidop/core/private/gdalreg.h"
-#include "tidop/graphic/layer.h"
+#include "tidop/graphic/model/GLayer.h"
 #include "tidop/graphic/entities/GPoint.h"
 #include "tidop/graphic/entities/GPoint3D.h"
 #include "tidop/graphic/entities/GLineString.h"
@@ -153,7 +153,7 @@ auto readBrushSpacing(OGRStyleBrush *ogrStyleBrush) -> std::optional<Vector2d>
     GBool bDefault2 = false;
     double spacing_y = ogrStyleBrush->SpacingY(bDefault2);
     if (!bDefault && !bDefault2) {
-        return Vector2d(spacing_x, spacing_y);
+        return Vector2d{spacing_x, spacing_y};
     }
     return std::nullopt;
 }

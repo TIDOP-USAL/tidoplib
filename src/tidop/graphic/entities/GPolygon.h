@@ -24,119 +24,97 @@
 
 #pragma once
 
-#include <numeric>
-
-#include "tidop/geometry/entities/entity.h"
 #include "tidop/geometry/primitives/Point.h"
-#include "tidop/graphic/base/Rect.h"
+#include "tidop/geometry/primitives/Polygon.h"
+#include "tidop/graphic/entities/GraphicEntity.h"
 
 namespace tl
 {
 
-/*! \addtogroup Shapes
+class Painter;
+
+/*! \addtogroup GraphicEntities
  *  \{
  */
 
 
 /*!
- * \brief Square class
- *
- * The `Square` class represents a square, a 2D geometric shape where 
- * all sides are of equal length.
+ * \brief Polygon graphic class
  */
-template<typename T>
-class Square
-  : public Shape
+class TL_EXPORT GPolygon
+  : public GraphicEntity
 {
-
-public:
-
-    using value_type = T;
 
 private:
 
-    T side;
+    Polygon<Point2d> mGeometry;
 
 public:
 
     /*!
      * \brief Default constructor
-     *
-     * Creates a square with side length 0.
      */
-    constexpr Square() = default;
+    GPolygon() = default;
+
+    explicit GPolygon(size_t size);
 
     /*!
-     * \brief Constructor with parameter
-     * \param[in] side The length of one side of the square
-     *
-     * Creates a square with the specified side length.
+     * \brief Constructor from a polygon
+     * \param[in] polygon Polygon class object
+     * \see Polygon
      */
-    constexpr Square(T side);
-
-    constexpr Square(const Square<T> &square) = default;
-    constexpr Square(Square<T> &&square) noexcept = default;
-
-    constexpr auto operator=(const Square<T> &square) -> Square<T> & = default;
-    constexpr auto operator=(Square<T> &&square) noexcept -> Square<T> & = default;
-
+    explicit GPolygon(const Polygon<Point2d> &polygon);
 
     /*!
-     * \brief Get the area of the square
-     * \return The area of the square
-     *
-     * The area of a square is simply the side length squared.
+     * \brief Copy constructor
+     * \param[in] gPolygon Object to be copied
      */
-    [[nodiscard]]
-    constexpr auto area() const noexcept -> double override;
+    GPolygon(const GPolygon &gPolygon) = default;
 
     /*!
-     * \brief Set the side length
-     * \param[in] side The length of the square's side
+     * \brief Move Constructor
+     * \param[in] gPolygon GPolygon object that moves
      */
-    constexpr void setSide(T side);
+    GPolygon(GPolygon &&gPolygon) noexcept = default;
+
+    ~GPolygon() override = default;
 
     /*!
-     * \brief Get the side length
-     * \return The length of the square's side
+     * \brief Copy assignment operator
+     * \param[in] gPolygon Object to be copied
+     * \return Object reference
      */
-    [[nodiscard]]
-    constexpr auto getSide() const noexcept  -> T;
+    auto operator =(const GPolygon& gPolygon) -> GPolygon& = default;
+
+    /*!
+     * \brief Move assignment operator
+     * \param[in] gPolygon GPolygon object that moves
+     * \return Object reference
+     */
+    auto operator =(GPolygon&& gPolygon) noexcept -> GPolygon& = default;
+
+    auto geometry() const -> const Polygon<Point2d> & { return mGeometry; }
+    auto geometry() -> Polygon<Point2d> & { return mGeometry; }
+
+    auto isMultiEntity() const -> bool override;
+    auto isSimpleEntity() const -> bool override;
+    auto window() const -> BoundingBox<Point2d> override;
+    void draw(Painter &painter) const override;
+    auto clone() const -> std::unique_ptr<GraphicEntity> override;
 };
 
 
-
-//template<typename T>
-//Square<T>::Square()
-//  : side(0)
-//{
-//}
-
-template<typename T>
-constexpr Square<T>::Square(T side)
-  : side(side)
+inline auto GPolygon::isMultiEntity() const -> bool
 {
+    return false;
 }
 
-template<typename T>
-constexpr auto Square<T>::area() const noexcept -> double
+inline auto GPolygon::isSimpleEntity() const -> bool
 {
-    return static_cast<double>(side * side);
-}
-
-template<typename T>
-constexpr void Square<T>::setSide(T side)
-{
-    this->side = side;
-}
-
-template<typename T>
-constexpr auto Square<T>::getSide() const noexcept -> T
-{
-    return side;
+    return true;
 }
 
 
-/*! \} */ 
+/*! \} */ // Fin GraphicEntities
 
-}
+} // namespace tl

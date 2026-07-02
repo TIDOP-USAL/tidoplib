@@ -221,8 +221,8 @@ constexpr Polygon<Point_t>::Polygon(std::initializer_list<Point_t> list)
 
 template<typename Point_t>
 constexpr Polygon<Point_t>::Polygon(size_t size)
+  : mOuter(size)
 {
-    mOuter.reserve(size);
 }
 
 template<typename Point_t>

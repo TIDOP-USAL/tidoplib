@@ -22,35 +22,37 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
-
-#include "tidop/core/base/Defs.h"
-
-#ifdef TL_HAVE_GDAL
-TL_DISABLE_WARNINGS
-#include "ogrsf_frmts.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
-
 #include "tidop/graphic/model/TableField.h"
+#include "tidop/core/base/Meta.h"
 
 namespace tl
 {
 
-/*! \addtogroup VectorTools
- *  \{
- */
+TableField::TableField(const std::string &name,
+                       Type type,
+                       int size)
+  : mName(name),
+    mType(type),
+    mSize(size)
+{
+}
+
+TableField::~TableField() = default;
+
+auto TableField::name() const -> std::string
+{
+    return mName;
+}
+
+auto TableField::type() const -> TableField::Type
+{
+    return mType;
+}
+
+auto TableField::size() const -> int
+{
+    return mSize;
+}
 
 
-
-#ifdef TL_HAVE_GDAL
-TL_EXPORT TableField::Type typeFromGdal(OGRFieldType ogrType);
-TL_EXPORT OGRFieldType typeToGdal(TableField::Type type);
-#endif // TL_HAVE_GDAL
-
-
-/*! \} */ // end of vector
-
-
-} // End namespace tl
-
+} // namespace tl

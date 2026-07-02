@@ -37,10 +37,7 @@ if (BUILD_TL_GRAPHIC)
     add_files_to_project(${PROJECT_NAME} 
                         SOURCE_FILES 
                             linealgorithms.cpp
-                            layer.cpp
-                            canvas.cpp
-                            painter.cpp
-                            datamodel.cpp
+                            #datamodel.cpp
                             color/Color.cpp
                             color/ColorConversion.cpp
                             color/ColorHSL.cpp
@@ -58,16 +55,19 @@ if (BUILD_TL_GRAPHIC)
                             entities/GPolygon.cpp
                             entities/GPolygon3D.cpp
                             entities/GraphicEntity.cpp
+                            model/GLayer.cpp
+                            model/RegisterValue.cpp
+                            model/TableField.cpp
+                            model/TableRegister.cpp
+                            render/Canvas.cpp
+                            render/Painter.cpp
                             styles/GraphicStyle.cpp
                         HEADER_FILES
                             Color.h
                             linealgorithms.h
                             Styles.h
-                            layer.h
-                            canvas.h
-                            painter.h
-                            Rect.h
-                            datamodel.h
+                            #datamodel.h
+                            base/Rect.h
                             color/ColorCMYK.h
                             color/Color.h
                             color/ColorConversion.h
@@ -89,6 +89,12 @@ if (BUILD_TL_GRAPHIC)
                             entities/GPolygon.h
                             entities/GPolygon3D.h
                             entities/GraphicEntity.h
+                            model/GLayer.h
+                            model/RegisterValue.h
+                            model/TableField.h
+                            model/TableRegister.h
+                            render/Canvas.h
+                            render/Painter.h
                             styles/Brush.h
                             styles/BrushPattern.h
                             styles/Font.h

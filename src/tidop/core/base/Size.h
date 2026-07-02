@@ -24,40 +24,14 @@
 
 /*!
  * \file Size.h
- * \brief Two-dimensional size representation with arithmetic operations
+ * \brief Two-dimensional size representation with arithmetic operations.
  *
- * This module provides a generic size class for representing the dimensions of two-dimensional objects.
- * It supports various arithmetic operations, type conversions, and validation methods.
+ * This file defines the `Size` class template, which represents the dimensions
+ * (width and height) of a two-dimensional object. It provides arithmetic
+ * operations, type conversions, and validation methods.
  *
- * ### Classes
- *
- * - \ref Size<T> - Generic size implementation for type T
- *
- * ### Features
- *
- * - Type-safe size storage with arithmetic type validation
- * - Arithmetic operations (addition, subtraction, scaling)
- * - Type conversion between compatible size types
- * - Dimension validation (positive, valid, empty checks)
- * - Constexpr support for compile-time evaluation
- * - Support for all arithmetic types (int, float, double, etc.)
- *
- * ### Example Usage
- *
- * \code{.cpp}
- * #include "tidop/core/base/size.h"
- *
- * tl::Sizei screenSize(1920, 1080);
- * tl::Sizei thumbnailSize = screenSize / 4;
- *
- * if (screenSize.isValid()) {
- *     tl::Sizef normalized = static_cast<tl::Sizef>(screenSize) / 1920.0f;
- * }
- *
- * tl::Sizei doubleSize = screenSize * 2;
- * \endcode
- *
- * \see tl::Sizei, tl::Sizef, tl::Sized
+ * \ingroup Base
+ * \see tl::Rect, tl::Point
  */
 
 #pragma once
@@ -79,8 +53,24 @@ namespace tl
 
 
 /*!
- * \brief Class for specifying the size of a two-dimensional object.
+ * \class Size
+ * \brief Represents the width and height of a two-dimensional object.
  *
+ * \tparam T Arithmetic type (e.g., `int`, `float`, `double`).
+ *
+ * This class stores two dimensions (width and height) and provides operations
+ * for arithmetic, comparison, and validation. It is used as a building block
+ * for geometric types such as `Rect`.
+ *
+ * ### Example
+ * \code
+ * Size<int> screenSize(1920, 1080);
+ * Size<int> thumbSize = screenSize / 4;
+ *
+ * if (screenSize.isValid()) {
+ *     Size<float> normalized = Size<float>(screenSize) / 1920.0f;
+ * }
+ * \endcode
  */
 template<typename T>
 class Size
@@ -138,13 +128,30 @@ public:
      */
     constexpr auto operator = (Size &&size) noexcept -> Size& = default;
 
+    /*!
+     * \brief Returns the width.
+     * \return The width.
+     */
     [[nodiscard]]
     constexpr auto width() const noexcept -> T;
 
+    /*!
+     * \brief Returns the height.
+     * \return The height.
+     */
     [[nodiscard]]
     constexpr auto height() const noexcept -> T;
 
+    /*!
+     * \brief Sets the width.
+     * \param[in] width New width.
+     */
     constexpr void setWidth(T width) noexcept;
+
+    /*!
+     * \brief Sets the height.
+     * \param[in] height New height.
+     */
     constexpr void setHeight(T height) noexcept;
 
     /*!

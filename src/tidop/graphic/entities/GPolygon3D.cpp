@@ -22,35 +22,45 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
-
-#include "tidop/core/base/Defs.h"
-
-#ifdef TL_HAVE_GDAL
-TL_DISABLE_WARNINGS
-#include "ogrsf_frmts.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
-
-#include "tidop/graphic/model/TableField.h"
+#include "tidop/graphic/entities/GPolygon3D.h"
+#include "tidop/graphic/render/Painter.h"
+#include "tidop/geometry/algorithms/spatial/Envelope.h"
 
 namespace tl
 {
 
-/*! \addtogroup VectorTools
- *  \{
- */
+
+GPolygon3D::GPolygon3D(size_t size)
+  : mGeometry(size),
+    GraphicEntity(GraphicEntity::Type::polygon_3d)
+{
+}
+
+GPolygon3D::GPolygon3D(const Polygon<Point3d> &polygon)
+  : mGeometry(polygon),
+    GraphicEntity(GraphicEntity::Type::polygon_3d)
+{
+}
+
+auto GPolygon3D::window() const -> BoundingBox<Point2d>
+{
+    auto bbox = tl::envelope(this->geometry());
+    return BoundingBox<Point2d>(static_cast<Point2d>(bbox.min()), static_cast<Point2d>(bbox.max()));
+}
+
+void GPolygon3D::draw(Painter &painter) const
+{
+    auto &outer = this->geometry().outer();
+    Polygon<Point2d> poly2d(outer.size());
+    for (size_t i = 0; i < outer.size(); ++i)
+        poly2d.outer()[i] = Point2d(outer[i].x(), outer[i].y());
+    painter.drawPolygon(poly2d);
+}
+
+auto GPolygon3D::clone() const -> std::unique_ptr<GraphicEntity>
+{
+    return std::make_unique<GPolygon3D>(*this);
+}
 
 
-
-#ifdef TL_HAVE_GDAL
-TL_EXPORT TableField::Type typeFromGdal(OGRFieldType ogrType);
-TL_EXPORT OGRFieldType typeToGdal(TableField::Type type);
-#endif // TL_HAVE_GDAL
-
-
-/*! \} */ // end of vector
-
-
-} // End namespace tl
-
+} // namespace tl

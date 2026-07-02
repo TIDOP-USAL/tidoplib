@@ -24,33 +24,65 @@
 
 #pragma once
 
-#include "tidop/core/base/Defs.h"
-
-#ifdef TL_HAVE_GDAL
-TL_DISABLE_WARNINGS
-#include "ogrsf_frmts.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
-
-#include "tidop/graphic/model/TableField.h"
+#include "tidop/geometry/primitives/MultiPoint.h"
+#include "tidop/geometry/spatial/BoundingBox.h"
+#include "tidop/geometry/algorithms/spatial/Envelope.h"
+#include "tidop/graphic/entities/GraphicEntity.h"
 
 namespace tl
 {
 
-/*! \addtogroup VectorTools
+class Painter;
+
+/*! \addtogroup GraphicEntities
  *  \{
  */
 
+/*!
+ * \brief Multi-point graphic class
+ */
+class TL_EXPORT GMultiPoint
+  : public GraphicEntity
+{
+private:
+
+    MultiPoint<Point<double>> mGeometry;
+
+public:
+
+    GMultiPoint() = default;
+    explicit GMultiPoint(size_t size);
+    explicit GMultiPoint(const MultiPoint<Point<double>> &multiPoint);
+    GMultiPoint(const GMultiPoint &gMultiPoint) = default;
+    GMultiPoint(GMultiPoint &&gMultiPoint) noexcept = default;
+    ~GMultiPoint() override = default;
+
+    auto operator =(const GMultiPoint& gMultiPoint) -> GMultiPoint& = default;
+    auto operator =(GMultiPoint &&gMultiPoint) noexcept -> GMultiPoint& = default;
+
+    auto geometry() const -> const MultiPoint<Point<double>> & { return mGeometry; }
+    auto geometry() -> MultiPoint<Point<double>> & { return mGeometry; }
+
+    auto isMultiEntity() const -> bool override;
+    auto isSimpleEntity() const -> bool override;
+    auto window() const ->BoundingBox<Point2d> override;
+    void draw(Painter &painter) const override;
+    auto clone() const -> std::unique_ptr<GraphicEntity> override;
+};
 
 
-#ifdef TL_HAVE_GDAL
-TL_EXPORT TableField::Type typeFromGdal(OGRFieldType ogrType);
-TL_EXPORT OGRFieldType typeToGdal(TableField::Type type);
-#endif // TL_HAVE_GDAL
+inline auto GMultiPoint::isMultiEntity() const -> bool
+{
+    return true;
+}
+
+inline auto GMultiPoint::isSimpleEntity() const -> bool
+{
+    return false;
+}
 
 
-/*! \} */ // end of vector
+/*! \} */ // Fin GraphicEntities
 
-
-} // End namespace tl
+} // namespace tl
 

@@ -22,35 +22,39 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
-
-#include "tidop/core/base/Defs.h"
-
-#ifdef TL_HAVE_GDAL
-TL_DISABLE_WARNINGS
-#include "ogrsf_frmts.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
-
-#include "tidop/graphic/model/TableField.h"
+#include "tidop/graphic/entities/GPoint3D.h"
+#include "tidop/graphic/render/Painter.h"
 
 namespace tl
 {
 
-/*! \addtogroup VectorTools
- *  \{
- */
+GPoint3D::GPoint3D(double x, double y, double z)
+  : mGeometry(x, y, z),
+    GraphicEntity(GraphicEntity::Type::point_3d)
+{
+}
+
+GPoint3D::GPoint3D(const Point3d &pt)
+  : mGeometry(pt),
+    GraphicEntity(GraphicEntity::Type::point_3d)
+{
+}
+
+auto GPoint3D::window() const -> BoundingBox<Point2d>
+{
+    Point2d pt(this->geometry().x(), this->geometry().y());
+    return {pt, pt};
+}
+
+void GPoint3D::draw(Painter &painter) const
+{
+    painter.drawPoint(Point2d(this->geometry().x(), this->geometry().y()));
+}
+
+auto GPoint3D::clone() const -> std::unique_ptr<GraphicEntity>
+{
+    return std::make_unique<GPoint3D>(*this);
+}
 
 
-
-#ifdef TL_HAVE_GDAL
-TL_EXPORT TableField::Type typeFromGdal(OGRFieldType ogrType);
-TL_EXPORT OGRFieldType typeToGdal(TableField::Type type);
-#endif // TL_HAVE_GDAL
-
-
-/*! \} */ // end of vector
-
-
-} // End namespace tl
-
+} // namespace tl

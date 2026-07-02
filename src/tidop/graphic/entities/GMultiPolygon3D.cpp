@@ -22,35 +22,60 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
-
-#include "tidop/core/base/Defs.h"
-
-#ifdef TL_HAVE_GDAL
-TL_DISABLE_WARNINGS
-#include "ogrsf_frmts.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
-
-#include "tidop/graphic/model/TableField.h"
+#include "tidop/graphic/entities/GMultiPolygon3D.h"
+#include "tidop/graphic/render/Painter.h"
+#include "tidop/geometry/algorithms/spatial/Envelope.h"
 
 namespace tl
 {
 
-/*! \addtogroup VectorTools
- *  \{
- */
 
+GMultiPolygon3D::GMultiPolygon3D(const MultiPolygon<Point3d> &multiPolygon)
+  : mGeometry(multiPolygon),
+    GraphicEntity(GraphicEntity::Type::multipolygon_3d)
+{
+}
 
+GMultiPolygon3D::GMultiPolygon3D(size_t size)
+  : mGeometry(size),
+    GraphicEntity(GraphicEntity::Type::multipolygon_3d)
+{
+}
 
-#ifdef TL_HAVE_GDAL
-TL_EXPORT TableField::Type typeFromGdal(OGRFieldType ogrType);
-TL_EXPORT OGRFieldType typeToGdal(TableField::Type type);
-#endif // TL_HAVE_GDAL
+auto GMultiPolygon3D::window() const -> BoundingBox<Point2d>
+{
+    auto bbox = tl::envelope(this->mGeometry);
+    return BoundingBox<Point2d>(static_cast<Point2d>(bbox.min()), static_cast<Point2d>(bbox.max()));
+}
 
+void GMultiPolygon3D::draw(Painter &painter) const
+{
+    size_t n = this->mGeometry.size();
+    MultiPolygon<Point2d> tmp(n);
+    for (size_t i = 0; i < n; ++i) {
+        const auto &poly = this->mGeometry[i];
+        auto &outer = poly.outer();
+        auto &inners = poly.inners();
+        Polygon<Point2d> p(outer.size());
+        for (size_t j = 0; j < outer.size(); ++j) {
+            p.outer()[j] = Point2d(outer[j].x(), outer[j].y());
+        }
+        for (size_t k = 0; k < inners.size(); ++k) {
+            const auto &inner = inners[k];
+            LinearRing<Point2d> inner_ring(inner.size());
+            for (size_t l = 0; l < inner.size(); ++l) {
+                inner_ring[l] = Point2d(inner[l].x(), inner[l].y());
+            }
+            p.addInner(inner_ring);
+        }
+        tmp[i] = p;
+    }
+    painter.drawMultiPolygon(tmp);
+}
 
-/*! \} */ // end of vector
+auto GMultiPolygon3D::clone() const -> std::unique_ptr<GraphicEntity>
+{
+    return std::make_unique<GMultiPolygon3D>(*this);
+}
 
-
-} // End namespace tl
-
+} // namespace tl

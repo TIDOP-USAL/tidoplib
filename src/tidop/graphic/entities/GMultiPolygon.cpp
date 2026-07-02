@@ -22,35 +22,38 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
-
-#include "tidop/core/base/Defs.h"
-
-#ifdef TL_HAVE_GDAL
-TL_DISABLE_WARNINGS
-#include "ogrsf_frmts.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
-
-#include "tidop/graphic/model/TableField.h"
+#include "tidop/graphic/entities/GMultiPolygon.h"
+#include "tidop/graphic/render/Painter.h"
+#include "tidop/geometry/algorithms/spatial/Envelope.h"
 
 namespace tl
 {
 
-/*! \addtogroup VectorTools
- *  \{
- */
+GMultiPolygon::GMultiPolygon(size_t size)
+  : mGeometry(size),
+    GraphicEntity(GraphicEntity::Type::multipolygon_2d)
+{
+}
 
+GMultiPolygon::GMultiPolygon(const MultiPolygon<Point2d> &multiPolygon)
+  : mGeometry(multiPolygon),
+    GraphicEntity(GraphicEntity::Type::multipolygon_2d)
+{
+}
 
+auto GMultiPolygon::window() const -> BoundingBox<Point2d>
+{
+    return tl::envelope(this->mGeometry);
+}
 
-#ifdef TL_HAVE_GDAL
-TL_EXPORT TableField::Type typeFromGdal(OGRFieldType ogrType);
-TL_EXPORT OGRFieldType typeToGdal(TableField::Type type);
-#endif // TL_HAVE_GDAL
+void GMultiPolygon::draw(Painter &painter) const
+{
+    painter.drawMultiPolygon(*this);
+}
 
+auto GMultiPolygon::clone() const -> std::unique_ptr<GraphicEntity>
+{
+    return std::make_unique<GMultiPolygon>(*this);
+}
 
-/*! \} */ // end of vector
-
-
-} // End namespace tl
-
+} // namespace tl

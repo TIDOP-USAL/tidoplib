@@ -24,7 +24,7 @@
  
 #define BOOST_TEST_MODULE Tidop Rect test
 #include <boost/test/unit_test.hpp>
-#include <tidop/graphic/rect.h>
+#include <tidop/graphic/base/Rect.h>
 
 using namespace tl;
 

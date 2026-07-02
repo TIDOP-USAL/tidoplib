@@ -22,35 +22,44 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
-
-#include "tidop/core/base/Defs.h"
-
-#ifdef TL_HAVE_GDAL
-TL_DISABLE_WARNINGS
-#include "ogrsf_frmts.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
-
-#include "tidop/graphic/model/TableField.h"
+#include "tidop/graphic/entities/GLineString3D.h"
+#include "tidop/graphic/render/Painter.h"
 
 namespace tl
 {
 
-/*! \addtogroup VectorTools
- *  \{
- */
+GLineString3D::GLineString3D(size_t size)
+  : mGeometry(size),
+    GraphicEntity(GraphicEntity::Type::linestring_3d)
+{
+}
+
+GLineString3D::GLineString3D(const LineString<Point3d> &gLineString3D)
+  : mGeometry(gLineString3D),
+    GraphicEntity(GraphicEntity::Type::linestring_3d)
+{
+}
+
+void GLineString3D::draw(Painter &painter) const
+{
+    size_t n = mGeometry.size();
+    LineString2d ls(n);
+    for (size_t i = 0; i < n; ++i)
+        ls[i] = Point2d(mGeometry[i].x(), mGeometry[i].y());
+    painter.drawLineString(ls);
+}
+
+auto GLineString3D::window() const -> BoundingBox<Point2d>
+{
+    auto bbox = tl::envelope(this->mGeometry);
+    return BoundingBox<Point2d>(static_cast<Point2d>(bbox.min()), static_cast<Point2d>(bbox.max()));
+
+}
+
+auto GLineString3D::clone() const -> std::unique_ptr<GraphicEntity>
+{
+    return std::make_unique<GLineString3D>(*this);
+}
 
 
-
-#ifdef TL_HAVE_GDAL
-TL_EXPORT TableField::Type typeFromGdal(OGRFieldType ogrType);
-TL_EXPORT OGRFieldType typeToGdal(TableField::Type type);
-#endif // TL_HAVE_GDAL
-
-
-/*! \} */ // end of vector
-
-
-} // End namespace tl
-
+} // namespace tl

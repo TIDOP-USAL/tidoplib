@@ -24,33 +24,68 @@
 
 #pragma once
 
+#include <array>
+
 #include "tidop/core/base/Defs.h"
-
-#ifdef TL_HAVE_GDAL
-TL_DISABLE_WARNINGS
-#include "ogrsf_frmts.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
-
-#include "tidop/graphic/model/TableField.h"
+#include "tidop/graphic/styles/Font.h"
+#include "tidop/graphic/Color.h"
 
 namespace tl
 {
 
-/*! \addtogroup VectorTools
+
+/*! \addtogroup Styles
  *  \{
  */
 
 
 
-#ifdef TL_HAVE_GDAL
-TL_EXPORT TableField::Type typeFromGdal(OGRFieldType ogrType);
-TL_EXPORT OGRFieldType typeToGdal(TableField::Type type);
-#endif // TL_HAVE_GDAL
+class TL_EXPORT LabelAnchor
+{
+
+public:
+
+    enum class Horizontal : uint8_t
+    {
+        left,
+        center,
+        right
+    };
+
+    enum class Vertical : uint8_t
+    {
+        baseline,
+        center,
+        top,
+        bottom
+    };
+
+private:
+
+    Horizontal mHorizontal = Horizontal::left;
+    Vertical mVertical = Vertical::baseline;
+
+public:
+
+    constexpr LabelAnchor() = default;
+    
+    constexpr LabelAnchor(Horizontal h, Vertical v) noexcept
+      : mHorizontal(h),
+        mVertical(v)
+    {}
+
+    [[nodiscard]] 
+    constexpr auto horizontal() const noexcept -> Horizontal { return mHorizontal; }
+    constexpr void setHorizontal(Horizontal h) noexcept { mHorizontal = h; }
+
+    [[nodiscard]] 
+    constexpr auto vertical() const noexcept -> Vertical { return mVertical; }
+    constexpr void setVertical(Vertical v) noexcept { mVertical = v; }
+
+    auto operator<=>(const LabelAnchor &) const = default;
+};
 
 
-/*! \} */ // end of vector
+/*! \} */ 
 
-
-} // End namespace tl
-
+} // namespace tl

@@ -35,7 +35,7 @@
 #include "tidop/core/base/Path.h"
 #include "tidop/core/base/macros/SmartPtr.h"
 #include "tidop/geometry/primitives/Point.h"
-#include "tidop/graphic/rect.h"
+#include "tidop/graphic/base/Rect.h"
 #include "tidop/rastertools/img.h"
 #include "tidop/rastertools/io/Metadata.h"
 #include "tidop/rastertools/io/Formats.h"

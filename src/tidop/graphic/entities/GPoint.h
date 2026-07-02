@@ -24,119 +24,103 @@
 
 #pragma once
 
-#include <numeric>
-
-#include "tidop/geometry/entities/entity.h"
 #include "tidop/geometry/primitives/Point.h"
-#include "tidop/graphic/base/Rect.h"
+#include "tidop/geometry/spatial/BoundingBox.h"
+#include "tidop/geometry/algorithms/spatial/Envelope.h"
+#include "tidop/graphic/entities/GraphicEntity.h"
 
 namespace tl
 {
 
-/*! \addtogroup Shapes
+class Painter;
+
+/*! \addtogroup GraphicEntities
  *  \{
  */
 
-
 /*!
- * \brief Square class
- *
- * The `Square` class represents a square, a 2D geometric shape where 
- * all sides are of equal length.
+ * \brief Point graphic class
  */
-template<typename T>
-class Square
-  : public Shape
+class TL_EXPORT GPoint
+  : public GraphicEntity
 {
-
-public:
-
-    using value_type = T;
 
 private:
 
-    T side;
+    Point2d mGeometry;
 
 public:
 
     /*!
      * \brief Default constructor
-     *
-     * Creates a square with side length 0.
      */
-    constexpr Square() = default;
+    GPoint() = default;
 
     /*!
-     * \brief Constructor with parameter
-     * \param[in] side The length of one side of the square
-     *
-     * Creates a square with the specified side length.
+     * \brief Constructor
+     * \param[in] x x coordinate
+     * \param[in] y y coordinate
      */
-    constexpr Square(T side);
-
-    constexpr Square(const Square<T> &square) = default;
-    constexpr Square(Square<T> &&square) noexcept = default;
-
-    constexpr auto operator=(const Square<T> &square) -> Square<T> & = default;
-    constexpr auto operator=(Square<T> &&square) noexcept -> Square<T> & = default;
-
+    GPoint(double x, double y);
 
     /*!
-     * \brief Get the area of the square
-     * \return The area of the square
-     *
-     * The area of a square is simply the side length squared.
+     * \brief Constructor from a Point
+     * \param[in] pt Point
+     * \see Point
      */
-    [[nodiscard]]
-    constexpr auto area() const noexcept -> double override;
+    explicit GPoint(const Point<double> &pt);
 
     /*!
-     * \brief Set the side length
-     * \param[in] side The length of the square's side
+     * \brief Copy constructor
+     * \param[in] pt Objeto GPoint to be copied
      */
-    constexpr void setSide(T side);
+    GPoint(const GPoint &pt) = default;
 
     /*!
-     * \brief Get the side length
-     * \return The length of the square's side
+     * \brief Move Constructor
+     * \param[in] pt Objeto GPoint object that moves
      */
-    [[nodiscard]]
-    constexpr auto getSide() const noexcept  -> T;
+    GPoint(GPoint &&pt) noexcept = default;
+
+    ~GPoint() override = default;
+
+    /*!
+     * \brief Copy assignment operator
+     * \param gPoint GPoint object to be assigned
+     * \return Object reference
+     */
+    auto operator =(const GPoint &gPoint) -> GPoint& = default;
+
+    /*!
+     * \brief Move assignment operator
+     * \param gPoint GPoint object that moves
+     * \return Object reference
+     */
+    auto operator =(GPoint&& gPoint) noexcept -> GPoint& = default;
+
+    auto geometry() const -> const Point2d& { return mGeometry; }
+    auto geometry() -> Point2d& { return mGeometry; }
+
+    auto isMultiEntity() const -> bool override;
+    auto isSimpleEntity() const -> bool override;
+    auto window() const -> BoundingBox<Point2d> override;
+    void draw(Painter &painter) const override;
+    auto clone() const -> std::unique_ptr<GraphicEntity> override;
 };
 
 
-
-//template<typename T>
-//Square<T>::Square()
-//  : side(0)
-//{
-//}
-
-template<typename T>
-constexpr Square<T>::Square(T side)
-  : side(side)
+inline auto GPoint::isMultiEntity() const -> bool
 {
+    return false;
 }
 
-template<typename T>
-constexpr auto Square<T>::area() const noexcept -> double
+inline auto GPoint::isSimpleEntity() const -> bool
 {
-    return static_cast<double>(side * side);
-}
-
-template<typename T>
-constexpr void Square<T>::setSide(T side)
-{
-    this->side = side;
-}
-
-template<typename T>
-constexpr auto Square<T>::getSide() const noexcept -> T
-{
-    return side;
+    return true;
 }
 
 
-/*! \} */ 
+/*! \} */ // Fin GraphicEntities
 
-}
+} // namespace tl
+

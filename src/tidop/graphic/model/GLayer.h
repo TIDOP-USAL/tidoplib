@@ -29,8 +29,8 @@
 #include <memory>
 #include <string>
 
-#include "tidop/core/base/Defs.h"
-#include "tidop/graphic/datamodel.h"
+#include "tidop/config.h"
+#include "tidop/graphic/model/TableField.h"
 #include "tidop/geometry/spatial/BoundingBox.h"
 
 namespace tl
@@ -63,14 +63,7 @@ class TL_EXPORT GLayer
 
 public:
 
-    using allocator_type = std::vector<std::unique_ptr<GraphicEntity> >::allocator_type;
     using value_type = std::vector<std::unique_ptr<GraphicEntity> >::value_type;
-    using size_type = std::vector<std::unique_ptr<GraphicEntity> >::size_type;
-    //using difference_type = std::vector<std::unique_ptr<GraphicEntity> >::difference_type;
-    using pointer = std::vector<std::unique_ptr<GraphicEntity> >::pointer;
-    using const_pointer = std::vector<std::unique_ptr<GraphicEntity> >::const_pointer;
-    using reference = std::vector<std::unique_ptr<GraphicEntity> >::reference;
-    using const_reference = std::vector<std::unique_ptr<GraphicEntity> >::const_reference;
     using iterator = std::vector<std::unique_ptr<GraphicEntity> >::iterator;
     using const_iterator = std::vector<std::unique_ptr<GraphicEntity> >::const_iterator;
 
@@ -157,13 +150,13 @@ public:
      * is greater than count, the container is truncated to the specified number of elements.
      * \param[in] count New container size
      */
-    void resize(size_type count);
+    void resize(size_t count);
 
     /*!
      * \brief Returns the number of entities in the layer.
      * \return Entity count.
      */
-    auto size() const noexcept -> size_type;
+    auto size() const noexcept -> size_t;
 
     /*!
      * \brief Erases a range of entities.

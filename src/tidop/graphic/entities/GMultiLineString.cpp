@@ -22,35 +22,37 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
-
-#include "tidop/core/base/Defs.h"
-
-#ifdef TL_HAVE_GDAL
-TL_DISABLE_WARNINGS
-#include "ogrsf_frmts.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
-
-#include "tidop/graphic/model/TableField.h"
+#include "tidop/graphic/entities/GMultiLineString.h"
+#include "tidop/graphic/render/Painter.h"
 
 namespace tl
 {
 
-/*! \addtogroup VectorTools
- *  \{
- */
+GMultiLineString::GMultiLineString(size_t size)
+  : mGeometry(size),
+	GraphicEntity(GraphicEntity::Type::multiline_2d)
+{
+}
 
+GMultiLineString::GMultiLineString(const MultiLineString<Point2d> &multiLineString)
+  : mGeometry(multiLineString),
+    GraphicEntity(GraphicEntity::Type::multiline_2d)
+{
+}
 
+void GMultiLineString::draw(Painter &painter) const
+{
+    painter.drawMultiLineString(*this);
+}
 
-#ifdef TL_HAVE_GDAL
-TL_EXPORT TableField::Type typeFromGdal(OGRFieldType ogrType);
-TL_EXPORT OGRFieldType typeToGdal(TableField::Type type);
-#endif // TL_HAVE_GDAL
+auto GMultiLineString::window() const -> BoundingBox<Point2d>
+{
+    return tl::envelope(this->mGeometry);
+}
 
+auto GMultiLineString::clone() const -> std::unique_ptr<GraphicEntity>
+{
+    return std::make_unique<GMultiLineString>(*this);
+}
 
-/*! \} */ // end of vector
-
-
-} // End namespace tl
-
+} // namespace tl

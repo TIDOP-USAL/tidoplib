@@ -24,33 +24,65 @@
 
 #pragma once
 
-#include "tidop/core/base/Defs.h"
+#include <vector>
+#include <string>
 
-#ifdef TL_HAVE_GDAL
-TL_DISABLE_WARNINGS
-#include "ogrsf_frmts.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
-
-#include "tidop/graphic/model/TableField.h"
+#include "tidop/config.h"
+#include "tidop/graphic/model/RegisterValue.h"
 
 namespace tl
 {
 
-/*! \addtogroup VectorTools
+/*! \addtogroup Graphic
  *  \{
  */
 
 
+/*!
+ * \class TableRegister
+ * \brief Represents a single record (row) in a attributes table.
+ *
+ * A `TableRegister` stores one value per field, forming a complete table row.
+ * Values are internally managed as `RegisterValue` objects.
+ */
+class TL_EXPORT TableRegister
+{
 
-#ifdef TL_HAVE_GDAL
-TL_EXPORT TableField::Type typeFromGdal(OGRFieldType ogrType);
-TL_EXPORT OGRFieldType typeToGdal(TableField::Type type);
-#endif // TL_HAVE_GDAL
+protected:
 
+    std::vector<RegisterValue> mRegisterValues;
 
-/*! \} */ // end of vector
+public:
 
+    TableRegister() = default;
 
-} // End namespace tl
+    /*!
+     * \brief Constructs a new record with the given table schema.
+     * \param[in] fields Table fields defining the register structure.
+     */
+    TableRegister(const std::vector<TableField> &fields);
 
+    /*!
+     * \brief Returns the value at the given index.
+     * \param[in] idx Field index.
+     * \return Value as string.
+     */
+    auto value(size_t idx) const -> std::string;
+
+    /*!
+     * \brief Sets the value at the given index.
+     * \param[in] idx Field index.
+     * \param[in] field Value as string.
+     */
+    void setValue(size_t idx, const std::string &field);
+
+    /*!
+     * \brief Returns the number of fields in the register.
+     */
+    auto size() const -> size_t;
+
+};
+
+/*! \} */
+
+} // namespace tl

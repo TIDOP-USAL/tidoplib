@@ -24,12 +24,9 @@
 
 #include <utility>
 
-#include "tidop/graphic/layer.h"
+#include "tidop/graphic/model/GLayer.h"
 
 #include "tidop/graphic/entities/GraphicEntity.h"
-//#include "tidop/graphic/entities/GPoint.h"
-//#include "tidop/graphic/entities/GLineString.h"
-//#include "tidop/graphic/entities/GPolygon.h"
 #include "tidop/geometry/algorithms/spatial/Envelope.h"
 
 namespace tl
@@ -58,18 +55,6 @@ GLayer::GLayer(const GLayer &gLayer)
         }
     }
 
-    //mTableFields.reserve(gLayer.mTableFields.size());
-    //for (const auto &field : gLayer.mTableFields) {
-    //    if (field) {
-    //        mTableFields.push_back(std::make_unique<TableField>(*field));
-    //    } else {
-    //        mTableFields.push_back(nullptr);
-    //    }
-    //}
-
-    // OJO con mSelectEntity: No podemos copiar el puntero crudo original 
-    // porque apuntaría a una entidad de la OTRA capa. 
-    // Lo correcto es resetearlo a nullptr (o buscar el equivalente indexado).
     mSelectEntity = nullptr;
 }
 
@@ -127,29 +112,22 @@ bool GLayer::empty() const noexcept
     return mEntities.empty();
 }
 
-void GLayer::resize(size_type count)
+void GLayer::resize(size_t count)
 {
     mEntities.resize(count);
 }
 
-auto GLayer::size() const noexcept -> size_type
+auto GLayer::size() const noexcept -> size_t
 {
     return mEntities.size();
 }
 
 auto GLayer::operator=(const GLayer &entity) -> GLayer&
 {
-    //if (this != &entity) {
-    //    this->mName = entity.mName;
-    //    this->mEntities = entity.mEntities;
-    //    this->mSelectEntity = entity.mSelectEntity;
-    //}
-    //return (*this);
     if (this != &entity) {
         mName = entity.mName;
         mTableFields = entity.mTableFields;
 
-        // Limpiamos lo que teníamos antes (unique_ptr destruye la memoria automáticamente)
         mEntities.clear();
         mEntities.reserve(entity.mEntities.size());
 
@@ -161,43 +139,19 @@ auto GLayer::operator=(const GLayer &entity) -> GLayer&
             }
         }
 
-        //mTableFields.clear();
-        //mTableFields.reserve(entity.mTableFields.size());
-        //for (const auto &field : entity.mTableFields) {
-        //    if (field) {
-        //        mTableFields.push_back(std::make_unique<TableField>(*field));
-        //    } else {
-        //        mTableFields.push_back(nullptr);
-        //    }
-        //}
-
-        mSelectEntity = nullptr; // Reseteamos la selección por seguridad
+        mSelectEntity = nullptr;
     }
     return *this;
 }
 
 auto GLayer::operator=(GLayer&& entity) noexcept -> GLayer&
 {
-    //if (this != &entity) {
-    //    this->mName = std::move(entity.mName);
-    //    this->mEntities.clear();
-    //    this->mEntities = std::move(entity.mEntities);
-    //    this->mSelectEntity = std::move(entity.mSelectEntity);
-    //}
-    //return (*this);
+
     if (this != &entity) {
         mName = std::move(entity.mName);
         mTableFields = std::move(entity.mTableFields);
-
-        // Al asignar con std::move, el operador de asignación de std::vector 
-        // destruye automáticamente todas las entidades viejas que tuviera 'this'
-        // y se adueña del nuevo bloque de memoria de 'entity'.
         mEntities = std::move(entity.mEntities);
-
-        // Transferimos el puntero de observación
         mSelectEntity = entity.mSelectEntity;
-
-        // Dejamos el objeto origen limpio
         entity.mSelectEntity = nullptr;
     }
     return *this;
@@ -240,12 +194,6 @@ auto GLayer::boundingBox() const -> BoundingBox<Point2d>
 
 auto GLayer::window() const -> BoundingBox<Point2d>
 {
-    //Window<Point<double>> w;
-
-    //for (auto &entity : mEntities) {
-    //    w = joinWindow(w, entity->window());
-    //}
-
     return boundingBox();
 }
 

@@ -42,7 +42,7 @@
 #pragma once
 
 #include "tidop/math/base/Data.h"
-#include "tidop/graphic/Rect.h"
+#include "tidop/graphic/base/Rect.h"
 #include "tidop/math/base/Concepts.h"
 #include "tidop/math/algebra/matrix/detail/Assign.h"
 

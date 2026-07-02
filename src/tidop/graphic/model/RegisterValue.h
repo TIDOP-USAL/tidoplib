@@ -24,33 +24,65 @@
 
 #pragma once
 
-#include "tidop/core/base/Defs.h"
+#include <string>
 
-#ifdef TL_HAVE_GDAL
-TL_DISABLE_WARNINGS
-#include "ogrsf_frmts.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
-
+#include "tidop/config.h"
 #include "tidop/graphic/model/TableField.h"
 
 namespace tl
 {
 
-/*! \addtogroup VectorTools
+/*! \addtogroup Graphic
  *  \{
  */
 
 
+/*!
+ * \class RegisterValue
+ * \brief Represents a single value in a table record.
+ *
+ * A `RegisterValue` holds a string-formatted value associated with a specific `TableField`.
+ * The actual value may be stored in string form, regardless of its declared type.
+ */
+class TL_EXPORT RegisterValue
+{
 
-#ifdef TL_HAVE_GDAL
-TL_EXPORT TableField::Type typeFromGdal(OGRFieldType ogrType);
-TL_EXPORT OGRFieldType typeToGdal(TableField::Type type);
-#endif // TL_HAVE_GDAL
+public:
+
+    /*!
+     * \brief Constructor with field reference.
+     * \param[in] field Associated table field.
+     */
+    RegisterValue(const TableField &field);
+
+    /*!
+     * \brief Constructor with initial value.
+     * \param[in] field Associated table field.
+     * \param[in] value String-formatted value.
+     */
+    RegisterValue(const TableField &field,
+                  std::string value);
+
+    ~RegisterValue() = default;
+
+    /*!
+     * \brief Returns the string value.
+     */
+    auto value() const -> std::string;
+
+    /*!
+     * \brief Sets the string value.
+     * \param[in] value New value to assign.
+     */
+    void setValue(const std::string &value);
+
+private:
+
+    TableField mField;
+    std::string mValue;
+};
 
 
-/*! \} */ // end of vector
+/*! \} */
 
-
-} // End namespace tl
-
+} // namespace tl

@@ -22,13 +22,13 @@
  *                                                                        *
  **************************************************************************/
 
-#include "tidop/graphic/painter.h"
+#include "tidop/graphic/render/Painter.h"
 
 #ifdef TL_HAVE_OPENCV
 #include "opencv2/core/core.hpp"
 #endif
 
-#include "tidop/graphic/canvas.h"
+#include "tidop/graphic/render/Canvas.h"
 
 namespace tl
 {

@@ -24,33 +24,82 @@
 
 #pragma once
 
-#include "tidop/core/base/Defs.h"
+#include <string>
 
-#ifdef TL_HAVE_GDAL
-TL_DISABLE_WARNINGS
-#include "ogrsf_frmts.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
-
-#include "tidop/graphic/model/TableField.h"
+#include "tidop/config.h"
 
 namespace tl
 {
 
-/*! \addtogroup VectorTools
+/*! \addtogroup Graphic
  *  \{
  */
 
+/*!
+ * \class TableField
+ * \brief Represents a field (column) definition in a table schema.
+ *
+ * A `TableField` stores metadata about a table column, including its name,
+ * attributes type and maximum size. It defines the structure of a `TableRegister`.
+ */
+class TL_EXPORT TableField
+{
 
+public:
 
-#ifdef TL_HAVE_GDAL
-TL_EXPORT TableField::Type typeFromGdal(OGRFieldType ogrType);
-TL_EXPORT OGRFieldType typeToGdal(TableField::Type type);
-#endif // TL_HAVE_GDAL
+    /*!
+     * \enum Type
+     * \brief Supported field attributes types.
+     */
+    enum class Type
+    {
+        INT,       /*!< 32-bit integer */
+        INT64,     /*!< 64-bit integer */
+        DOUBLE,    /*!< Double-precision floating point */
+        STRING     /*!< UTF-8 encoded string */
+        //....
+    };
 
+private:
 
-/*! \} */ // end of vector
+    std::string mName;
+    Type mType;
+    int mSize;
 
+public:
 
-} // End namespace tl
+    //TableField() = default;
 
+    /*!
+     * \brief Constructor
+     * \param[in] name Field name
+     * \param[in] type Field type
+     * \param[in] size Maximum field size (in characters or bytes)
+     */
+    TableField(const std::string &name, Type type, int size);
+
+    ~TableField();
+
+    /*!
+     * \brief Returns the field name
+     */
+    [[nodiscard]]
+    auto name() const ->std::string;
+
+    /*!
+     * \brief Returns the field type
+     */
+    [[nodiscard]]
+    auto type() const -> Type;
+
+    /*!
+     * \brief Returns the field size
+     */
+    [[nodiscard]]
+    auto size() const -> int;
+
+};
+
+/*! \} */
+
+} // namespace tl

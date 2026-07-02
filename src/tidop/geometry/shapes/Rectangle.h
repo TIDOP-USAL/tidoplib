@@ -26,7 +26,7 @@
 
 #include "tidop/geometry/shapes/Shape.h"
 #include "tidop/geometry/primitives/Point.h"
-#include "tidop/graphic/rect.h"
+#include "tidop/graphic/base/Rect.h"
 
 namespace tl
 {

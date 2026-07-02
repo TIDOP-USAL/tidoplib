@@ -22,35 +22,34 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
+#include "tidop/graphic/entities/GraphicEntity.h"
 
-#include "tidop/core/base/Defs.h"
-
-#ifdef TL_HAVE_GDAL
-TL_DISABLE_WARNINGS
-#include "ogrsf_frmts.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
-
-#include "tidop/graphic/model/TableField.h"
 
 namespace tl
 {
 
-/*! \addtogroup VectorTools
- *  \{
- */
+
+GraphicEntity::GraphicEntity(Type type, 
+                             const GraphicStyle &style)
+  : mEntityType(type), 
+    mStyle(style)
+{
+}
+
+auto GraphicEntity::type() const -> Type
+{
+    return mEntityType;
+}
+
+auto GraphicEntity::attributes() const -> TableRegister
+{
+    return mData;
+}
+
+void GraphicEntity::setAttributes(const TableRegister &attributes)
+{
+    mData = attributes;
+}
 
 
-
-#ifdef TL_HAVE_GDAL
-TL_EXPORT TableField::Type typeFromGdal(OGRFieldType ogrType);
-TL_EXPORT OGRFieldType typeToGdal(TableField::Type type);
-#endif // TL_HAVE_GDAL
-
-
-/*! \} */ // end of vector
-
-
-} // End namespace tl
-
+} // namespace tl

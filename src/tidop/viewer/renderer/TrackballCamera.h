@@ -2,7 +2,7 @@
 
 #include "Camera.h"
 
-#include "tidop/graphic/rect.h"
+#include "tidop/graphic/base/Rect.h"
 
 namespace tl
 {
