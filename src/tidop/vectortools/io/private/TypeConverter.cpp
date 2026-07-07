@@ -31,7 +31,7 @@ namespace tl
 
 #ifdef TL_HAVE_GDAL
 
-TableField::Type typeFromGdal(OGRFieldType ogrType)
+auto typeFromGdal(OGRFieldType ogrType) -> TableField::Type
 {
     TableField::Type type = TableField::Type::STRING;
 
@@ -74,7 +74,7 @@ TableField::Type typeFromGdal(OGRFieldType ogrType)
     return type;
 }
 
-OGRFieldType typeToGdal(TableField::Type type)
+auto typeToGdal(TableField::Type type) -> OGRFieldType
 {
     OGRFieldType ogr_type = OFTString;
     switch (type) {

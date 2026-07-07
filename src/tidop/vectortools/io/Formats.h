@@ -26,22 +26,55 @@
 
 #include "tidop/core/base/Defs.h"
 
-#include <vector>
+//#include <vector>
 
-#ifdef TL_HAVE_GDAL
-TL_DISABLE_WARNINGS
-#include "gdal_priv.h"
-TL_DEFAULT_WARNINGS
-#endif // TL_HAVE_GDAL
+//#ifdef TL_HAVE_GDAL
+//TL_DISABLE_WARNINGS
+//#include "gdal_priv.h"
+//TL_DEFAULT_WARNINGS
+//#endif // TL_HAVE_GDAL
 
 #include <map>
+#include <optional>
+#include <string>
+#include <string_view>
 
 namespace tl
 {
 
+
+
+
+
 /*! \addtogroup VectorIO
  *  \{
  */
+
+
+namespace shape
+{
+
+// Layer creation options
+
+// Override the type of shapefile created. Can be one of NULL for a simple .dbf 
+// file with no .shp file, POINT, ARC, POLYGON or MULTIPOINT for 2D; POINTZ, ARCZ, 
+// POLYGONZ, MULTIPOINTZ or MULTIPATCH for 3D; POINTM, ARCM, POLYGONM or MULTIPOINTM 
+// for measured geometries; and POINTZM, ARCZM, POLYGONZM or MULTIPOINTZM for 
+// 3D measured geometries.
+constexpr std::string_view shpt = "SHPT";
+constexpr std::string_view encoding = "ENCODING";
+// Defaults to NO. Set to YES to resize fields to their optimal size. See above "Field sizes" section.
+constexpr std::string_view resize = "RESIZE";
+// Defaults to NO. Set to YES to enforce the 2GB file size for .SHP or .DBF files.
+constexpr std::string_view limit_2gb = "2GB_LIMIT";
+// Defaults to NO.Set to YES to create a spatial index(.qix).
+constexpr std::string_view spatial_index = "SPATIAL_INDEX";
+constexpr std::string_view bbf_date_last_update = "DBF_DATE_LAST_UPDATE";
+constexpr std::string_view auto_repack = "AUTO_REPACK";
+constexpr std::string_view dbf_eof_char = "DBF_EOF_CHAR";
+
+}
+
 
 /*!
  * \brief Format options
@@ -51,134 +84,87 @@ class TL_EXPORT VectorOptions
 
 public:
 
-    enum class Format
-    {
-        shp,
-        dxf,
-        dgn,
-        geojson
-    };
-
-    using option_iterator = std::map<std::string, std::string>::iterator;
-    using option_const_iterator = std::map<std::string, std::string>::const_iterator;
+    using container_type = std::map<std::string, std::string, std::less<>>;
+    using iterator = std::map<std::string, std::string>::iterator;
+    using const_iterator = std::map<std::string, std::string>::const_iterator;
 
 protected:
 
-    Format mFormat;
+    container_type mOptions;
 
 public:
 
     VectorOptions() = default;
     virtual ~VectorOptions() = default;
 
-    virtual auto format() const -> Format = 0;
+    auto &set(std::string_view key, std::string_view value);
 
-    virtual auto options() const -> std::map<std::string, std::string> = 0;
-    virtual auto activeOptions() const -> std::map<std::string, std::string> = 0;
-    virtual void reset() = 0;
+    /*!
+     * \brief Retrieve an option value.
+     *
+     * \param key Option name.
+     * \return An optional containing the value as string_view if the key exists,
+     *         or std::nullopt otherwise.
+     */
+    [[nodiscard]]
+    auto value(std::string_view key) const -> std::optional<std::string_view>;
+
+    /*!
+     * \brief Iterator to the first option.
+     * \return Mutable iterator.
+     */
+    auto begin() noexcept -> iterator
+    {
+        return mOptions.begin();
+    }
+
+    /*!
+     * \brief Const iterator to the first option.
+     * \return Constant iterator.
+     */
+    auto begin() const noexcept -> const_iterator
+    {
+        return mOptions.begin();
+    }
+
+    /*!
+     * \brief Iterator to the end of the options.
+     * \return Mutable end iterator.
+     */
+    auto end() noexcept -> iterator
+    {
+        return mOptions.end();
+    }
+
+    /*!
+     * \brief Const iterator to the end of the options.
+     * \return Constant end iterator.
+     */
+    auto end() const noexcept -> const_iterator
+    {
+        return mOptions.end();
+    }
+
+    /*!
+     * \brief Check whether the container is empty.
+     * \return true if no options are stored, false otherwise.
+     */
+    [[nodiscard]]
+    auto empty() const noexcept -> bool { return mOptions.empty(); }
+
+    /*!
+     * \brief Get the number of stored options.
+     * \return Number of key‑value pairs.
+     */
+    [[nodiscard]]
+    auto size() const noexcept -> size_t { return mOptions.size(); }
+
+    /*!
+     * \brief Remove all options from the container.
+     */
+    void clear() { mOptions.clear(); }
 
 };
-
-
-class TL_EXPORT VectorOptionsBase
-  : public VectorOptions
-{
-
-private:
-
-    Format mFormat;
-
-public:
-
-    VectorOptionsBase(Format format);
-    ~VectorOptionsBase() override;
-
-    auto format() const -> Format override;
-    auto options() const -> std::map<std::string, std::string> override;
-    auto activeOptions() const -> std::map<std::string, std::string> override;
-
-protected:
-
-    virtual auto options(bool all) const -> std::map<std::string, std::string> = 0;
-
-};
-
-
-/*!
- * \brief Class that manages the options of the Shape format
- */
-//class TL_EXPORT ShapeOptions
-//  : public VectorOptionsBase
-//{
-//
-//public:
-//
-//    /*!
-//     * \brief Geometry adjustment modes
-//     */
-//    enum class AdjustGeomType : uint8_t
-//    {
-//        no,
-//        first_shape,
-//        all_shapes
-//    };
-//
-//protected:
-//
-//    /*!
-//     * \brief Encoding
-//     */
-//    std::pair<std::string, std::string> mEncoding;
-//
-//    /*!
-//     * \brief Modification date to write in the DBF header with the format year-month-day.
-//     * If not specified, the current date is used.
-//     */
-//    std::pair<std::string, std::string> mDbfDateLastUpdate;
-//
-//    std::pair<bool, bool> bAdjustType;
-//
-//    /*!
-//     * \brief Adjustment of geometry type
-//     * Defines how the layer geometry type is calculated, particularly to distinguish shapefiles
-//     * that have shapes with meaningful values in the M dimension from those where M values are
-//     * set to nodata.
-//     * The default value is FIRST_SHAPE.
-//     * \see AdjustGeomType
-//     */
-//    std::pair<AdjustGeomType, AdjustGeomType> mAdjustGeomType;
-//
-//    std::pair<bool, bool> bAutoRepack;
-//    std::pair<bool, bool> bDbfEofChar;
-//
-//public:
-//
-//    ShapeOptions();
-//    ~ShapeOptions() override;
-//
-//    void reset() override;
-//
-//    void enableAdjustType(bool value = true);
-//    void enableAutoRepac(bool value = true);
-//    void enableDbfEofChar(bool value = true);
-//
-//    auto encoding() const -> std::string;
-//    void setEncoding(const std::string &encoding);
-//
-//    auto dbfDateLastUpdate() const -> std::string;
-//    void setDbfDateLastUpdate(const std::string &date);
-//
-//    auto adjustGeomType() const -> AdjustGeomType;
-//    void setAdjustGeomType(AdjustGeomType type);
-//
-//private:
-//
-//    void init();
-//    auto options(bool all) const -> std::map<std::string, std::string> override;
-//
-//};
-
-
 
 
 /*! \} */ // end of vector

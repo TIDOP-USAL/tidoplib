@@ -44,8 +44,8 @@ namespace tl
 
 
 #ifdef TL_HAVE_GDAL
-TL_EXPORT TableField::Type typeFromGdal(OGRFieldType ogrType);
-TL_EXPORT OGRFieldType typeToGdal(TableField::Type type);
+TL_EXPORT auto typeFromGdal(OGRFieldType ogrType) -> TableField::Type;
+TL_EXPORT auto typeToGdal(TableField::Type type) -> OGRFieldType;
 #endif // TL_HAVE_GDAL
 
 

@@ -307,7 +307,7 @@ constexpr std::string_view Interlacing = "INTERLACING";
  * }
  * \endcode
  */
-class ImageOptions
+class TL_EXPORT ImageOptions
 {
 
 public:

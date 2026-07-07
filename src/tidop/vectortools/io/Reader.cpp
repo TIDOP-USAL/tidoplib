@@ -99,4 +99,10 @@ auto VectorReader::crsWkt() const -> std::string
     return mReader->crsWkt();
 }
 
+auto VectorReader::boundingBox() const -> BoundingBox<Point2d>
+{
+    TL_ASSERT(isOpen(), "VectorReader is not open");
+    return mReader->boundingBox();
+}
+
 } // End namespace tl

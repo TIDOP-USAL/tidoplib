@@ -30,7 +30,7 @@
 
 #include "tidop/core/base/Defs.h"
 #include "tidop/core/base/Path.h"
-
+#include "tidop/geometry/spatial/BoundingBox.h"
 
 namespace tl
 {
@@ -165,6 +165,11 @@ public:
      */
     auto crsWkt() const -> std::string;
 
+    /*!
+     * \brief Returns the bounding box (window) that encloses all entities.
+     * \return Bounding window of the layer contents.
+     */
+    auto boundingBox() const -> BoundingBox<Point2d>;
 };
 
 

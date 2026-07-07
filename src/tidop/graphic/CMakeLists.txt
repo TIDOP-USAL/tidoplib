@@ -36,8 +36,6 @@ if (BUILD_TL_GRAPHIC)
 
     add_files_to_project(${PROJECT_NAME} 
                         SOURCE_FILES 
-                            linealgorithms.cpp
-                            #datamodel.cpp
                             color/Color.cpp
                             color/ColorConversion.cpp
                             color/ColorHSL.cpp
@@ -64,9 +62,7 @@ if (BUILD_TL_GRAPHIC)
                             styles/GraphicStyle.cpp
                         HEADER_FILES
                             Color.h
-                            linealgorithms.h
                             Styles.h
-                            #datamodel.h
                             base/Rect.h
                             color/ColorCMYK.h
                             color/Color.h

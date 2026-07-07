@@ -31,7 +31,7 @@
 #include "tidop/core/base/Defs.h"
 #include "tidop/core/base/Path.h"
 #include "tidop/core/base/macros/SmartPtr.h"
-
+#include "tidop/geometry/spatial/BoundingBox.h"
 
 namespace tl
 {
@@ -113,7 +113,7 @@ public:
      *
      * This method reads the specified layer by its ID and returns it as a `GLayer` object.
      */
-    virtual auto read(int layerId) -> std::shared_ptr<GLayer> = 0;
+    virtual auto read(int layerId) const -> std::shared_ptr<GLayer> = 0;
 
     /*!
      * \brief Reads a layer from the vector file by its name.
@@ -122,7 +122,7 @@ public:
      *
      * This method reads the specified layer by its name and returns it as a `GLayer` object.
      */
-    virtual auto read(const std::string &layerName) -> std::shared_ptr<GLayer> = 0;
+    virtual auto read(const std::string &layerName) const -> std::shared_ptr<GLayer> = 0;
 
     /*!
      * \brief Copies the vector data to another file, optionally reprojecting it. 
@@ -137,6 +137,10 @@ public:
      */
     virtual auto crsWkt() const -> std::string = 0;
 
+    /*!
+     * \brief Bounding box in terrain coordinates
+     */
+    virtual auto boundingBox() const -> BoundingBox<Point2d> = 0;
 };
 
 

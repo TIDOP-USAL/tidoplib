@@ -241,7 +241,7 @@ public:
     /*!
      * \brief Bounding box of the image in terrain coordinates
      */
-    auto window() const ->BoundingBox2d;
+    auto window() const -> BoundingBox2d;
 
     /*!
      * \brief No-data value for the image bands
