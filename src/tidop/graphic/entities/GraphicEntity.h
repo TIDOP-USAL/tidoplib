@@ -22,6 +22,18 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file GraphicEntity.h
+ * \brief Base class for drawable graphical entities.
+ *
+ * This file defines the `GraphicEntity` class, which serves as the abstract base
+ * for all renderable geometric objects. Each entity has a geometry type, a visual
+ * style (pen, brush, symbol, label), and optional attribute data. Derived classes
+ * must implement the rendering logic (`draw`), bounding box (`window`), and cloning.
+ *
+ * \ingroup Graphics
+ * \see tl::GraphicStyle, tl::Painter, tl::TableRegister
+ */
+
 #pragma once
 
 #include <string>
@@ -98,7 +110,7 @@ public:
 
 protected:
 
-    Type mEntityType;
+    Type mEntityType = Type::point_2d;
     TableRegister mData;
     GraphicStyle mStyle;
 
@@ -108,7 +120,8 @@ public:
 
     /*!
      * \brief Constructs a graphical entity of the given type.
-     * \param[in] type Geometry type of the entity.
+     * \param[in] type  Geometry type of the entity.
+     * \param[in] style Initial visual style (default: empty).
      */
     explicit GraphicEntity(Type type, const GraphicStyle &style = {});
 
@@ -140,20 +153,68 @@ public:
      */
     auto operator =(GraphicEntity&& graphicEntity) noexcept -> GraphicEntity& = default;
 
+    /*!
+     * \brief Sets the visual style of the entity.
+     * \param[in] style The new style.
+     */
     void setStyle(const GraphicStyle &style) { mStyle = style; }
     [[nodiscard]]
+
+    /*!
+     * \brief Returns the current visual style.
+     * \return Const reference to the style.
+     */
     auto style() const -> const GraphicStyle & { return mStyle; }   
 
+    /*!
+     * \brief Sets the pen (stroke) of the entity.
+     * \param[in] pen The new pen.
+     */
     void setPen(const Pen &pen) { mStyle.setPen(pen); }
+
+    /*!
+     * \brief Returns the current pen.
+     * \return Pointer to the pen, or `nullptr` if not set.
+     */
     [[nodiscard]]
     auto pen() const -> const Pen * { return mStyle.pen(); }
+
+    /*!
+     * \brief Sets the brush (fill) of the entity.
+     * \param[in] brush The new brush.
+     */
     void setBrush(const Brush &brush) { mStyle.setBrush(brush); }
+
+    /*!
+     * \brief Returns the current brush.
+     * \return Pointer to the brush, or `nullptr` if not set.
+     */
     [[nodiscard]] 
     auto brush() const -> const Brush * { return mStyle.brush(); }
+
+    /*!
+     * \brief Sets the symbol (marker) of the entity.
+     * \param[in] symbol The new symbol.
+     */
     void setSymbol(const Symbol &symbol) { mStyle.setSymbol(symbol); }
+
+    /*!
+     * \brief Returns the current symbol.
+     * \return Pointer to the symbol, or `nullptr` if not set.
+     */
     [[nodiscard]] 
     auto symbol() const -> const Symbol * { return mStyle.symbol(); }
+
+    /*!
+     * \brief Sets the label of the entity.
+     * \param[in] label The new label.
+     */
     void setLabel(const Label &label) { mStyle.setLabel(label); }
+
+    /*!
+     * \brief Returns the current label.
+     * \return Pointer to the label, or `nullptr` if not set.
+     */
     [[nodiscard]] 
     auto label() const -> const Label * { return mStyle.label(); }
 
@@ -162,18 +223,6 @@ public:
      * \return Type of the entity.
      */
     auto type() const -> Type;
-
-    /*!
-     * \brief Checks whether the entity is a multi-geometry.
-     * \return True if the entity is a multi-geometry type.
-     */
-    virtual auto isMultiEntity() const -> bool = 0;
-
-    /*!
-     * \brief Checks whether the entity is a simple (non-multi) geometry.
-     * \return True if the entity is a simple geometry type.
-     */
-    virtual auto isSimpleEntity() const -> bool = 0;
 
     /*!
      * \brief Renders the entity using the given painter.
@@ -189,21 +238,25 @@ public:
 
     /*!
      * \brief Returns the attribute data associated with this entity.
-     * \return Shared pointer to the attribute table entry.
+     * \return A `TableRegister` containing the attribute data.
      */
     auto attributes() const -> TableRegister;
 
     /*!
      * \brief Associates attribute data with this entity.
-     * \param[in] data Pointer to the attribute table entry.
+     * \param[in] data The attribute data to store.
      */
     void setAttributes(const TableRegister &attributes);
 
+    /*!
+     * \brief Creates a deep copy of this entity.
+     * \return A unique pointer to the cloned entity.
+     */
     virtual auto clone() const -> std::unique_ptr<GraphicEntity> = 0;
 
 };
 
 
-/*! \} */ // End GraphicEntities
+/*! \} */
 
 } // namespace tl

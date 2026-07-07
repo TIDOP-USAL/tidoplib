@@ -80,4 +80,4 @@ auto Color::randomColor() -> Color
 }
 
 
-} // End namespace tl
+} // namespace tl

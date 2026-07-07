@@ -29,6 +29,10 @@
 namespace tl
 {
 
+GPolygon::GPolygon()
+  : GraphicEntity(GraphicEntity::Type::polygon_2d)
+{
+}
 
 GPolygon::GPolygon(size_t size)
   : mGeometry(size),

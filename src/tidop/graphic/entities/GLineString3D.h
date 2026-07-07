@@ -51,68 +51,83 @@ private:
 public:
 
     /*!
-     * \brief Default constructor
+     * \brief Default constructor.
+     * Constructs an empty 3D polyline graphic entity.
      */
-    GLineString3D() = default;
+    GLineString3D();
 
+    /*!
+     * \brief Constructs with a pre-allocated number of vertices.
+     * \param[in] size Initial number of points in the polyline.
+     */
     explicit GLineString3D(size_t size);
 
     /*!
-     * \brief Constructor from a 3D polyline
-     * Represents a 3D polyline without style
-     * \param[in] gLineString3D LineString3D class object
-     * \see LineString3D
+     * \brief Constructs from a 3D polyline.
+     * \param[in] lineString The 3D polyline geometry.
      */
-    explicit GLineString3D(const LineString<Point3d> &gLineString3D);
+    explicit GLineString3D(const LineString<Point3d> &lineString);
 
     /*!
-     * \brief Copy constructor
+     * \brief Copy constructor.
+     * \param[in] gLineString3D Object to copy.
      */
     GLineString3D(const GLineString3D &gLineString3D) = default;
 
     /*!
-     * \brief Move constructor
+     * \brief Move constructor.
+     * \param[in] gLineString3D Object to move.
      */
     GLineString3D(GLineString3D &&gLineString3D) noexcept = default;
 
+    /*! \brief Destructor. */
     ~GLineString3D() override = default;
 
     /*!
-     * \brief Assignment copy operator
-     * \param[in] gLineString3D GLineString3D object to be copied
-     * \return Object reference
+     * \brief Copy assignment operator.
+     * \param[in] gLineString3D Object to copy.
+     * \return Reference to this object.
      */
-    auto operator =(const GLineString3D& gLineString3D) -> GLineString3D& = default;
+    auto operator =(const GLineString3D &gLineString3D) -> GLineString3D & = default;
 
     /*!
-     * \brief Assignment move operator
-     * \param[in] gLineString3D GLineString3D object that moves
-     * \return Object reference
+     * \brief Move assignment operator.
+     * \param[in] gLineString3D Object to move.
+     * \return Reference to this object.
      */
-    auto operator =(GLineString3D&& gLineString3D) noexcept -> GLineString3D& = default;
+    auto operator =(GLineString3D &&gLineString3D) noexcept -> GLineString3D & = default;
 
+    /*!
+     * \brief Returns a const reference to the underlying polyline geometry.
+     * \return Const reference to `LineString<Point3d>`.
+     */
     auto geometry() const -> const LineString<Point3d> & { return mGeometry; }
+
+    /*!
+     * \brief Returns a mutable reference to the underlying polyline geometry.
+     * \return Reference to `LineString<Point3d>`.
+     */
     auto geometry() -> LineString<Point3d> & { return mGeometry; }
 
-    auto isMultiEntity() const -> bool override;
-    auto isSimpleEntity() const -> bool override;
-
-    void draw(Painter &painter) const override;
+    /*!
+     * \brief Computes the 2D bounding window of the projected polyline.
+     * \return A `BoundingBox<Point2d>` enclosing the polyline.
+     */
     auto window() const -> BoundingBox<Point2d> override;
+
+    /*!
+     * \brief Renders the polyline using the given painter.
+     * \param[in] painter The painter used for rendering.
+     */
+    void draw(Painter &painter) const override;
+
+    /*!
+     * \brief Creates a deep copy of this graphic entity.
+     * \return A unique pointer to the cloned object.
+     */
     auto clone() const -> std::unique_ptr<GraphicEntity> override;
 };
 
-
-
-inline auto GLineString3D::isMultiEntity() const -> bool
-{
-    return false;
-}
-
-inline auto GLineString3D::isSimpleEntity() const -> bool
-{
-    return true;
-}
-
+/*! \} */
 
 } // namespace tl

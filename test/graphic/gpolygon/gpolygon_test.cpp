@@ -53,22 +53,10 @@ struct GPolygonTest
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, GPolygonTest)
 {
-  BOOST_CHECK_EQUAL(false, polygon.isMultiEntity());
-  BOOST_CHECK_EQUAL(true, polygon.isSimpleEntity());
-  //BOOST_CHECK_EQUAL(false, polygon.is3D());
-
-  BOOST_CHECK_EQUAL(false, polygon_3d.isMultiEntity());
-  BOOST_CHECK_EQUAL(true, polygon_3d.isSimpleEntity());
-  //BOOST_CHECK_EQUAL(true, polygon_3d.is3D());
-
-  BOOST_CHECK_EQUAL(true, multi_polygon.isMultiEntity());
-  BOOST_CHECK_EQUAL(false, multi_polygon.isSimpleEntity());
-  //BOOST_CHECK_EQUAL(false, multi_polygon.is3D());
-
-  BOOST_CHECK_EQUAL(true, multi_polygon_3d.isMultiEntity());
-  BOOST_CHECK_EQUAL(false, multi_polygon_3d.isSimpleEntity());
-  //BOOST_CHECK_EQUAL(true, multi_polygon_3d.is3D());
-  
+    BOOST_CHECK(polygon.type() == GraphicEntity::Type::polygon_2d);
+    BOOST_CHECK(polygon_3d.type() == GraphicEntity::Type::polygon_3d);
+    BOOST_CHECK(multi_polygon.type() == GraphicEntity::Type::multipolygon_2d);
+    BOOST_CHECK(multi_polygon_3d.type() == GraphicEntity::Type::multipolygon_3d);
 }
 
 

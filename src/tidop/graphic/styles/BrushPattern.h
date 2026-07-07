@@ -22,6 +22,18 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file BrushPattern.h
+ * \brief Hatch pattern definition for brush fills.
+ *
+ * This file defines the `BrushPattern` class, which represents a hatch pattern
+ * used by the `Brush` class to fill shapes with repeating line patterns. It
+ * includes predefined hatch types, rotation angle, scaling factor, and spacing
+ * controls.
+ *
+ * \ingroup Graphics
+ * \see tl::Brush, tl::Color
+ */
+
 #pragma once
 
 #include <array>
@@ -38,6 +50,23 @@ namespace tl
  *  \{
  */
 
+/*!
+ * \class BrushPattern
+ * \brief Hatch pattern used for brush fills.
+ *
+ * The `BrushPattern` class defines the appearance of a hatch fill, including
+ * the type of pattern, rotation angle, scaling factor, and spacing between
+ * lines. It is used by the `Brush` class when `Brush::Style::hatch` is set.
+ *
+ * ### Example
+ * \code
+ * BrushPattern pattern(BrushPattern::HatchType::cross, 45.0, 1.5);
+ * pattern.setSpacing(2.0, 2.0);
+ * Brush brush(Color::Blue, Color::White, pattern);
+ * \endcode
+ *
+ * \see Brush, Color
+ */
 class TL_EXPORT BrushPattern
 {
 
@@ -75,9 +104,31 @@ private:
 
 public:
 
+    /*!
+     * \brief Default constructor.
+     * Creates a horizontal hatch pattern with no rotation, unit scaling,
+     * and zero spacing.
+     */
     constexpr BrushPattern() = default;
+
+    /*!
+     * \brief Copy constructor.
+     * \param[in] brushPattern Pattern to copy.
+     */
     constexpr BrushPattern(const BrushPattern &brushPattern) = default;
+
+    /*!
+     * \brief Move constructor.
+     * \param[in] brushPattern Pattern to move.
+     */
     constexpr BrushPattern(BrushPattern &&brushPattern) noexcept = default;
+
+    /*!
+     * \brief Constructs a hatch pattern with a specific type, angle, and scale.
+     * \param[in] type  Hatch type.
+     * \param[in] angle Rotation angle in degrees (default: 0.0).
+     * \param[in] scale Scaling factor (default: 1.0).
+     */
     constexpr BrushPattern(HatchType type, double angle = 0.0, double scale = 1.0)
       : mHatchType(type),
         mAngle(angle), 
@@ -85,52 +136,77 @@ public:
     {
     }
 
+    /*!
+     * \brief Copy assignment operator.
+     * \param[in] brushPattern Pattern to copy.
+     * \return Reference to this object.
+     */
     constexpr auto operator =(const BrushPattern &brushPattern) -> BrushPattern & = default;
+
+    /*!
+     * \brief Move assignment operator.
+     * \param[in] brush Pattern to move.
+     * \return Reference to this object.
+     */
     constexpr auto operator =(BrushPattern &&brush) noexcept -> BrushPattern & = default;
 
+    /*!
+     * \brief Returns the hatch type.
+     * \return The current hatch type.
+     */
     [[nodiscard]] 
     constexpr auto hatchType() const noexcept -> HatchType { return mHatchType; }
+
+    /*!
+     * \brief Sets the hatch type.
+     * \param[in] type New hatch type.
+     */
     constexpr void setHatchType(HatchType type) noexcept { mHatchType = type; }
 
     /*!
-     * \brief Gets the rotation angle of the brush pattern.
-     * \return Angle in decimal degrees.
-     *
-     * This affects the orientation of hatch lines or patterns.
+     * \brief Returns the rotation angle.
+     * \return Angle in degrees.
      */
     [[nodiscard]]
     constexpr auto angle() const noexcept -> double;
 
     /*!
-     * \brief Sets the rotation angle of the brush pattern.
-     * \param[in] angle Angle in decimal degrees.
+     * \brief Sets the rotation angle.
+     * \param[in] angle Angle in degrees.
      */
     constexpr void setAngle(double angle) noexcept;
 
     /*!
-     * \brief Gets the scale applied to the pattern.
+     * \brief Returns the scaling factor.
      * \return Scaling factor (1.0 = no scaling).
-     *
-     * Useful to zoom in or out the density of the brush pattern.
      */
     [[nodiscard]]
     constexpr auto scalingFactor() const noexcept -> double;
 
     /*!
-     * \brief Sets the scale of the pattern.
-     * \param[in] scalingFactor Scaling factor to apply.
+     * \brief Sets the scaling factor.
+     * \param[in] scalingFactor New scaling factor.
      */
     constexpr void setScalingFactor(double scalingFactor) noexcept;
 
+    /*!
+     * \brief Returns the line spacing.
+     * \return Vector containing spacing in X and Y directions.
+     */
     [[nodiscard]]
     constexpr auto spacing() const noexcept -> const Vector2d &;
 
     /*!
-     * \brief Sets the spacing of the pattern in both X and Y directions.
-     * \param[in] spacingX Horizontal spacing.
-     * \param[in] spacingY Vertical spacing.
+     * \brief Sets the line spacing.
+     * \param[in] spacing Vector containing spacing in X and Y.
      */
     constexpr void setSpacing(Vector2d spacing) noexcept;
+
+    /*!
+     * \brief Sets the line spacing using individual coordinates.
+     * \param[in] spacingX Spacing in X direction.
+     * \param[in] spacingY Spacing in Y direction.
+     */
     constexpr void setSpacing(double spacingX, double spacingY) noexcept;
 
     auto operator<=>(const BrushPattern &) const = default;

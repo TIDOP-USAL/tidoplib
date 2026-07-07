@@ -22,8 +22,19 @@
  *                                                                        *
  **************************************************************************/
 
-#pragma once
+/*! \file GLayer.h
+ * \brief Layer container for graphic entities.
+ *
+ * This file defines the `GLayer` class, which represents a collection of
+ * `GraphicEntity` objects (points, polylines, polygons, etc.) organized as a
+ * named layer. It provides methods for managing entities, accessing attribute
+ * schema, and rendering the entire layer using a `Painter`.
+ *
+ * \ingroup Graphics
+ * \see tl::GraphicEntity, tl::Painter, tl::TableField
+ */
 
+#pragma once
 
 #include <vector>
 #include <memory>
@@ -46,17 +57,23 @@ class GraphicEntity;
 
 /*!
  * \class GLayer
- * \brief Represents a layer that holds a collection of graphical entities.
+ * \brief Named layer containing a collection of graphic entities.
  *
- * A `GLayer` contains a list of `GraphicEntity` objects that can be rendered
- * together as a logical group. Layers may hold entities of one or multiple types
- * (e.g., points, lines, polygons), and can also store optional table fields associated
- * with their attributes.
+ * A `GLayer` stores a list of `GraphicEntity` objects (owned via `std::unique_ptr`),
+ * along with a name and an attribute schema (list of `TableField`). It provides
+ * STL-like iteration, insertion, removal, and rendering capabilities.
  *
- * Layers support basic container operations such as iteration, insertion, resizing,
- * and drawing.
+ * The layer does not copy entities; it moves them into its internal storage.
+ * Copy construction and assignment are supported but perform deep copies of
+ * all entities (via `clone()`).
  *
- * \see GraphicEntity, Painter, TableField
+ * ### Example
+ * \code
+ * GLayer layer("MyLayer");
+ * auto point = std::make_unique<GPoint>(10, 20);
+ * layer.push_back(std::move(point));
+ * layer.draw(painter);
+ * \endcode
  */
 class TL_EXPORT GLayer
 {
@@ -77,22 +94,26 @@ protected:
 public:
 
     /*!
-     * \brief Default constructor
+     * \brief Default constructor.
+     * Creates an empty layer with an empty name.
      */
     GLayer();
 
     /*!
      * \brief Copy constructor.
+     * Performs a deep copy of all entities in the source layer.
      * \param[in] gLayer Layer to copy.
      */
     GLayer(const GLayer &gLayer);
 
     /*!
      * \brief Move constructor.
+     * Transfers ownership of entities from the source layer.
      * \param[in] gLayer Layer to move.
      */
     GLayer(GLayer &&gLayer) noexcept;
 
+    /*! \brief Destructor. */
     ~GLayer() = default;
 
     /*!
@@ -103,7 +124,7 @@ public:
 
     /*!
      * \brief Sets the name of the layer.
-     * \param[in] name Layer name.
+     * \param[in] name New layer name.
      */
     void setName(const std::string &name);
 
@@ -128,8 +149,8 @@ public:
     auto end() const noexcept -> const_iterator;
 
     /*!
-     * \brief Appends a new entity to the layer.
-     * \param[in] entity Shared pointer to the entity.
+     * \brief Appends a new entity to the layer (takes ownership).
+     * \param[in] entity Unique pointer to the entity (moved into the layer).
      */
     void push_back(std::unique_ptr<GraphicEntity> entity);
 
@@ -140,15 +161,15 @@ public:
 
     /*!
      * \brief Checks whether the layer is empty.
-     * \return True if the entity list is empty.
+     * \return `true` if the entity list is empty; `false` otherwise.
      */
     auto empty() const noexcept -> bool;
 
     /*!
      * \brief Resizes the entity container.
-     * If the current size is less than count, additional elements are added. If the current size
-     * is greater than count, the container is truncated to the specified number of elements.
-     * \param[in] count New container size
+     * \param[in] count New container size.
+     * If `count` is larger than the current size, default-constructed
+     * (empty) `unique_ptr<GraphicEntity>` are added.
      */
     void resize(size_t count);
 
@@ -167,18 +188,24 @@ public:
     auto erase(const_iterator first, const_iterator last) -> iterator;
 
     /*!
-     * \brief Copy assignment
+     * \brief Copy assignment operator.
+     * Performs a deep copy of all entities from the source.
+     * \param[in] entity Source layer.
+     * \return Reference to this layer.
      */
     auto operator=(const GLayer &entity) -> GLayer &;
 
     /*!
-     * \brief Move assignment
+     * \brief Move assignment operator.
+     * Transfers ownership of entities from the source.
+     * \param[in] entity Source layer.
+     * \return Reference to this layer.
      */
     auto operator=(GLayer &&entity) noexcept -> GLayer &;
 
     /*!
-     * \brief Adds a table field (attribute definition) to the layer.
-     * \param[in] field pointer to the field.
+     * \brief Adds a table field (attribute definition) to the layer's schema.
+     * \param[in] field The field definition.
      */
     void addDataField(TableField field);
 
@@ -186,22 +213,20 @@ public:
      * \brief Returns the list of table fields (attribute schema).
      * \return Vector of field definitions.
      */
-    auto tableFields() const -> const std::vector<TableField>&;
+    auto tableFields() const -> const std::vector<TableField> &;
 
     /*!
-     * \brief Draws all entities in the layer using the provided painter.
+     * \brief Renders all entities in the layer using the provided painter.
      * \param[in] painter Painter object used for rendering.
      */
     void draw(Painter &painter) const;
 
     /*!
-     * \brief Returns the bounding box (window) that encloses all entities.
-     * \return Bounding window of the layer contents.
+     * \brief Computes the bounding box that encloses all entities.
+     * \return A `BoundingBox<Point2d>` covering the entire layer.
+     * \note If the layer is empty, returns an empty (invalid) bounding box.
      */
     auto boundingBox() const -> BoundingBox<Point2d>;
-
-    //TL_DEPRECATED("Use boundingBox() instead")
-    auto window() const -> BoundingBox<Point2d>;
 };
 
 

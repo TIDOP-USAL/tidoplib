@@ -29,6 +29,10 @@
 namespace tl
 {
 
+GPolygon3D::GPolygon3D()
+  : GraphicEntity(GraphicEntity::Type::polygon_3d)
+{
+}
 
 GPolygon3D::GPolygon3D(size_t size)
   : mGeometry(size),

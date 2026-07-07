@@ -29,6 +29,11 @@
 namespace tl
 {
 
+GMultiPolygon::GMultiPolygon()
+  : GraphicEntity(GraphicEntity::Type::multipolygon_2d)
+{
+}
+
 GMultiPolygon::GMultiPolygon(size_t size)
   : mGeometry(size),
     GraphicEntity(GraphicEntity::Type::multipolygon_2d)

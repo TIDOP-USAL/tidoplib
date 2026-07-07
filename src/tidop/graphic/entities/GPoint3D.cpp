@@ -28,6 +28,11 @@
 namespace tl
 {
 
+GPoint3D::GPoint3D()
+  : GraphicEntity(GraphicEntity::Type::point_3d) 
+{
+}
+
 GPoint3D::GPoint3D(double x, double y, double z)
   : mGeometry(x, y, z),
     GraphicEntity(GraphicEntity::Type::point_3d)

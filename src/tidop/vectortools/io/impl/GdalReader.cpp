@@ -99,7 +99,7 @@ auto readBrushStyle(OGRStyleBrush *ogrStyleBrush) -> std::pair<Brush::Style, Bru
     const char *brush_id = ogrStyleBrush->Id(bDefault);
     if (!bDefault) {
         if (strcmp(brush_id, "ogr-pen-1") == 0) {
-            style = Brush::Style::null;
+            style = Brush::Style::no_fill;
         } else if (strcmp(brush_id, "ogr-pen-2") == 0) {
             style = Brush::Style::hatch;
             hatch = BrushPattern::HatchType::horizontal;
@@ -1325,6 +1325,7 @@ auto VectorReaderGdal::readLabel(OGRStyleLabel *ogrStyleLabel) -> Label
     readLabelOffset(ogrStyleLabel, &label);
     readLabelStretch(ogrStyleLabel, &label);
     readLabelFont(ogrStyleLabel, &label);
+    readLabelText(ogrStyleLabel, &label);
 
     return label;
 }
@@ -1527,6 +1528,15 @@ void VectorReaderGdal::readLabelFont(OGRStyleLabel *ogrStyleLabel, Label *label)
     }
 
     label->setFont(font);
+}
+
+void VectorReaderGdal::readLabelText(OGRStyleLabel *ogrStyleLabel, Label *label)
+{
+    GBool bDefault = false;
+    const char *text = ogrStyleLabel->TextString(bDefault);
+    if (!bDefault && text != nullptr) {
+        label->setText(text);
+    }
 }
 
 void VectorReaderGdal::readData(const OGRFeature *ogrFeature,

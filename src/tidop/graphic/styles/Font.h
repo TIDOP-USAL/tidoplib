@@ -22,6 +22,17 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file Font.h
+ * \brief Font representation for text rendering.
+ *
+ * This file defines the `Font` class, which encapsulates font properties
+ * such as family name, size, style (bold, italic), underline, and strikethrough.
+ * It is used by the `Label` class to control text rendering.
+ *
+ * \ingroup Graphics
+ * \see tl::Label, tl::Color
+ */
+
 #pragma once
 
 #include <string>
@@ -38,13 +49,21 @@ namespace tl
 
 /*!
  * \class Font
- * \brief Represents a text font with styling options.
+ * \brief Font style and properties for text rendering.
  *
- * The `Font` class defines the typographic attributes used when rendering text.
- * This includes the font family name, size, style flags (bold, italic), and decorations
- * such as underline or strikethrough. Font styles are stored using bitwise combinable flags.
+ * The `Font` class represents a typeface with specific attributes including
+ * family name, size in points, and style flags (bold, italic, underline,
+ * strikethrough). It is used as part of the `Label` class to define how text
+ * is rendered on a canvas.
  *
- * \see Font::Style, Label, GraphicStyle
+ * ### Example
+ * \code
+ * Font font("Times New Roman", 14, Font::Style::bold | Font::Style::italic);
+ * font.setUnderline(true);
+ * Label label("Hello", font, Color::Black);
+ * \endcode
+ *
+ * \see Label, Color
  */
 class TL_EXPORT Font
 {
@@ -65,7 +84,7 @@ public:
     enum class Style : uint8_t
     {
         normal = 0 << 0,  /*!< Regular style (default) */
-        bold = 1 << 0,  /*!< Bold weight */
+        bold = 1 << 0,    /*!< Bold weight */
         italic = 1 << 1   /*!< Italic slant */
     };
 
@@ -153,59 +172,59 @@ public:
 
     /*!
      * \brief Checks if the font is bold.
-     * \return True if bold.
+     * \return `true` if bold is enabled; `false` otherwise.
      */
     [[nodiscard]]
     constexpr auto isBold() const noexcept -> bool;
 
     /*!
      * \brief Enables or disables bold style.
-     * \param[in] active True to enable bold.
+     * \param[in] active `true` to enable bold; `false` to disable.
      */
     constexpr void setBold(bool active) noexcept;
 
     /*!
      * \brief Checks if the font is italic.
-     * \return True if italic.
+     * \return `true` if italic is enabled; `false` otherwise.
      */
     [[nodiscard]] 
     constexpr auto isItalic() const noexcept -> bool;
 
     /*!
      * \brief Enables or disables italic style.
-     * \param[in] active True to enable italic.
+     * \param[in] active `true` to enable italic; `false` to disable.
      */
     constexpr void setItalic(bool active) noexcept;
 
     /*!
      * \brief Checks if the font is underlined.
-     * \return True if underlined.
+     * \return `true` if underline is enabled; `false` otherwise.
      */
     [[nodiscard]] 
     constexpr auto isUnderline() const noexcept -> bool;
 
     /*!
      * \brief Enables or disables underline.
-     * \param[in] active True to enable underline.
+     * \param[in] active `true` to enable underline; `false` to disable.
      */
     constexpr void setUnderline(bool active) noexcept;
 
     /*!
      * \brief Checks if the font has strikethrough.
-     * \return True if strikethrough is enabled.
+     * \return `true` if strikethrough is enabled; `false` otherwise.
      */
     [[nodiscard]] 
     constexpr auto isStrikethrough() const noexcept -> bool;
 
     /*!
      * \brief Enables or disables strikethrough.
-     * \param[in] active True to enable strikethrough.
+     * \param[in] active `true` to enable strikethrough; `false` to disable.
      */
     constexpr void setStrikethrough(bool active) noexcept;
 
     /*!
      * \brief Sets the font style.
-     * \param[in] style Bitwise combination of Style flags.
+     * \param[in] style Bitwise combination of `Style` flags.
      */
     constexpr void setStyle(Style style) noexcept;
 

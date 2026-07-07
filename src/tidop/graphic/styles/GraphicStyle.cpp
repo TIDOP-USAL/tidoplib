@@ -28,31 +28,6 @@
 namespace tl
 {
 
-
-//GraphicStyle::GraphicStyle()
-//  : mPen(std::make_shared<Pen>()),
-//    mBrush(nullptr/*std::make_shared<Brush>()*/),
-//    mSymbol(std::make_shared<Symbol>()),
-//    mLabel(std::make_shared<Label>())
-//{
-//}
-
-//GraphicStyle::GraphicStyle(const GraphicStyle &graphicStyle)
-//  : mPen(graphicStyle.mPen),
-//    mBrush(graphicStyle.mBrush),
-//    mSymbol(graphicStyle.mSymbol),
-//    mLabel(graphicStyle.mLabel)
-//{
-//}
-//
-//GraphicStyle::GraphicStyle(GraphicStyle &&graphicStyle) TL_NOEXCEPT
-//  : mPen(std::move(graphicStyle.mPen)),
-//    mBrush(std::move(graphicStyle.mBrush)),
-//    mSymbol(std::move(graphicStyle.mSymbol)),
-//    mLabel(std::move(graphicStyle.mLabel))
-//{
-//}
-
 auto GraphicStyle::pen() const -> const Pen*
 {
     return mPen ? &(*mPen) : nullptr;
@@ -93,26 +68,4 @@ void GraphicStyle::setLabel(Label label)
     mLabel = std::move(label);
 }
 
-//auto GraphicStyle::operator =(const GraphicStyle &graphicStyle) -> GraphicStyle&
-//{
-//    if (this != &graphicStyle) {
-//        mPen = graphicStyle.mPen;
-//        mBrush = graphicStyle.mBrush;
-//        mSymbol = graphicStyle.mSymbol;
-//        mLabel = graphicStyle.mLabel;
-//    }
-//    return *this;
-//}
-//
-//auto GraphicStyle::operator =(GraphicStyle &&graphicStyle) TL_NOEXCEPT -> GraphicStyle &
-//{
-//    if (this != &graphicStyle) {
-//        mPen = std::move(graphicStyle.mPen);
-//        mBrush = std::move(graphicStyle.mBrush);
-//        mSymbol = std::move(graphicStyle.mSymbol);
-//        mLabel = std::move(graphicStyle.mLabel);
-//    }
-//    return *this;
-//}
-
-} // End namespace tl
+} // namespace tl

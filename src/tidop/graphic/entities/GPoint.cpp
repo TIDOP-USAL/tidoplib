@@ -30,6 +30,10 @@
 namespace tl
 {
 
+GPoint::GPoint()
+  : GraphicEntity(GraphicEntity::Type::point_2d)
+{
+}
 
 GPoint::GPoint(double x, double y)
   : mGeometry(x, y),
@@ -51,6 +55,9 @@ auto GPoint::window() const -> BoundingBox<Point2d>
 void GPoint::draw(Painter &painter) const
 {
     painter.drawPoint(*this);
+    if (auto _label = this->label()) {
+        painter.drawText(this->geometry(), _label->text());
+    }
 }
 
 auto GPoint::clone() const -> std::unique_ptr<GraphicEntity>

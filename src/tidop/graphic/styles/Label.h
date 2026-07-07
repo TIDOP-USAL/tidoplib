@@ -22,6 +22,17 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file Label.h
+ * \brief Text label style and placement for graphic entities.
+ *
+ * This file defines the `Label` class, which encapsulates the text content,
+ * font, colors, and placement options for rendering labels on geometric features.
+ * It is used by `GraphicStyle` to annotate points, polylines, and polygons.
+ *
+ * \ingroup Graphics
+ * \see tl::Font, tl::Color, tl::LabelAnchor, tl::GraphicStyle
+ */
+
 #pragma once
 
 #include <array>
@@ -45,13 +56,24 @@ namespace tl
  * \class Label
  * \brief Represents the text style and placement options for map or geometry labels.
  *
- * The `Label` class defines how text is rendered and positioned relative to a geometric feature.
- * It supports font styling, color customization (foreground, background, outline, shadow),
- * alignment, rotation, offsetting, and various placement strategies for polylines or points.
+ * The `Label` class defines how text is rendered and positioned relative to a
+ * geometric feature. It supports font styling, color customization (foreground,
+ * background, outline, shadow), alignment, rotation, offsetting, and various
+ * placement strategies for polylines or points.
  *
- * Labels are typically used to annotate map features, drawings, or geometries in visualization systems.
+ * Labels are typically used to annotate map features, drawings, or geometries
+ * in visualization systems.
  *
- * \see Font, Color, Label::Placement, Label::AnchorPosition
+ * ### Example
+ * \code
+ * Font font("Arial", 12, Font::Style::bold);
+ * Label label(font, Color::Black);
+ * label.setText("Hello World");
+ * label.setPlacement(Label::Placement::middle);
+ * label.setOffset(5.0, 10.0);
+ * \endcode
+ *
+ * \see Font, Color, LabelAnchor, GraphicStyle
  */
 class TL_EXPORT Label
 {
@@ -65,13 +87,13 @@ public:
      */
     enum class Placement : uint8_t
     {
-        point,                /*!< A simple label is attached to a point or to the first vertex of a polyline. */
-        last_vertex,          /*!< Text is attached to the last vertex of a polyline. A PEN tool can be combined with this LABEL tool to draw the polyline as a leader to the label. */
-        stretched,            /*!< Stretch the text string along a polyline, with an equal spacing between each character. */
-        middle,               /*!< Place text as a single label at the middle of a polyline (based on total line length). */
+        point,                /*!< Label attached to a point or to the first vertex of a polyline. */
+        last_vertex,          /*!< Label attached to the last vertex of a polyline. */
+        stretched,            /*!< Text stretched along a polyline with equal spacing between characters. */
+        middle,               /*!< Single label placed at the middle of a polyline (based on total length). */
         word_per_segment,     /*!< One word per line segment in a polyline. */
-        horizontal,           /*!< Every word of text attached to polyline is placed horizontally in its segment, anchor point is a center of segment. */
-        stretched_to_segment  /*!< Every word of text attached to polyline is stretched to fit the segment of polyline and placed along that segment. The anchor point is a start of a segment. */
+        horizontal,           /*!< Each word placed horizontally in its segment, anchored at the segment center. */
+        stretched_to_segment  /*!< Each word stretched to fit its segment and placed along it, anchored at segment start. */
     };
 
 private:
@@ -92,194 +114,208 @@ private:
 
 public:
 
+    /*!
+     * \brief Default constructor.
+     * Creates an empty label with default settings.
+     */
     Label() = default;
+
+    /*!
+     * \brief Constructs a label with a font and foreground color.
+     * \param[in] font            Font to use.
+     * \param[in] foregroundColor Text color (default: black).
+     */
+    Label(Font font, Color foregroundColor = {0, 0, 0})
+        : mFont(std::move(font)),
+        mForegroundColor(foregroundColor)
+    {
+    }
+
+    /*!
+     * \brief Copy constructor.
+     * \param[in] label Label to copy.
+     */
     Label(const Label &label) = default;
+
+    /*!
+     * \brief Move constructor.
+     * \param[in] label Label to move.
+     */
     Label(Label &&label) noexcept = default;
+
+    /*! \brief Destructor. */
     ~Label() = default;
 
     /*!
-     * \brief Assignment operator
-     * \param label The label style
-     * \return Reference to the label style
+     * \brief Copy assignment operator.
+     * \param[in] label Label to copy.
+     * \return Reference to this object.
      */
     auto operator =(const Label &label) -> Label & = default;
 
     /*!
-     * \brief Assignment move operator
-     * \param label The label style
-     * \return Reference to the label style
+     * \brief Move assignment operator.
+     * \param[in] label Label to move.
+     * \return Reference to this object.
      */
     auto operator =(Label &&label) noexcept -> Label & = default;
 
     /*!
-     * \brief Get the label text
-     * \return The label text
+     * \brief Returns the label text.
+     * \return The text string.
      */
     [[nodiscard]]
     auto text() const noexcept -> std::string;
 
     /*!
-     * \brief Set the label text
-     * \param[in] text The label text
+     * \brief Sets the label text.
+     * \param[in] text The text string.
      */
     void setText(std::string text) noexcept;
 
     /*!
-     * \brief Get the rotation angle
-     * \return The rotation angle in decimal sexagesimal degrees
-     * \see angleConversion
-     */
-    [[nodiscard]]
-    constexpr auto angle() const noexcept -> double;
-
-    /*!
-     * \brief Set the rotation angle
-     * \param[in] angle The rotation angle in decimal sexagesimal degrees
-     * \see angleConversion
-     */
-    constexpr void setAngle(double angle) noexcept;
-
-    /*!
-     * \brief Get the foreground color
-     * \return The foreground color
-     * \see Color
-     */
-    [[nodiscard]]
-    constexpr auto foregroundColor() const noexcept -> Color;
-
-    /*!
-     * \brief Set the foreground color
-     * \param[in] color The foreground color
-     * \see Color
-     */
-    constexpr void setForegroundColor(Color color) noexcept;
-
-    /*!
-     * \brief Get the background color
-     * \return The background color
-     * \see Color
-     */
-    [[nodiscard]]
-    constexpr auto backgroundColor() const noexcept -> Color;
-
-    /*!
-     * \brief Set the background color
-     * \param[in] color The background color
-     * \see Color
-     */
-    constexpr void setBackgroundColor(Color color) noexcept;
-
-    /*!
-     * \brief Get the outline color
-     * \return The outline color
-     * \see Color
-     */
-    [[nodiscard]]
-    constexpr auto outlineColor() const noexcept -> Color;
-
-    /*!
-     * \brief Set the outline color
-     * \param[in] color The outline color
-     * \see Color
-     */
-    constexpr void setOutlineColor(Color color) noexcept;
-
-    /*!
-     * \brief Get the shadow color
-     * \return The shadow color
-     * \see Color
-     */
-    [[nodiscard]]
-    constexpr auto shadowColor() const noexcept -> Color;
-
-    /*!
-     * \brief Set the shadow color
-     * \param[in] color The shadow color
-     * \see Color
-     */
-    constexpr void setShadowColor(Color color) noexcept;
-
-    /*!
-     * \brief Gets the horizontal stretch factor of the text.
-     * \return Stretch factor in percentage (e.g. 100 = no stretch, 200 = 2× wider).
-     */
-    [[nodiscard]]
-    constexpr auto stretchFactor() const noexcept -> double;
-
-    /*!
-     * \brief Set the stretch factor
-     * \param[in] stretch The stretch factor
-     */
-    constexpr void setStretchFactor(double stretch) noexcept;
-
-    /*!
-     * \brief Get the label placement mode
-     * \return The label placement mode
-     * \see Placement
-     */
-    [[nodiscard]]
-    constexpr auto placement() const noexcept -> Placement;
-
-    /*!
-     * \brief Set the label placement mode
-     * \param[in] placement The label placement mode
-     * \see Placement
-     */
-    constexpr void setPlacement(Placement placement) noexcept;
-
-    /*!
-     * \brief Get the label anchor position
-     * \return The label anchor position
-     * \see LabelAnchor
-     */
-    [[nodiscard]]
-    constexpr auto anchorPosition() const noexcept -> LabelAnchor;
-
-    /*!
-     * \brief Set the label anchor position
-     * \param[in] anchorPosition The label anchor position
-     * \see LabelAnchor
-     */
-    constexpr void setAnchorPosition(LabelAnchor anchor) noexcept;
-
-    [[nodiscard]]
-    constexpr auto offset() const noexcept -> Vector2d;
-
-    /*!
-     * \brief Set the offset of the label insertion point
-     * \param[in] dx The X offset of the label insertion point
-     * \param[in] dy The Y offset of the label insertion point
-     */
-    constexpr void setOffset(double dx, double dy) noexcept;
-
-
-    /*!
-     * \brief Sets the font of the label text.
-     * \param[in] font Font to be used.
-     */
-    void setFont(Font font) noexcept;
-
-    /*!
-     * \brief Gets the font used to render the label text.
-     * \return Font definition.
+     * \brief Returns the font used for rendering.
+     * \return The font.
      */
     [[nodiscard]]
     constexpr auto font() const noexcept -> Font;
 
     /*!
-     * \brief Gets the perpendicular offset from the geometry.
-     *
-     * Useful to move the label away from the feature when drawing along a line.
-     * \return Perpendicular offset in pixels or drawing units.
+     * \brief Sets the font.
+     * \param[in] font The new font.
+     */
+    void setFont(Font font) noexcept;
+
+    /*!
+     * \brief Returns the foreground (text) color.
+     * \return The foreground color.
+     */
+    [[nodiscard]]
+    constexpr auto foregroundColor() const noexcept -> Color;
+
+    /*!
+     * \brief Sets the foreground color.
+     * \param[in] color The new foreground color.
+     */
+    constexpr void setForegroundColor(Color color) noexcept;
+
+    /*!
+     * \brief Returns the background color.
+     * \return The background color.
+     */
+    [[nodiscard]]
+    constexpr auto backgroundColor() const noexcept -> Color;
+
+    /*!
+     * \brief Sets the background color.
+     * \param[in] color The new background color.
+     */
+    constexpr void setBackgroundColor(Color color) noexcept;
+
+    /*!
+     * \brief Returns the outline color.
+     * \return The outline color.
+     */
+    [[nodiscard]]
+    constexpr auto outlineColor() const noexcept -> Color;
+
+    /*!
+     * \brief Sets the outline color.
+     * \param[in] color The new outline color.
+     */
+    constexpr void setOutlineColor(Color color) noexcept;
+
+    /*!
+     * \brief Returns the shadow color.
+     * \return The shadow color.
+     */
+    [[nodiscard]]
+    constexpr auto shadowColor() const noexcept -> Color;
+
+    /*!
+     * \brief Sets the shadow color.
+     * \param[in] color The new shadow color.
+     */
+    constexpr void setShadowColor(Color color) noexcept;
+
+    /*!
+     * \brief Returns the rotation angle.
+     * \return Angle in degrees.
+     */
+    [[nodiscard]]
+    constexpr auto angle() const noexcept -> double;
+
+    /*!
+     * \brief Sets the rotation angle.
+     * \param[in] angle Angle in degrees.
+     */
+    constexpr void setAngle(double angle) noexcept;
+
+    /*!
+     * \brief Returns the horizontal stretch factor.
+     * \return Stretch factor in percentage (100 = no stretch).
+     */
+    [[nodiscard]]
+    constexpr auto stretchFactor() const noexcept -> double;
+
+    /*!
+     * \brief Sets the horizontal stretch factor.
+     * \param[in] stretch Stretch factor in percentage (100 = no stretch).
+     */
+    constexpr void setStretchFactor(double stretch) noexcept;
+
+    /*!
+     * \brief Returns the placement mode.
+     * \return The placement mode.
+     */
+    [[nodiscard]]
+    constexpr auto placement() const noexcept -> Placement;
+
+    /*!
+     * \brief Sets the placement mode.
+     * \param[in] placement The new placement mode.
+     */
+    constexpr void setPlacement(Placement placement) noexcept;
+
+    /*!
+     * \brief Returns the anchor position.
+     * \return The anchor position.
+     */
+    [[nodiscard]]
+    constexpr auto anchorPosition() const noexcept -> LabelAnchor;
+
+    /*!
+     * \brief Sets the anchor position.
+     * \param[in] anchor The new anchor position.
+     */
+    constexpr void setAnchorPosition(LabelAnchor anchor) noexcept;
+
+    /*!
+     * \brief Returns the offset from the anchor point.
+     * \return The offset vector.
+     */
+    [[nodiscard]]
+    constexpr auto offset() const noexcept -> Vector2d;
+
+    /*!
+     * \brief Sets the offset from the anchor point.
+     * \param[in] dx X-offset.
+     * \param[in] dy Y-offset.
+     */
+    constexpr void setOffset(double dx, double dy) noexcept;
+
+    /*!
+     * \brief Returns the perpendicular offset from the geometry.
+     * \return The perpendicular offset in drawing units.
      */
     [[nodiscard]]
     constexpr auto perpendicularOffset() const noexcept -> int;
 
     /*!
      * \brief Sets the perpendicular offset from the geometry.
-     * \param[in] offset Offset value.
+     * \param[in] offset The perpendicular offset.
      */
-    constexpr void setPerpendicularOffset(int perpendicularOffset) noexcept;
+    constexpr void setPerpendicularOffset(int offset) noexcept;
 
 };
 
@@ -408,4 +444,4 @@ constexpr void Label::setPerpendicularOffset(int perpendicularOffset) noexcept
 
 /*! \} */ 
 
-} // End namespace tl
+} // namespace tl

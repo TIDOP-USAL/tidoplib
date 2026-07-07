@@ -29,6 +29,10 @@
 namespace tl
 {
 
+GMultiPolygon3D::GMultiPolygon3D()
+  : GraphicEntity(GraphicEntity::Type::multipolygon_3d)
+{
+}
 
 GMultiPolygon3D::GMultiPolygon3D(const MultiPolygon<Point3d> &multiPolygon)
   : mGeometry(multiPolygon),

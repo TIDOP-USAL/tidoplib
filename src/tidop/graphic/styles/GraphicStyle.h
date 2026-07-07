@@ -22,6 +22,18 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file GraphicStyle.h
+ * \brief Aggregated visual style for graphic entities.
+ *
+ * This file defines the `GraphicStyle` class, which groups together the four
+ * visual components used for rendering: `Pen` (stroke), `Brush` (fill),
+ * `Symbol` (point marker), and `Label` (text). Each component is optional,
+ * so a style can be partially defined.
+ *
+ * \ingroup Graphics
+ * \see tl::Pen, tl::Brush, tl::Symbol, tl::Label
+ */
+
 #pragma once
 
 #include <memory>
@@ -46,14 +58,24 @@ namespace tl
  * \class GraphicStyle
  * \brief Aggregates graphical style components for rendering.
  *
- * `GraphicStyle` defines the complete visual styling for an entity, layer, or dataset.
- * It groups four visual components:
+ * `GraphicStyle` defines the complete visual styling for an entity, layer,
+ * or dataset. It groups four visual components:
  * - `Pen`: controls stroke (line) appearance.
  * - `Brush`: controls area (fill) appearance.
  * - `Symbol`: defines point marker style.
  * - `Label`: defines text rendering style.
  *
- * A style can be partially defined (e.g., only a label), and missing components are simply ignored during rendering.
+ * A style can be partially defined (e.g., only a label), and missing
+ * components are simply ignored during rendering.
+ *
+ * ### Example
+ * \code
+ * GraphicStyle style;
+ * style.setPen(Pen(Color::Blue, 2.0));
+ * style.setBrush(Brush(Color::Red, Color::White, Brush::Style::solid));
+ * style.setSymbol(Symbol(Symbol::Type::Circle, 8.0));
+ * style.setLabel(Label("Name", Font("Arial", 12), Color::Black));
+ * \endcode
  *
  * \see Pen, Brush, Symbol, Label
  */
@@ -70,7 +92,8 @@ private:
 public:
 
     /*!
-     * \brief Default constructor
+     * \brief Default constructor.
+     * Creates an empty style with no components set.
      */
     GraphicStyle() = default;
 
@@ -107,33 +130,33 @@ public:
 
     /*!
      * \brief Returns the current pen style.
-     * \return Shared pointer to the `Pen` object (may be null).
+     * \return Pointer to the `Pen` object, or `nullptr` if not set.
      */
     [[nodiscard]]
     auto pen() const -> const Pen *;
 
     /*!
      * \brief Sets the pen style.
-     * \param[in] pen Shared pointer to the pen style.
+     * \param[in] pen The new pen style.
      */
     void setPen(Pen pen);
 
     /*!
      * \brief Returns the current brush style.
-     * \return Shared pointer to the `Brush` object (may be null).
+     * \return Pointer to the `Brush` object, or `nullptr` if not set.
      */
     [[nodiscard]]
     auto brush() const -> const Brush *;
 
     /*!
      * \brief Sets the brush style.
-     * \param[in] brush Shared pointer to the brush style.
+     * \param[in] brush The new brush style.
      */
     void setBrush(Brush brush);
 
     /*!
      * \brief Returns the current symbol style.
-     * \return Shared pointer to the `Symbol` object (may be null).
+     * \return Pointer to the `Symbol` object, or `nullptr` if not set.
      */
     [[nodiscard]]
     auto symbol() const -> const Symbol*;
@@ -146,14 +169,14 @@ public:
 
     /*!
      * \brief Returns the current label style.
-     * \return Shared pointer to the `Label` object (may be null).
+     * \return Pointer to the `Label` object, or `nullptr` if not set.
      */
     [[nodiscard]]
     auto label() const -> const Label*;
 
     /*!
      * \brief Sets the label style.
-     * \param[in] label Shared pointer to the label style.
+     * \param[in] label The new label style.
      */
     void setLabel(Label label);
 };
@@ -161,4 +184,4 @@ public:
 
 /*! \} */ 
 
-} // End namespace tl
+} // namespace tl

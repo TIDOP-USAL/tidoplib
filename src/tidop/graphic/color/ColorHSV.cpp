@@ -103,4 +103,4 @@ auto ColorHSV::fromColor(const Color &color) -> ColorHSV
     return ColorHSV(hue, saturation, value);
 }
 
-} // End namespace tl
+} // namespace tl

@@ -37,38 +37,26 @@ BOOST_AUTO_TEST_SUITE(GLineStringTestSuite)
 struct GLineStringTest
 {
 
-  GLineStringTest()
-  {
-  }
+    GLineStringTest()
+    {
+    }
 
-  ~GLineStringTest()
-  {
-  }
+    ~GLineStringTest()
+    {
+    }
 
-  GLineString linestring;
-  GLineString3D linestring_3d;
-  GMultiLineString multi_linestring;
-  GMultiLineString3D multi_linestring_3d;
+    GLineString linestring;
+    GLineString3D linestring_3d;
+    GMultiLineString multi_linestring;
+    GMultiLineString3D multi_linestring_3d;
 };
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, GLineStringTest)
 {
-  BOOST_CHECK_EQUAL(false, linestring.isMultiEntity());
-  BOOST_CHECK_EQUAL(true, linestring.isSimpleEntity());
-  //BOOST_CHECK_EQUAL(false, linestring.is3D());
-
-  BOOST_CHECK_EQUAL(false, linestring_3d.isMultiEntity());
-  BOOST_CHECK_EQUAL(true, linestring_3d.isSimpleEntity());
-  //BOOST_CHECK_EQUAL(true, linestring_3d.is3D());
-
-  BOOST_CHECK_EQUAL(true, multi_linestring.isMultiEntity());
-  BOOST_CHECK_EQUAL(false, multi_linestring.isSimpleEntity());
-  //BOOST_CHECK_EQUAL(false, multi_linestring.is3D());
-
-  BOOST_CHECK_EQUAL(true, multi_linestring_3d.isMultiEntity());
-  BOOST_CHECK_EQUAL(false, multi_linestring_3d.isSimpleEntity());
-  //BOOST_CHECK_EQUAL(true, multi_linestring_3d.is3D());
-  
+    BOOST_CHECK(linestring.type() == GraphicEntity::Type::linestring_2d);
+    BOOST_CHECK(linestring_3d.type() == GraphicEntity::Type::linestring_3d);
+    BOOST_CHECK(multi_linestring.type() == GraphicEntity::Type::multiline_2d);
+    BOOST_CHECK(multi_linestring_3d.type() == GraphicEntity::Type::multiline_3d);  
 }
 
 

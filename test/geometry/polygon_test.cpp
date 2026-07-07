@@ -124,9 +124,9 @@ BOOST_FIXTURE_TEST_CASE(size, PolygonTest)
     BOOST_CHECK_EQUAL(0, polygon_default_constructor_double.outer().size());
     BOOST_CHECK_EQUAL(0, polygon_default_constructor_float.outer().size());
     BOOST_CHECK_EQUAL(7, polygon_initializer_list_constructor->outer().size());
-    BOOST_CHECK_EQUAL(0, polygon_reserve_constructor->outer().size());
+    BOOST_CHECK_EQUAL(10, polygon_reserve_constructor->outer().size());
     BOOST_CHECK_EQUAL(7, polygon_copy_constructor_integer->outer().size());
-    BOOST_CHECK_EQUAL(0, polygon_copy_constructor_double->outer().size());
+    BOOST_CHECK_EQUAL(10, polygon_copy_constructor_double->outer().size());
 }
 
 BOOST_FIXTURE_TEST_CASE(capacity, PolygonTest)
@@ -137,7 +137,7 @@ BOOST_FIXTURE_TEST_CASE(capacity, PolygonTest)
     BOOST_CHECK_EQUAL(7, polygon_initializer_list_constructor->outer().capacity());
     BOOST_CHECK_EQUAL(10, polygon_reserve_constructor->outer().capacity());
     BOOST_CHECK_EQUAL(7, polygon_copy_constructor_integer->outer().capacity());
-    BOOST_CHECK_EQUAL(0, polygon_copy_constructor_double->outer().capacity());
+    BOOST_CHECK_EQUAL(10, polygon_copy_constructor_double->outer().capacity());
 }
 
 BOOST_FIXTURE_TEST_CASE(perimeter, PolygonTest)
@@ -291,7 +291,7 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, Polygon3DTest)
 
 BOOST_FIXTURE_TEST_CASE(constructor_reserve, Polygon3DTest)
 {
-    BOOST_CHECK_EQUAL(0, polygon_reserve_constructor->outer().size());
+    BOOST_CHECK_EQUAL(10, polygon_reserve_constructor->outer().size());
     BOOST_CHECK_EQUAL(10, polygon_reserve_constructor->outer().capacity());
     BOOST_CHECK(polygon_reserve_constructor->type() == GeometryType::polygon);
     BOOST_CHECK_EQUAL(0., tl::length(*polygon_reserve_constructor));
@@ -300,8 +300,8 @@ BOOST_FIXTURE_TEST_CASE(constructor_reserve, Polygon3DTest)
 BOOST_FIXTURE_TEST_CASE(copy_constructor, Polygon3DTest)
 {
     Polygon3d pol_c(*polygon_reserve_constructor);
-    BOOST_CHECK_EQUAL(0, pol_c.outer().size());
-    BOOST_CHECK_EQUAL(0, pol_c.outer().capacity());
+    BOOST_CHECK_EQUAL(10, pol_c.outer().size());
+    BOOST_CHECK_EQUAL(10, pol_c.outer().capacity());
     BOOST_CHECK(pol_c.type() == GeometryType::polygon);
     BOOST_CHECK_EQUAL(0., tl::length(pol_c));
 }

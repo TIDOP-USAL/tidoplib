@@ -28,6 +28,11 @@
 namespace tl
 {
 
+GMultiLineString3D::GMultiLineString3D()
+  : GraphicEntity(GraphicEntity::Type::multiline_3d)
+{
+}
+
 GMultiLineString3D::GMultiLineString3D(size_t size)
   : mGeometry(size),
     GraphicEntity(GraphicEntity::Type::multiline_3d)

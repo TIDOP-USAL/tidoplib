@@ -28,6 +28,10 @@
 namespace tl
 {
 
+GLineString::GLineString()
+  : GraphicEntity(GraphicEntity::Type::linestring_2d)
+{
+}
 
 GLineString::GLineString(size_t size)
   : mGeometry(size),

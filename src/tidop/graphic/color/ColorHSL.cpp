@@ -111,4 +111,4 @@ auto ColorHSL::fromColor(const Color &color) -> ColorHSL
     return ColorHSL(hue, saturation, lightness);    
 }
 
-} // End namespace tl
+} // namespace tl

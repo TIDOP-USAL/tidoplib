@@ -22,6 +22,17 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file GMultiPolygon.h
+ * \brief 2D multi-polygon graphic entity for rendering.
+ *
+ * This file defines the `GMultiPolygon` class, which represents a collection
+ * of 2D polygons as a graphic entity that can be rendered using a `Painter`.
+ * It inherits from `GraphicEntity` and stores a `MultiPolygon<Point2d>` geometry.
+ *
+ * \ingroup GraphicEntities
+ * \see tl::GraphicEntity, tl::MultiPolygon, tl::Point2d
+ */
+
 #pragma once
 
 #include "tidop/geometry/primitives/Point.h"
@@ -39,7 +50,22 @@ class Painter;
 
 
 /*!
- * \brief Multi-polygon graphic class
+ * \class GMultiPolygon
+ * \brief 2D multi-polygon graphic entity.
+ *
+ * This class wraps a 2D multi-polygon geometry (`MultiPolygon<Point2d>`) and
+ * provides the necessary interface for rendering via a `Painter`. It also
+ * implements the `clone()` method and computes the bounding window of the
+ * multi-polygon.
+ *
+ * ### Example
+ * \code
+ * MultiPolygon<Point2d> mp = ...;
+ * GMultiPolygon gmp(mp);
+ * gmp.setPen(Pen(Color::Blue, 2.0));
+ * gmp.setBrush(Brush(Color::Red, Brush::Style::Solid));
+ * painter.draw(gmp);
+ * \endcode
  */
 class TL_EXPORT GMultiPolygon
   : public GraphicEntity
@@ -52,70 +78,83 @@ private:
 public:
 
     /*!
-     * \brief Default constructor
+     * \brief Default constructor.
+     * Constructs an empty 2D multi-polygon graphic entity.
      */
-    GMultiPolygon() = default;
+    GMultiPolygon();
 
+    /*!
+     * \brief Constructs with a pre-allocated number of polygons.
+     * \param[in] size Initial number of polygons in the collection.
+     */
     explicit GMultiPolygon(size_t size);
 
     /*!
-     * \brief Constructor from a multi-polygon
-     * \param multiPolygon MultiPolygon object
-     * \see MultiPolygon
+     * \brief Constructs from a 2D multi-polygon.
+     * \param[in] multiPolygon The 2D multi-polygon geometry.
      */
     explicit GMultiPolygon(const MultiPolygon<Point2d> &multiPolygon);
 
     /*!
-     * \brief Copy constructor
-     * \param[in] multiPolygon Object to be copied
+     * \brief Copy constructor.
+     * \param[in] multiPolygon Object to copy.
      */
     GMultiPolygon(const GMultiPolygon &multiPolygon) = default;
 
     /*!
-     * \brief Move Constructor
-     * \param[in] multiPolygon GMultiPolygon object that moves
+     * \brief Move constructor.
+     * \param[in] multiPolygon Object to move.
      */
     GMultiPolygon(GMultiPolygon &&multiPolygon) noexcept = default;
 
     ~GMultiPolygon() override = default;
 
     /*!
-     * \brief Copy assignment operator
-     * \param[in] multiPolygon Object to be copied
-     * \return Object reference
+     * \brief Copy assignment operator.
+     * \param[in] multiPolygon Object to copy.
+     * \return Reference to this object.
      */
-    auto operator =(const GMultiPolygon &multiPolygon) -> GMultiPolygon& = default;
+    auto operator =(const GMultiPolygon &multiPolygon) -> GMultiPolygon & = default;
 
     /*!
-     * \brief Move assignment operator
-     * \param[in] multiPolygon GPolygon object that moves
-     * \return Object reference
+     * \brief Move assignment operator.
+     * \param[in] multiPolygon Object to move.
+     * \return Reference to this object.
      */
-    auto operator =(GMultiPolygon &&multiPolygon) noexcept -> GMultiPolygon& = default;
+    auto operator =(GMultiPolygon &&multiPolygon) noexcept -> GMultiPolygon & = default;
 
+    /*!
+     * \brief Returns a const reference to the underlying multi-polygon geometry.
+     * \return Const reference to `MultiPolygon<Point2d>`.
+     */
     auto geometry() const -> const MultiPolygon<Point2d> & { return mGeometry; }
+
+    /*!
+     * \brief Returns a mutable reference to the underlying multi-polygon geometry.
+     * \return Reference to `MultiPolygon<Point2d>`.
+     */
     auto geometry() -> MultiPolygon<Point2d> & { return mGeometry; }
 
-    auto isMultiEntity() const -> bool override;
-    auto isSimpleEntity() const -> bool override;
+    /*!
+     * \brief Computes the 2D bounding window of the multi-polygon.
+     * \return A `BoundingBox<Point2d>` enclosing the multi-polygon.
+     */
     auto window() const -> BoundingBox<Point2d> override;
+
+    /*!
+     * \brief Renders the multi-polygon using the given painter.
+     * \param[in] painter The painter used for rendering.
+     */
     void draw(Painter &painter) const override;
+
+    /*!
+     * \brief Creates a deep copy of this graphic entity.
+     * \return A unique pointer to the cloned object.
+     */
     auto clone() const -> std::unique_ptr<GraphicEntity> override;
 };
 
 
-
-inline auto GMultiPolygon::isMultiEntity() const -> bool
-{
-    return true;
-}
-
-inline auto GMultiPolygon::isSimpleEntity() const -> bool
-{
-    return false;
-}
-
-
-/*! \} */ // Fin GraphicEntities
+/*! \} */ 
 
 } // namespace tl

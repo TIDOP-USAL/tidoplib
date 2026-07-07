@@ -22,6 +22,17 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file GPoint.h
+ * \brief 2D point graphic entity for rendering.
+ *
+ * This file defines the `GPoint` class, which represents a 2D point
+ * as a graphic entity that can be rendered using a `Painter`. It inherits from
+ * `GraphicEntity` and stores a 2D point geometry (`Point2d`).
+ *
+ * \ingroup GraphicEntities
+ * \see tl::GraphicEntity, tl::Point2d
+ */
+
 #pragma once
 
 #include "tidop/geometry/primitives/Point.h"
@@ -39,7 +50,19 @@ class Painter;
  */
 
 /*!
- * \brief Point graphic class
+ * \class GPoint
+ * \brief 2D point graphic entity.
+ *
+ * This class wraps a 2D point geometry (`Point2d`) and provides the necessary
+ * interface for rendering via a `Painter`. It also implements the `clone()`
+ * method and computes the bounding window of the point.
+ *
+ * ### Example
+ * \code
+ * GPoint gpoint(10.0, 20.0);
+ * gpoint.setSymbol(Symbol(Symbol::Type::Circle, 8.0));
+ * painter.draw(gpoint);
+ * \endcode
  */
 class TL_EXPORT GPoint
   : public GraphicEntity
@@ -52,75 +75,85 @@ private:
 public:
 
     /*!
-     * \brief Default constructor
+     * \brief Default constructor.
+     * Constructs a 2D point at the origin `(0, 0)`.
      */
-    GPoint() = default;
+    GPoint();
 
     /*!
-     * \brief Constructor
-     * \param[in] x x coordinate
-     * \param[in] y y coordinate
+     * \brief Constructs a 2D point from coordinates.
+     * \param[in] x X-coordinate.
+     * \param[in] y Y-coordinate.
      */
     GPoint(double x, double y);
 
     /*!
-     * \brief Constructor from a Point
-     * \param[in] pt Point
-     * \see Point
+     * \brief Constructs a 2D point from a `Point2d` object.
+     * \param[in] pt The 2D point.
      */
     explicit GPoint(const Point<double> &pt);
 
     /*!
-     * \brief Copy constructor
-     * \param[in] pt Objeto GPoint to be copied
+     * \brief Copy constructor.
+     * \param[in] pt Object to copy.
      */
     GPoint(const GPoint &pt) = default;
 
     /*!
-     * \brief Move Constructor
-     * \param[in] pt Objeto GPoint object that moves
+     * \brief Move constructor.
+     * \param[in] pt Object to move.
      */
     GPoint(GPoint &&pt) noexcept = default;
+
 
     ~GPoint() override = default;
 
     /*!
-     * \brief Copy assignment operator
-     * \param gPoint GPoint object to be assigned
-     * \return Object reference
+     * \brief Copy assignment operator.
+     * \param[in] gPoint Object to copy.
+     * \return Reference to this object.
      */
-    auto operator =(const GPoint &gPoint) -> GPoint& = default;
+    auto operator =(const GPoint &gPoint) -> GPoint & = default;
 
     /*!
-     * \brief Move assignment operator
-     * \param gPoint GPoint object that moves
-     * \return Object reference
+     * \brief Move assignment operator.
+     * \param[in] gPoint Object to move.
+     * \return Reference to this object.
      */
-    auto operator =(GPoint&& gPoint) noexcept -> GPoint& = default;
+    auto operator =(GPoint &&gPoint) noexcept -> GPoint & = default;
 
-    auto geometry() const -> const Point2d& { return mGeometry; }
-    auto geometry() -> Point2d& { return mGeometry; }
+    /*!
+     * \brief Returns a const reference to the underlying point geometry.
+     * \return Const reference to `Point2d`.
+     */
+    auto geometry() const -> const Point2d & { return mGeometry; }
 
-    auto isMultiEntity() const -> bool override;
-    auto isSimpleEntity() const -> bool override;
+    /*!
+     * \brief Returns a mutable reference to the underlying point geometry.
+     * \return Reference to `Point2d`.
+     */
+    auto geometry() -> Point2d & { return mGeometry; }
+
+    /*!
+     * \brief Computes the 2D bounding window of the point.
+     * \return A `BoundingBox<Point2d>` containing the point.
+     */
     auto window() const -> BoundingBox<Point2d> override;
+
+    /*!
+     * \brief Renders the point using the given painter.
+     * \param[in] painter The painter used for rendering.
+     */
     void draw(Painter &painter) const override;
+
+    /*!
+     * \brief Creates a deep copy of this graphic entity.
+     * \return A unique pointer to the cloned object.
+     */
     auto clone() const -> std::unique_ptr<GraphicEntity> override;
 };
 
-
-inline auto GPoint::isMultiEntity() const -> bool
-{
-    return false;
-}
-
-inline auto GPoint::isSimpleEntity() const -> bool
-{
-    return true;
-}
-
-
-/*! \} */ // Fin GraphicEntities
+/*! \} */
 
 } // namespace tl
 

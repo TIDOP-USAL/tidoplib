@@ -22,6 +22,17 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file Pen.h
+ * \brief Line style for drawing outlines and strokes.
+ *
+ * This file defines the `Pen` class, which encapsulates the visual styling
+ * properties for drawing linear features such as borders, paths, or contours.
+ * It includes color, width, line patterns, caps, joins, and perpendicular offset.
+ *
+ * \ingroup Graphics
+ * \see tl::Color, tl::GraphicStyle
+ */
+
 #pragma once
 
 #include "tidop/config.h"
@@ -36,18 +47,27 @@ namespace tl
  */
 
 
- /*!
-  * \class Pen
-  * \brief Defines the line style used for drawing outlines or strokes.
-  *
-  * The `Pen` class encapsulates the visual styling properties for drawing linear features such as borders,
-  * paths, or contours. This includes color, width, predefined or custom line patterns, line caps,
-  * joins, perpendicular offset, and rendering priority.
-  *
-  * It is typically used in vector drawing, mapping, and styling of geometries.
-  *
-  * \see Color, Pen::PredefinedPattern, Pen::Cap, Pen::Join
-  */
+/*!
+ * \class Pen
+ * \brief Defines the line style used for drawing outlines or strokes.
+ *
+ * The `Pen` class encapsulates the visual styling properties for drawing
+ * linear features such as borders, paths, or contours. This includes color,
+ * width, predefined or custom line patterns, line caps, joins, perpendicular
+ * offset, and rendering priority.
+ *
+ * It is typically used in vector drawing, mapping, and styling of geometries.
+ *
+ * ### Example
+ * \code
+ * Pen pen(Color::Blue, 2);
+ * pen.setPredefinedPattern(Pen::PredefinedPattern::dash);
+ * pen.setCap(Pen::Cap::round);
+ * pen.setJoin(Pen::Join::rounded);
+ * \endcode
+ *
+ * \see Color, GraphicStyle
+ */
 class TL_EXPORT Pen
 {
 public:
@@ -104,115 +124,127 @@ private:
 public:
 
     /*!
-     * \brief Default constructor
+     * \brief Default constructor.
+     * Creates a solid black pen with width 1, butt caps, and bevel joins.
      */
     constexpr Pen() = default;
 
     /*!
-     * \brief Copy constructor
-     * \param[in] pen Pen style class being copied
+     * \brief Constructs a pen with a color and width.
+     * \param[in] color Pen color.
+     * \param[in] width Line width (default: 1).
+     */
+    constexpr Pen(Color color,
+        uint8_t width = 1)
+        : mColor(color),
+        mWidth(width)
+    {
+    }
+
+    /*!
+     * \brief Copy constructor.
+     * \param[in] pen Pen to copy.
      */
     constexpr Pen(const Pen &pen) = default;
 
     /*!
-     * \brief Move constructor
+     * \brief Move constructor.
+     * \param[in] pen Pen to move.
      */
     constexpr Pen(Pen &&pen) noexcept = default;
 
-    /*!
-     * \brief Destructor
-     */
+    /*! \brief Destructor. */
     ~Pen() = default;
 
     /*!
-     * \brief Assignment operator
-     * \param[in] stylePen Pen style
-     * \return Reference to the pen style
+     * \brief Copy assignment operator.
+     * \param[in] pen Pen to copy.
+     * \return Reference to this object.
      */
-    constexpr auto operator =(const Pen &stylePen) -> Pen& = default;
+    constexpr auto operator =(const Pen &pen) -> Pen & = default;
 
     /*!
-     * \brief Assignment move operator
-     * \param[in] stylePen Pen style
-     * \return Reference to the pen style
+     * \brief Move assignment operator.
+     * \param[in] pen Pen to move.
+     * \return Reference to this object.
      */
-    constexpr auto operator =(Pen &&stylePen) noexcept -> Pen& = default;
+    constexpr auto operator =(Pen &&pen) noexcept -> Pen & = default;
 
     /*!
      * \brief Returns the pen color.
-     * \return Pen color.
+     * \return The pen color.
      */
     [[nodiscard]]
     constexpr auto color() const noexcept -> Color;
 
     /*!
      * \brief Sets the pen color.
-     * \param[in] color Pen color.
+     * \param[in] color New pen color.
      */
     constexpr void setColor(Color color) noexcept;
 
     /*!
-     * \brief Returns the pen width in pixels or drawing units.
-     * \return Pen width.
+     * \brief Returns the line width.
+     * \return Width in pixels or drawing units.
      */
     [[nodiscard]]
     constexpr auto width() const noexcept -> uint8_t;
 
     /*!
-     * \brief Sets the pen width.
-     * \param[in] width Pen width.
+     * \brief Sets the line width.
+     * \param[in] width New line width.
      */
     constexpr void setWidth(uint8_t width) noexcept;
 
     /*!
-     * \brief Returns the custom line pattern string (e.g., for dash arrays).
-     * \return Pattern string.
+     * \brief Returns the custom pattern string.
+     * \return Pattern string (empty if not set).
      */
     [[nodiscard]]
     constexpr auto pattern() const noexcept -> std::string;
 
     /*!
-     * \brief Sets a custom line pattern string.
-     * \param[in] pattern Pattern string.
+     * \brief Sets a custom pattern string.
+     * \param[in] pattern Pattern string (e.g., dash array).
      */
     void setPattern(std::string pattern) noexcept;
 
     /*!
      * \brief Returns the predefined pattern type.
-     * \return Predefined line pattern.
+     * \return The predefined pattern.
      */
     [[nodiscard]]
     constexpr auto predefinedPattern() const noexcept -> PredefinedPattern;
 
     /*!
      * \brief Sets the predefined pattern type.
-     * \param[in] pattern Predefined line pattern.
+     * \param[in] pattern New predefined pattern.
      */
     constexpr void setPredefinedPattern(PredefinedPattern pattern) noexcept;
 
     /*!
      * \brief Returns the cap style for line ends.
-     * \return Cap style.
+     * \return The cap style.
      */
     [[nodiscard]]
-    constexpr auto cap() const noexcept  -> Cap;
+    constexpr auto cap() const noexcept -> Cap;
 
     /*!
      * \brief Sets the cap style for line ends.
-     * \param[in] cap Cap style.
+     * \param[in] cap New cap style.
      */
-    constexpr void setCap(Cap pencap) noexcept;
+    constexpr void setCap(Cap cap) noexcept;
 
     /*!
      * \brief Returns the join style between line segments.
-     * \return Join style.
+     * \return The join style.
      */
     [[nodiscard]]
     constexpr auto join() const noexcept -> Join;
 
     /*!
      * \brief Sets the join style between line segments.
-     * \param[in] join Join style.
+     * \param[in] join New join style.
      */
     constexpr void setJoin(Join join) noexcept;
 
@@ -227,7 +259,7 @@ public:
      * \brief Sets the perpendicular offset from the centerline.
      * \param[in] offset Offset value (negative = left).
      */
-    constexpr void setPerpendicularOffset(int32_t perpendicularoffset) noexcept;
+    constexpr void setPerpendicularOffset(int32_t offset) noexcept;
 
 };
 

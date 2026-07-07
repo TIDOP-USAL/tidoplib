@@ -33,8 +33,6 @@ namespace tl
 {
 
 
-
-
 GLayer::GLayer()
   : mEntities(0),
     mSelectEntity(nullptr)
@@ -190,11 +188,6 @@ auto GLayer::boundingBox() const -> BoundingBox<Point2d>
     }
 
     return bbox;
-}
-
-auto GLayer::window() const -> BoundingBox<Point2d>
-{
-    return boundingBox();
 }
 
 } // End namespace tl

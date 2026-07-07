@@ -22,6 +22,17 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file GPolygon.h
+ * \brief 2D polygon graphic entity for rendering.
+ *
+ * This file defines the `GPolygon` class, which represents a 2D polygon
+ * as a graphic entity that can be rendered using a `Painter`. It inherits from
+ * `GraphicEntity` and stores a 2D polygon geometry (`Polygon<Point2d>`).
+ *
+ * \ingroup GraphicEntities
+ * \see tl::GraphicEntity, tl::Polygon, tl::Point2d
+ */
+
 #pragma once
 
 #include "tidop/geometry/primitives/Point.h"
@@ -39,7 +50,21 @@ class Painter;
 
 
 /*!
- * \brief Polygon graphic class
+ * \class GPolygon
+ * \brief 2D polygon graphic entity.
+ *
+ * This class wraps a 2D polygon geometry (`Polygon<Point2d>`) and provides
+ * the necessary interface for rendering via a `Painter`. It also implements
+ * the `clone()` method and computes the bounding window of the polygon.
+ *
+ * ### Example
+ * \code
+ * Polygon<Point2d> poly = ...;
+ * GPolygon gpoly(poly);
+ * gpoly.setPen(Pen(Color::Blue, 2.0));
+ * gpoly.setBrush(Brush(Color::Red));
+ * painter.draw(gpoly);
+ * \endcode
  */
 class TL_EXPORT GPolygon
   : public GraphicEntity
@@ -52,22 +77,26 @@ private:
 public:
 
     /*!
-     * \brief Default constructor
+     * \brief Default constructor.
+     * Constructs an empty 2D polygon graphic entity.
      */
-    GPolygon() = default;
+    GPolygon();
 
+    /*!
+     * \brief Constructs a polygon with a pre-allocated number of vertices.
+     * \param[in] size Initial number of vertices (outer ring size).
+     */
     explicit GPolygon(size_t size);
 
     /*!
-     * \brief Constructor from a polygon
-     * \param[in] polygon Polygon class object
-     * \see Polygon
+     * \brief Constructs from a 2D polygon.
+     * \param[in] polygon The 2D polygon geometry.
      */
     explicit GPolygon(const Polygon<Point2d> &polygon);
 
     /*!
-     * \brief Copy constructor
-     * \param[in] gPolygon Object to be copied
+     * \brief Copy constructor.
+     * \param[in] gPolygon Object to copy.
      */
     GPolygon(const GPolygon &gPolygon) = default;
 
@@ -80,41 +109,51 @@ public:
     ~GPolygon() override = default;
 
     /*!
-     * \brief Copy assignment operator
-     * \param[in] gPolygon Object to be copied
-     * \return Object reference
+     * \brief Copy assignment operator.
+     * \param[in] gPolygon Object to copy.
+     * \return Reference to this object.
      */
-    auto operator =(const GPolygon& gPolygon) -> GPolygon& = default;
+    auto operator =(const GPolygon &gPolygon) -> GPolygon & = default;
 
     /*!
-     * \brief Move assignment operator
-     * \param[in] gPolygon GPolygon object that moves
-     * \return Object reference
+     * \brief Move assignment operator.
+     * \param[in] gPolygon Object to move.
+     * \return Reference to this object.
      */
-    auto operator =(GPolygon&& gPolygon) noexcept -> GPolygon& = default;
+    auto operator =(GPolygon &&gPolygon) noexcept -> GPolygon & = default;
 
+    /*!
+     * \brief Returns a const reference to the underlying polygon geometry.
+     * \return Const reference to `Polygon<Point2d>`.
+     */
     auto geometry() const -> const Polygon<Point2d> & { return mGeometry; }
+
+    /*!
+     * \brief Returns a mutable reference to the underlying polygon geometry.
+     * \return Reference to `Polygon<Point2d>`.
+     */
     auto geometry() -> Polygon<Point2d> & { return mGeometry; }
 
-    auto isMultiEntity() const -> bool override;
-    auto isSimpleEntity() const -> bool override;
+    /*!
+     * \brief Computes the 2D bounding window of the polygon.
+     * \return A `BoundingBox<Point2d>` enclosing the polygon.
+     */
     auto window() const -> BoundingBox<Point2d> override;
+
+    /*!
+     * \brief Renders the polygon using the given painter.
+     * \param[in] painter The painter used for rendering.
+     */
     void draw(Painter &painter) const override;
+
+    /*!
+     * \brief Creates a deep copy of this graphic entity.
+     * \return A unique pointer to the cloned object.
+     */
     auto clone() const -> std::unique_ptr<GraphicEntity> override;
 };
 
 
-inline auto GPolygon::isMultiEntity() const -> bool
-{
-    return false;
-}
-
-inline auto GPolygon::isSimpleEntity() const -> bool
-{
-    return true;
-}
-
-
-/*! \} */ // Fin GraphicEntities
+/*! \} */
 
 } // namespace tl

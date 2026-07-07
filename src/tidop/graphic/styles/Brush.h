@@ -22,6 +22,17 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file Brush.h
+ * \brief Brush style for filling graphical shapes.
+ *
+ * This file defines the `Brush` class, which encapsulates the fill style used
+ * for rendering filled shapes such as polygons. It supports solid fills, no fill,
+ * and hatch patterns with configurable foreground and background colors.
+ *
+ * \ingroup Graphics
+ * \see tl::Pen, tl::GraphicStyle, tl::BrushPattern
+ */
+
 #pragma once
 
 #include <array>
@@ -44,33 +55,35 @@ namespace tl
  * \class Brush
  * \brief Represents a brush style used to fill graphical shapes.
  *
- * The `Brush` class encapsulates the style used to fill areas in vector graphics (e.g. polygons).
- * It includes properties such as foreground and background colors, hatch patterns, spacing,
- * orientation, scaling, and a drawing priority level.
+ * The `Brush` class encapsulates the style used to fill areas in vector graphics
+ * (e.g., polygons). It includes properties such as foreground and background colors,
+ * hatch patterns, and a drawing style.
  *
  * The brush style determines how a filled region is visually rendered — for example,
  * with solid color, no fill, or hatch patterns such as diagonal or crosshatch lines.
  *
- * ### Example Usage
+ * ### Example
  * \code
- * BrushPattern pattern(BrushPattern::HatchType::cross, 0.0, 2.0);
- * brush = Brush(Color(Color::Name::green),
- *               Color(Color::Name::dark_green),
- *               pattern);
+ * Brush solidBrush(Color::Red, Color::Red, Brush::Style::solid);
+ * Brush hatchBrush(Color::Blue, Color::White, BrushPattern(BrushPattern::HatchType::cross, 0.0, 2.0));
  * \endcode
  *
- * \see Color, GraphicStyle
+ * \see Color, GraphicStyle, BrushPattern
  */
 class TL_EXPORT Brush
 {
 
 public:
 
+    /*!
+     * \enum Style
+     * \brief Brush fill styles.
+     */
     enum class Style : uint8_t
     {
-        solid,
-        null,
-        hatch
+        solid,   /*!< Solid fill using the foreground color. */
+        no_fill, /*!< No fill (transparent). */
+        hatch    /*!< Hatch pattern using foreground and background colors. */
     };
 
 private:
@@ -83,22 +96,29 @@ private:
 public:
 
     /*!
-     * \brief Default constructor
+     * \brief Default constructor.
+     * Creates a solid brush with default (black) colors.
      */
     constexpr Brush() = default;
 
     /*!
-     * \brief Copy constructor
-     * \param[in] brush Brush object being copied
+     * \brief Copy constructor.
+     * \param[in] brush Brush object to copy.
      */
     constexpr Brush(const Brush &brush) = default;
 
     /*!
-     * \brief Move constructor
-     * \param[in] brush Brush object being copied
+     * \brief Move constructor.
+     * \param[in] brush Brush object to move.
      */
     constexpr Brush(Brush &&brush) noexcept = default;
 
+    /*!
+     * \brief Constructs a brush with a style.
+     * \param[in] foreground Foreground color.
+     * \param[in] background Background color.
+     * \param[in] style      Brush style (default: `Style::solid`).
+     */
     constexpr Brush(Color foreground,
                     Color background,
                     Style style = Style::solid)
@@ -108,6 +128,12 @@ public:
         setStyle(style);
     }
 
+    /*!
+     * \brief Constructs a hatch brush.
+     * \param[in] foreground Foreground color (hatch lines).
+     * \param[in] background Background color (behind the hatch).
+     * \param[in] pattern    Hatch pattern.
+     */
     constexpr Brush(Color foreground,
                     Color background,
                     BrushPattern pattern)
@@ -115,7 +141,8 @@ public:
         mBackColor(std::move(background)),
         mStyle(Style::hatch),
         mPattern(pattern)
-    { }
+    {
+    }
 
     /*!
      * \brief Copy assignment operator.
@@ -131,40 +158,45 @@ public:
      */
     constexpr auto operator =(Brush &&brush) noexcept -> Brush & = default;
 
-
     /*!
-     * \brief Gets the foreground color of the brush pattern.
-     * \return Foreground color used for the hatch lines or solid fill.
-     * \see Color
+     * \brief Returns the foreground color.
+     * \return Foreground color (used for solid fill or hatch lines).
      */
-    [[nodiscard]] 
+    [[nodiscard]]
     constexpr auto foregroundColor() const noexcept -> Color;
 
     /*!
-     * \brief Sets the foreground color of the brush pattern.
-     * \param[in] foregroundColor Color for the lines or fill.
-     * \see Color 
+     * \brief Sets the foreground color.
+     * \param[in] foregroundColor New foreground color.
      */
     constexpr void setForegroundColor(Color foregroundColor) noexcept;
 
     /*!
-     * \brief Gets the background color behind the pattern.
-     * \return Background color.
-     * \see Color
+     * \brief Returns the background color.
+     * \return Background color (used behind hatch patterns).
      */
     [[nodiscard]]
     constexpr auto backgroundColor() const noexcept -> Color;
 
     /*!
-     * \brief Sets the background color behind the pattern.
-     * \param[in] backgroundColor Color to appear behind the hatch lines or fill.
-     * \see Color
+     * \brief Sets the background color.
+     * \param[in] backgroundColor New background color.
      */
     constexpr void setBackgroundColor(Color backgroundColor) noexcept;
 
-    [[nodiscard]] 
+    /*!
+     * \brief Returns the current brush style.
+     * \return The brush style.
+     */
+    [[nodiscard]]
     constexpr auto style() const noexcept -> Style { return mStyle; }
 
+    /*!
+     * \brief Sets the brush style.
+     * \param[in] style New brush style.
+     * \note If the style is set to `hatch` and no pattern exists, a default
+     *       `BrushPattern` is created.
+     */
     constexpr void setStyle(Style style) noexcept
     {
         mStyle = style;
@@ -173,7 +205,16 @@ public:
         }
     }
 
+    /*!
+     * \brief Returns the hatch pattern.
+     * \return Optional reference to the current pattern (empty if not set).
+     */
     [[nodiscard]] constexpr auto pattern() const noexcept -> const std::optional<BrushPattern> & { return mPattern; }
+
+    /*!
+     * \brief Sets the hatch pattern and switches the style to `hatch`.
+     * \param[in] pattern New hatch pattern.
+     */
     constexpr void setPattern(BrushPattern pattern) noexcept
     {
         mPattern = pattern;

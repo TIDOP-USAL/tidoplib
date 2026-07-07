@@ -39,99 +39,89 @@ namespace tl
 
 #ifdef TL_HAVE_OPENCV
 
-CanvasCV::CanvasCV()
-  : mSize(100, 100),
+CanvasCV::CanvasCV(Size<int> size)
+  : mSize(std::move(size)),
     mBgColor(Color::Name::white)
 {
     update();
 }
 
-CanvasCV::CanvasCV(const CanvasCV &canvas)
-  : Canvas(canvas),
-    mSize(canvas.mSize),
-    mBgColor(canvas.mBgColor)
+void CanvasCV::draw(const Point2d &point, const Symbol &symbol, const Pen &pen)
 {
-    update();
-}
+    auto pen_color = colorToCvScalar(pen.color());
+    auto pen_width = pen.width();
 
-CanvasCV::~CanvasCV() = default;
+    Point2i pt = static_cast<Point2i>(point + symbol.offset());
 
-void CanvasCV::draw(const Point2d &point, const GraphicStyle &style)
-{
-    const auto style_symbol = style.symbol();
-    const auto style_pen = style.pen();
-    Color c = style_pen->color();
-    cv::Scalar color = colorToCvScalar(c);
-
-    Point2i pt = static_cast<Point2i>(point + style_symbol->offset());
-
-    switch (style_symbol->shape()) {
-    case Symbol::Shape::cross:
-        cv::drawMarker(mCanvas, cv::Point(pt.x(), pt.y()), color, cv::MARKER_CROSS, 10, 1);
-        break;
-    case Symbol::Shape::diagonal_cross:
-        cv::drawMarker(mCanvas, cv::Point(pt.x(), pt.y()), color, cv::MARKER_TILTED_CROSS, 10, 1);
-        break;
-    case Symbol::Shape::circle:
-        cv::circle(mCanvas, cv::Point(pt.x(), pt.y()), 10, color, 1);
-        break;
-    case Symbol::Shape::circle_filled:
-        cv::circle(mCanvas, cv::Point(pt.x(), pt.y()), 10, color, -1);
-        break;
-    case Symbol::Shape::square:
-        cv::drawMarker(mCanvas, cv::Point(pt.x(), pt.y()), color, cv::MARKER_SQUARE, 10, 1);
-        break;
-    case Symbol::Shape::square_filled:
-        cv::drawMarker(mCanvas, cv::Point(pt.x(), pt.y()), color, cv::MARKER_SQUARE, 10, -1);
-        break;
-    case Symbol::Shape::triangle:
-        cv::drawMarker(mCanvas, cv::Point(pt.x(), pt.y()), color, cv::MARKER_TRIANGLE_UP, 10, 1);
-        break;
-    case Symbol::Shape::triangle_filled:
-        cv::drawMarker(mCanvas, cv::Point(pt.x(), pt.y()), color, cv::MARKER_TRIANGLE_UP, 10, -1);
-        break;
-    case Symbol::Shape::star:
-        cv::drawMarker(mCanvas, cv::Point(pt.x(), pt.y()), color, cv::MARKER_STAR, 10, 1);
-        break;
-    case Symbol::Shape::star_filled:
-        cv::drawMarker(mCanvas, cv::Point(pt.x(), pt.y()), color, cv::MARKER_STAR, 10, -1);
-        break;
-    case Symbol::Shape::vertical_bar:
-        break;
-    default:
-        cv::line(mCanvas, cv::Point(pt.x(), pt.y()), cv::Point(pt.x(), pt.y()), color, style_pen->width());
-        break;
+    switch (symbol.shape()) {
+        case Symbol::Shape::cross:
+            cv::drawMarker(mCanvas, cv::Point(pt.x(), pt.y()), pen_color, cv::MARKER_CROSS, 10, 1);
+            break;
+        case Symbol::Shape::diagonal_cross:
+            cv::drawMarker(mCanvas, cv::Point(pt.x(), pt.y()), pen_color, cv::MARKER_TILTED_CROSS, 10, 1);
+            break;
+        case Symbol::Shape::circle:
+            cv::circle(mCanvas, cv::Point(pt.x(), pt.y()), 10, pen_color, 1);
+            break;
+        case Symbol::Shape::circle_filled:
+            cv::circle(mCanvas, cv::Point(pt.x(), pt.y()), 10, pen_color, -1);
+            break;
+        case Symbol::Shape::square:
+            cv::drawMarker(mCanvas, cv::Point(pt.x(), pt.y()), pen_color, cv::MARKER_SQUARE, 10, 1);
+            break;
+        case Symbol::Shape::square_filled:
+            cv::drawMarker(mCanvas, cv::Point(pt.x(), pt.y()), pen_color, cv::MARKER_SQUARE, 10, -1);
+            break;
+        case Symbol::Shape::triangle:
+            cv::drawMarker(mCanvas, cv::Point(pt.x(), pt.y()), pen_color, cv::MARKER_TRIANGLE_UP, 10, 1);
+            break;
+        case Symbol::Shape::triangle_filled:
+            cv::drawMarker(mCanvas, cv::Point(pt.x(), pt.y()), pen_color, cv::MARKER_TRIANGLE_UP, 10, -1);
+            break;
+        case Symbol::Shape::star:
+            cv::drawMarker(mCanvas, cv::Point(pt.x(), pt.y()), pen_color, cv::MARKER_STAR, 10, 1);
+            break;
+        case Symbol::Shape::star_filled:
+            cv::drawMarker(mCanvas, cv::Point(pt.x(), pt.y()), pen_color, cv::MARKER_STAR, 10, -1);
+            break;
+        case Symbol::Shape::vertical_bar:
+            break;
+        default:
+            //TODO: Igual es mejor no pintar ya que puede ser un texto
+            cv::line(mCanvas, cv::Point(pt.x(), pt.y()), cv::Point(pt.x(), pt.y()), pen_color, pen_width);
+            break;
     }
 
-    auto style_label = style.label();
-    if (style_label && !style_label->text().empty()) {
-
-        Color foregroundColor = style_label->foregroundColor();
-
-#ifdef HAVE_QT
-        Font font = style_label->font();
-        cv::QtFont qt_font = cv::fontQt(font.name(),font.size(),
-                                        colorToCvScalar(foregroundColor),
-                                        font.isBold() ? cv::QtFontWeights::QT_FONT_BOLD : cv::QtFontWeights::QT_FONT_NORMAL,
-                                        font.isItalic() ? cv::QtFontStyles::QT_STYLE_ITALIC : cv::QtFontStyles::QT_STYLE_NORMAL);
-        cv::addText(mCanvas, style_label->text(), cv::Point(pt.x(), pt.y()), qt_font);
-#else
-        int fontFace = cv::FONT_HERSHEY_SIMPLEX;
-        double fontScale = 2;
-        int thickness = 3;
-        int baseline = 0;
-        //cv::Size textSize = cv::getTextSize(style_label->text(), fontFace,
-        //                                    fontScale, thickness, &baseline);
-        baseline += thickness;
-
-        cv::putText(mCanvas, style_label->text(), cv::Point(roundToInteger(point.x()), roundToInteger(point.y())), fontFace, fontScale,
-                    colorToCvScalar(foregroundColor), thickness, 8);
-#endif
-
-    }
+    //¿Mover a drawText?
+//    auto style_label = style.label();
+//    if (style_label && !style_label->text().empty()) {
+//
+//        Color foregroundColor = style_label->foregroundColor();
+//
+//#ifdef HAVE_QT
+//        Font font = style_label->font();
+//        cv::QtFont qt_font = cv::fontQt(font.name(),font.size(),
+//                                        colorToCvScalar(foregroundColor),
+//                                        font.isBold() ? cv::QtFontWeights::QT_FONT_BOLD : cv::QtFontWeights::QT_FONT_NORMAL,
+//                                        font.isItalic() ? cv::QtFontStyles::QT_STYLE_ITALIC : cv::QtFontStyles::QT_STYLE_NORMAL);
+//        cv::addText(mCanvas, style_label->text(), cv::Point(pt.x(), pt.y()), qt_font);
+//#else
+//        int fontFace = cv::FONT_HERSHEY_SIMPLEX;
+//        double fontScale = 2;
+//        int thickness = 3;
+//        int baseline = 0;
+//        //cv::Size textSize = cv::getTextSize(style_label->text(), fontFace,
+//        //                                    fontScale, thickness, &baseline);
+//        baseline += thickness;
+//
+//        cv::putText(mCanvas, style_label->text(), cv::Point(roundToInteger(point.x()), roundToInteger(point.y())), fontFace, fontScale,
+//                    colorToCvScalar(foregroundColor), thickness, 8);
+//#endif
+//
+//    }
 }
 
-void CanvasCV::draw(const LineString<Point2d> &lineString, const GraphicStyle &style)
+void CanvasCV::draw(const LineString<Point2d> &lineString, const Pen &pen)
 {
     size_t n = lineString.size();
     std::vector<std::vector<cv::Point>> pts(1, std::vector<cv::Point>(n));
@@ -140,20 +130,15 @@ void CanvasCV::draw(const LineString<Point2d> &lineString, const GraphicStyle &s
         pts[0][i].y = static_cast<int>(lineString[i].y());
     }
 
-    //  const cv::Point *cpts = (const cv::Point*) cv::Mat(pts).data;
-    //  int npts = cv::Mat(pts).rows;
-
-    const auto style_pen = style.pen();
-    if (!style_pen->pattern().empty()) {
+    if (!pen.pattern().empty()) {
         ///TODO: drawPolyLine(grd, cpts, npts, GVE_ReadyStyle::PenColor, GVE_ReadyStyle::PenWidth, GVE_ReadyStyle::PenPattern);
     } else {
-        Color color = style_pen->color();
-        cv::polylines(mCanvas, pts, false, colorToCvScalar(color), style_pen->width());
+        cv::polylines(mCanvas, pts, false, colorToCvScalar(pen.color()), pen.width());
     }
 }
 
 
-void CanvasCV::draw(const Polygon<Point2d> &polygon, const GraphicStyle &style)
+void CanvasCV::draw(const Polygon<Point2d> &polygon, const Pen &pen, const Brush &brush)
 {
     // Añadir islas (huecos) si las hay
     const auto &outer = polygon.outer();
@@ -164,47 +149,42 @@ void CanvasCV::draw(const Polygon<Point2d> &polygon, const GraphicStyle &style)
         pts[0][i].y = static_cast<int>(outer[i].y());
     }
 
-    if (const auto style_brush = style.brush()) {
-        Color fore_color = style_brush->foregroundColor();
+    if (brush.style() == Brush::Style::solid) {
+        Color fore_color = brush.foregroundColor();
         cv::fillPoly(mCanvas, pts, colorToCvScalar(fore_color));
     }
 
-    if (const auto style_pen = style.pen()) {
-        Color color = style_pen->color();
-        uint8_t width = style_pen->width();
-        if (!style_pen->pattern().empty()) {
-            ///TODO: drawPolyLine(grd, cpts, npts, GVE_ReadyStyle::PenColor, GVE_ReadyStyle::PenWidth, GVE_ReadyStyle::PenPattern);
-        } else {
-            cv::polylines(mCanvas, pts, true, colorToCvScalar(color), width);
-        }
+    if (!pen.pattern().empty()) {
+        ///TODO: drawPolyLine(grd, cpts, npts, GVE_ReadyStyle::PenColor, GVE_ReadyStyle::PenWidth, GVE_ReadyStyle::PenPattern);
+    } else {
+        cv::polylines(mCanvas, pts, true, colorToCvScalar(pen.color()), pen.width());
     }
 
-    
-    const auto style_label = style.label();
-    if (style_label && !style_label->text().empty()) {
-
-        Color foregroundColor = style_label->foregroundColor();
-        auto &point = envelope(polygon).min();
-
-#ifdef HAVE_QT
-        Font font = style_label->font();
-        cv::QtFont qt_font = cv::fontQt(font.name(), font.size(),
-            colorToCvScalar(foregroundColor),
-            font.isBold() ? cv::QtFontWeights::QT_FONT_BOLD : cv::QtFontWeights::QT_FONT_NORMAL,
-            font.isItalic() ? cv::QtFontStyles::QT_STYLE_ITALIC : cv::QtFontStyles::QT_STYLE_NORMAL);
-        cv::addText(mCanvas, style_label->text(), cv::Point(point.x(), point.y()), qt_font);
-#else
-        int fontFace = cv::FONT_HERSHEY_SIMPLEX;
-        double fontScale = 2;
-        int thickness = 3;
-        //int baseline = 0;
-        
-        cv::putText(mCanvas, style_label->text(), cv::Point(roundToInteger(point.x()), roundToInteger(point.y())), fontFace, fontScale,
-            colorToCvScalar(foregroundColor), thickness, 8);
-#endif
-
-
-    }
+    // Mover a drawText()??
+//    if (label && !label->text().empty()) {
+//
+//        Color foregroundColor = label->foregroundColor();
+//        auto &point = envelope(polygon).min();
+//
+//#ifdef HAVE_QT
+//        Font font = label->font();
+//        cv::QtFont qt_font = cv::fontQt(font.name(), font.size(),
+//            colorToCvScalar(foregroundColor),
+//            font.isBold() ? cv::QtFontWeights::QT_FONT_BOLD : cv::QtFontWeights::QT_FONT_NORMAL,
+//            font.isItalic() ? cv::QtFontStyles::QT_STYLE_ITALIC : cv::QtFontStyles::QT_STYLE_NORMAL);
+//        cv::addText(mCanvas, label->text(), cv::Point(point.x(), point.y()), qt_font);
+//#else
+//        int fontFace = cv::FONT_HERSHEY_SIMPLEX;
+//        double fontScale = 2;
+//        int thickness = 3;
+//        //int baseline = 0;
+//        
+//        cv::putText(mCanvas, label->text(), cv::Point(roundToInteger(point.x()), roundToInteger(point.y())), fontFace, fontScale,
+//            colorToCvScalar(foregroundColor), thickness, 8);
+//#endif
+//
+//
+//    }
 
     /// TODO: completar
     //if (Symbol *style_symbol = style.symbol()) {
@@ -212,34 +192,33 @@ void CanvasCV::draw(const Polygon<Point2d> &polygon, const GraphicStyle &style)
     //}
 }
 
-void CanvasCV::draw(const MultiPoint<Point2d> &multiPoint, const GraphicStyle &style)
-{
-    for (const auto &pt : multiPoint) {
-        draw(pt, style);
-    }
-}
+//void CanvasCV::draw(const MultiPoint<Point2d> &multiPoint, const GraphicStyle &style)
+//{
+//    for (const auto &pt : multiPoint) {
+//        draw(pt, style);
+//    }
+//}
+//
+//void CanvasCV::draw(const MultiLineString<Point2d> &multiLineString, const GraphicStyle &style)
+//{
+//    for (const auto &ls : multiLineString) {
+//        draw(ls, style);
+//    }
+//}
+//
+//void CanvasCV::draw(const MultiPolygon<Point2d> &multiPolygon, const GraphicStyle &style)
+//{
+//    for (const auto &poly : multiPolygon) {
+//        draw(poly, style);
+//    }
+//}
 
-void CanvasCV::draw(const MultiLineString<Point2d> &multiLineString, const GraphicStyle &style)
+void CanvasCV::drawText(const Point2d &point, std::string_view text, const Label &label)
 {
-    for (const auto &ls : multiLineString) {
-        draw(ls, style);
-    }
-}
-
-void CanvasCV::draw(const MultiPolygon<Point2d> &multiPolygon, const GraphicStyle &style)
-{
-    for (const auto &poly : multiPolygon) {
-        draw(poly, style);
-    }
-}
-
-void CanvasCV::drawText(const Point2d &point, const std::string &text, const GraphicStyle &style)
-{
-    const auto style_label = style.label();
-    Color foregroundColor = style_label->foregroundColor();
+    Color foregroundColor = label.foregroundColor();
 
 #ifdef HAVE_QT
-    Font font = style_label->font();
+    Font font = label.font();
     cv::QtFont qt_font = cv::fontQt(font.name(), font.size(),
         colorToCvScalar(foregroundColor),
         font.isBold() ? cv::QtFontWeights::QT_FONT_BOLD : cv::QtFontWeights::QT_FONT_NORMAL,
@@ -253,24 +232,9 @@ void CanvasCV::drawText(const Point2d &point, const std::string &text, const Gra
     //cv::Size textSize = cv::getTextSize(text, fontFace,
     //                                    fontScale, thickness, &baseline);
     baseline += thickness;
-    cv::putText(mCanvas, text, cv::Point(roundToInteger(point.x()), roundToInteger(point.y())), fontFace, fontScale,
+    cv::putText(mCanvas, text.data(), cv::Point(roundToInteger(point.x()), roundToInteger(point.y())), fontFace, fontScale,
                 colorToCvScalar(foregroundColor), thickness, 8);
 #endif
-}
-
-//void CanvasCV::setPicture(const cv::Mat &bmp)
-//{
-//    /// insertar imagen. 
-//    bmp.copyTo(mCanvas);
-//}
-
-CanvasCV &CanvasCV::operator =(const CanvasCV &canvas)
-{
-    if (this != &canvas) {
-        mSize = canvas.mSize;
-        mBgColor = canvas.mBgColor;
-    }
-    return *this;
 }
 
 void CanvasCV::update()
@@ -279,7 +243,6 @@ void CanvasCV::update()
         mCanvas = cv::Mat(mSize.height(), mSize.width(), CV_MAKETYPE(CV_8U, 3));
     }
 
-    // Always apply the current background color.
     mCanvas.setTo(colorToCvScalar(mBgColor));
 }
 
@@ -289,4 +252,4 @@ void CanvasCV::update()
 
 
 
-} // End namespace tl
+} // namespace tl

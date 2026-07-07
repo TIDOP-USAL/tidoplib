@@ -22,6 +22,18 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file GMultiLineString3D.h
+ * \brief 3D multi-line string graphic entity for rendering.
+ *
+ * This file defines the `GMultiLineString3D` class, which represents a collection
+ * of 3D polylines (MultiLineString) as a graphic entity that can be rendered
+ * using a `Painter`. It inherits from `GraphicEntity` and stores a
+ * `MultiLineString<Point3d>` geometry.
+ *
+ * \ingroup GraphicEntities
+ * \see tl::GraphicEntity, tl::MultiLineString, tl::Point3d
+ */
+
 #pragma once
 
 #include "tidop/geometry/primitives/Point.h"
@@ -38,7 +50,21 @@ namespace tl
 
 
 /*!
- * \brief 3D multi-polyline graphic class
+ * \class GMultiLineString3D
+ * \brief 3D multi-line string graphic entity.
+ *
+ * This class wraps a 3D multi-line string geometry (`MultiLineString<Point3d>`)
+ * and provides the necessary interface for rendering via a `Painter`. It also
+ * implements the `clone()` method and computes the 2D bounding window of the
+ * projected multi-line string collection.
+ *
+ * ### Example
+ * \code
+ * MultiLineString<Point3d> mls = ...;
+ * GMultiLineString3D gmls(mls);
+ * gmls.setPen(Pen(Color::Green, 1.5));
+ * painter.draw(gmls);
+ * \endcode
  */
 class TL_EXPORT GMultiLineString3D
   : public GraphicEntity
@@ -50,56 +76,83 @@ private:
 public:
 
     /*!
-     * \brief Default constructor
+     * \brief Default constructor.
+     * Constructs an empty 3D multi-line string graphic entity.
      */
-    GMultiLineString3D() = default;
-
-    explicit GMultiLineString3D(size_t size);
-
-    explicit GMultiLineString3D(const MultiLineString<Point3d> &gMultiLineString3D);
+    GMultiLineString3D();
 
     /*!
-     * \brief Copy constructor
+     * \brief Constructs with a pre-allocated number of polylines.
+     * \param[in] size Initial number of polylines in the collection.
+     */
+    explicit GMultiLineString3D(size_t size);
+
+    /*!
+     * \brief Constructs from a 3D multi-line string.
+     * \param[in] multiLineString The 3D multi-line string geometry.
+     */
+    explicit GMultiLineString3D(const MultiLineString<Point3d> &multiLineString);
+
+    /*!
+     * \brief Copy constructor.
+     * \param[in] gMultiLineString3D Object to copy.
      */
     GMultiLineString3D(const GMultiLineString3D &gMultiLineString3D) = default;
 
     /*!
-     * \brief Move constructor
+     * \brief Move constructor.
+     * \param[in] gMultiLineString3D Object to move.
      */
     GMultiLineString3D(GMultiLineString3D &&gMultiLineString3D) noexcept = default;
 
+    /*! \brief Destructor. */
     ~GMultiLineString3D() override = default;
 
     /*!
-     * \brief Assignment copy operator
+     * \brief Copy assignment operator.
+     * \param[in] gMultiLineString3D Object to copy.
+     * \return Reference to this object.
      */
-    auto operator =(const GMultiLineString3D &gMultiLineString3D) -> GMultiLineString3D& = default;
+    auto operator =(const GMultiLineString3D &gMultiLineString3D) -> GMultiLineString3D & = default;
 
     /*!
-     * \brief Assignment move operator
+     * \brief Move assignment operator.
+     * \param[in] gMultiLineString3D Object to move.
+     * \return Reference to this object.
      */
-    auto operator =(GMultiLineString3D &&gMultiLineString3D) noexcept -> GMultiLineString3D& = default;
+    auto operator =(GMultiLineString3D &&gMultiLineString3D) noexcept -> GMultiLineString3D & = default;
 
+    /*!
+     * \brief Returns a const reference to the underlying multi-line string geometry.
+     * \return Const reference to `MultiLineString<Point3d>`.
+     */
     auto geometry() const -> const MultiLineString<Point3d> & { return mGeometry; }
+
+    /*!
+     * \brief Returns a mutable reference to the underlying multi-line string geometry.
+     * \return Reference to `MultiLineString<Point3d>`.
+     */
     auto geometry() -> MultiLineString<Point3d> & { return mGeometry; }
 
-    auto isMultiEntity() const -> bool override;
-    auto isSimpleEntity() const -> bool override;
+    /*!
+     * \brief Computes the 2D bounding window of the projected multi-line string collection.
+     * \return A `BoundingBox<Point2d>` enclosing the multi-line string.
+     */
     auto window() const -> BoundingBox<Point2d> override;
+
+    /*!
+     * \brief Renders the multi-line string collection using the given painter.
+     * \param[in] painter The painter used for rendering.
+     */
     void draw(Painter &painter) const override;
+
+    /*!
+     * \brief Creates a deep copy of this graphic entity.
+     * \return A unique pointer to the cloned object.
+     */
     auto clone() const -> std::unique_ptr<GraphicEntity> override;
 };
 
-
-inline auto GMultiLineString3D::isMultiEntity() const -> bool
-{
-    return true;
-}
-
-inline auto GMultiLineString3D::isSimpleEntity() const -> bool
-{
-    return false;
-}
-
+/*! \} */
 
 } // namespace tl

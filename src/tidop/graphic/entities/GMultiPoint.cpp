@@ -29,6 +29,10 @@
 namespace tl
 {
 
+GMultiPoint::GMultiPoint()
+  : GraphicEntity(GraphicEntity::Type::multipoint_2d)
+{
+}
 
 GMultiPoint::GMultiPoint(size_t size)
   : mGeometry(size),

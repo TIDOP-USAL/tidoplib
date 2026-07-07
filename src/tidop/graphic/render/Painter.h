@@ -22,6 +22,19 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file Painter.h
+ * \brief High-level drawing interface for 2D geometric primitives.
+ *
+ * This file defines the `Painter` class, which provides a unified interface
+ * for rendering geometric primitives onto a `Canvas`. The `Painter` applies
+ * an affine transformation to all geometries before drawing, and manages
+ * default visual styles. It is the primary entry point for rendering graphic
+ * entities and raw geometries.
+ *
+ * \ingroup Graphics
+ * \see tl::Canvas, tl::GraphicStyle, tl::Affine
+ */
+
 #pragma once
 
 #include "tidop/config.h"
@@ -54,108 +67,125 @@ class GraphicStyle;
 
 /*!
  * \class Painter
- * \brief High-level interface for rendering vector geometries on a canvas.
+ * \brief High-level drawing interface for 2D geometries.
  *
- * The `Painter` class provides a convenient API for drawing 2D geometries such as points,
- * polylines, polygons, and text onto a `Canvas` surface. It inherits from `GraphicStyle`,
- * so it can carry styling information (pen, brush, symbol, label) directly or through
- * an internal style stack.
+ * The `Painter` class is the main entry point for rendering geometric primitives.
+ * It holds a reference to a `Canvas` and applies an affine transformation to all
+ * geometries before passing them to the canvas's low-level drawing methods.
+ * It also manages a default visual style and resolves style overrides from
+ * individual `GraphicEntity` objects.
  *
- * This class delegates the actual drawing to the underlying canvas implementation, applying
- * style and optional coordinate transformations.
+ * ### Example
+ * \code
+ * CanvasCV canvas(Size<int>(800, 600));
+ * Painter painter(canvas);
+ *
+ * // Set a default style
+ * painter.setDefaultStyle(GraphicStyle().setPen(Pen(Color::Blue, 2.0)));
+ *
+ * // Draw a point with custom style
+ * GPoint point(10, 20);
+ * point.setSymbol(Symbol(Symbol::Type::Circle, 10.0));
+ * painter.drawPoint(point);
+ *
+ * // Draw a raw polygon
+ * Polygon<Point2d> poly = ...;
+ * painter.drawPolygon(poly);
+ * \endcode
  *
  * \see Canvas, GraphicStyle, Affine
  */
 class TL_EXPORT Painter
-  //: public GraphicStyle
 {
+
+protected:
+
+    Affine<double, 2> mTransform;
+    Canvas &mCanvas;
+    GraphicStyle mDefaultStyle;
 
 public:
 
     /*!
-     * \brief Default constructor.
-     */
-    Painter();
-
-    /*!
      * \brief Constructs a painter for the given canvas.
-     * \param[in] canvas Canvas to draw on.
+     * \param[in] canvas Reference to the canvas where drawing operations are performed.
      */
-    Painter(Canvas *canvas);
-
-    Painter(const Painter &painter) = delete;
-    Painter(Painter &&painter) = delete;
-    Painter &operator = (const Painter &painter) = delete;
-    Painter &operator = (Painter &&painter) = delete;
+    Painter(Canvas &canvas);
 
     ~Painter();
 
-    ///*!
-    // * \brief Begins a new drawing session on the given canvas.
-    // * \param[in] canvas Target canvas.
-    // */
-    //void begin(Canvas *canvas) { unusedParameter(canvas); }
+    TL_DISABLE_COPY_AND_MOVE(Painter)
 
-    ///*!
-    // * \brief Ends the current drawing session.
-    // */
-    //void end() {}
+        /*!
+         * \brief Draws a point graphic entity.
+         * \param[in] point The point graphic entity.
+         */
+        void drawPoint(const GPoint &point);
 
     /*!
-     * \brief Draws a point.
-     * \param[in] point Point geometry.
-     */
-    void drawPoint(const GPoint &point);
-
-    /*!
-     * \brief Draws a point using raw coordinates.
+     * \brief Draws a point from raw coordinates.
      * \param[in] point 2D point.
      */
     void drawPoint(const Point2d &point) const;
 
     /*!
-     * \brief Draws a polyline geometry.
-     * \param[in] lineString Polyline.
+     * \brief Draws a polyline graphic entity.
+     * \param[in] lineString The polyline graphic entity.
      */
     void drawLineString(const GLineString &lineString) const;
 
     /*!
-     * \brief Draws a polyline from raw 2D points.
-     * \param[in] lineString Polyline.
+     * \brief Draws a polyline from raw points.
+     * \param[in] lineString The polyline.
      */
     void drawLineString(const LineString<Point2d> &lineString) const;
 
     /*!
-     * \brief Draws a polygon geometry.
-     * \param[in] polygon Polygon.
+     * \brief Draws a polygon graphic entity.
+     * \param[in] polygon The polygon graphic entity.
      */
     void drawPolygon(const GPolygon &polygon) const;
 
     /*!
-     * \brief Draws a polygon from raw 2D coordinates.
-     * \param[in] polygon Polygon.
+     * \brief Draws a polygon from raw points.
+     * \param[in] polygon The polygon.
      */
     void drawPolygon(const Polygon<Point2d> &polygon) const;
 
     /*!
-     * \brief Draws a multipoint geometry.
-     * \param[in] multipoint Multipoint object.
+     * \brief Draws a multi-point graphic entity.
+     * \param[in] multipoint The multi-point graphic entity.
      */
     void drawMultiPoint(const GMultiPoint &multipoint) const;
+
+    /*!
+     * \brief Draws a multi-point from raw points.
+     * \param[in] multipoint The multi-point.
+     */
     void drawMultiPoint(const MultiPoint<Point2d> &multipoint) const;
 
     /*!
-     * \brief Draws a multilinestring geometry.
-     * \param[in] multiLineString Multi-line object.
+     * \brief Draws a multi-line string graphic entity.
+     * \param[in] multiLineString The multi-line string graphic entity.
      */
     void drawMultiLineString(const GMultiLineString &multiLineString) const;
+
+    /*!
+     * \brief Draws a multi-line string from raw geometry.
+     * \param[in] multiLineString The multi-line string.
+     */
     void drawMultiLineString(const MultiLineString<Point2d> &multiLineString) const;
 
     /*!
-     * \brief Draws a multipolygon geometry.
-     * \param[in] multiPolygon Multi-polygon object.
+     * \brief Draws a multi-polygon graphic entity.
+     * \param[in] multiPolygon The multi-polygon graphic entity.
      */
     void drawMultiPolygon(const GMultiPolygon &multiPolygon) const;
+
+    /*!
+     * \brief Draws a multi-polygon from raw geometry.
+     * \param[in] multiPolygon The multi-polygon.
+     */
     void drawMultiPolygon(const MultiPolygon<Point2d> &multiPolygon) const;
 
 #ifdef TL_HAVE_OPENCV
@@ -167,57 +197,32 @@ public:
 #endif // TL_HAVE_OPENCV
 
     /*!
-     * \brief Draws a text string at a specified position.
-     * \param[in] point Insertion point.
-     * \param[in] text Text to render.
+     * \brief Draws text at a specified position.
+     * \param[in] point Anchor point for the text.
+     * \param[in] text  Text string to render.
+     * \note Currently not implemented.
      */
-    void drawText(const Point2d &point, const std::string &text) const;
+    void drawText(const Point2d &point, std::string_view text) const;
 
     /*!
-     * \brief Sets the canvas used for drawing operations.
-     *
-     * This assigns the target canvas on which all subsequent drawing commands will be rendered.
-     * The canvas must remain valid during the lifetime of the painter session.
-     *
-     * \param[in] canvas Pointer to the target canvas.
+     * \brief Sets the affine transformation applied to all drawing operations.
+     * \param[in] affine 2D affine transformation.
      */
-    void setCanvas(Canvas *canvas);
-
-    /*!
-     * \brief Pushes a new style onto the style stack.
-     * \param[in] style Graphic style to apply.
-     */
-    //void pushStyle(const GraphicStyle &style);
-
-    /*!
-     * \brief Pops the last style from the style stack.
-     */
-    //void popStyle();
-
-    /*!
-     * \brief Sets the affine transform applied to all drawing operations.
-     * \param[in] affine Affine 2D transformation.
-     */
-    void setTransform(const Affine<double, 2> &affine);
+    void setTransform(Affine<double, 2> affine);
 
     //void drawImage(const RasterGraphics &image, const geometry::WindowI &w);
     //void drawImage(const RasterGraphics &image, Helmert2D<geometry::Point<int>> *trf);
 
 private:
 
-   auto resolvedStyle(const GraphicStyle &entityStyle) const -> GraphicStyle;
-   void drawImpl(const Point2d &geometry, const GraphicStyle &style) const;
-   void drawImpl(const LineString<Point2d> &geometry, const GraphicStyle &style) const;
-   void drawImpl(const Polygon<Point2d> &geometry, const GraphicStyle &style) const;
-   void drawImpl(const MultiPoint<Point2d> &geometry, const GraphicStyle &style) const;
-   void drawImpl(const MultiLineString<Point2d> &geometry, const GraphicStyle &style) const;
-   void drawImpl(const MultiPolygon<Point2d> &geometry, const GraphicStyle &style) const;
-
-protected:
-
-    Affine<double, 2> mTransform;
-    Canvas *mCanvas;
-    GraphicStyle mDefaultStyle;
+    [[nodiscard]]
+    auto resolveStyle(const GraphicStyle &entityStyle) const -> GraphicStyle;
+    void drawImpl(const Point2d &geometry, const GraphicStyle &style) const;
+    void drawImpl(const LineString<Point2d> &geometry, const GraphicStyle &style) const;
+    void drawImpl(const Polygon<Point2d> &geometry, const GraphicStyle &style) const;
+    void drawImpl(const MultiPoint<Point2d> &geometry, const GraphicStyle &style) const;
+    void drawImpl(const MultiLineString<Point2d> &geometry, const GraphicStyle &style) const;
+    void drawImpl(const MultiPolygon<Point2d> &geometry, const GraphicStyle &style) const;
 
 };
 

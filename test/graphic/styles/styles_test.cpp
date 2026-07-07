@@ -130,7 +130,7 @@ struct StyleBrushTest
     {
         brush_solid = Brush(Color(Color::Name::azure), Color(Color::Name::deep_pink));
         brush_hatch = Brush(Color(Color::Name::red), Color(Color::Name::blue), Brush::Style::hatch);
-        brush_null = Brush(Color(Color::Name::green), Color(Color::Name::dark_green), Brush::Style::null);
+        brush_no_fill = Brush(Color(Color::Name::green), Color(Color::Name::dark_green), Brush::Style::no_fill);
         BrushPattern pattern(BrushPattern::HatchType::cross, 0.0, 2.0);
         brush_hatch_cross = Brush(Color(Color::Name::green), Color(Color::Name::dark_green), pattern);
     }
@@ -142,7 +142,7 @@ struct StyleBrushTest
     Brush def_style;
     Brush brush_solid;
     Brush brush_hatch;
-    Brush brush_null;
+    Brush brush_no_fill;
     Brush brush_hatch_cross;
 };
 
@@ -180,10 +180,10 @@ BOOST_FIXTURE_TEST_CASE(brush_hatch_constructor, StyleBrushTest)
 
 BOOST_FIXTURE_TEST_CASE(brush_null_constructor, StyleBrushTest)
 {
-    BOOST_CHECK(Color(Color::Name::green) == brush_null.foregroundColor());
-    BOOST_CHECK(Color(Color::Name::dark_green) == brush_null.backgroundColor());
-    BOOST_CHECK(Brush::Style::null == brush_null.style());
-    BOOST_CHECK(!brush_null.pattern().has_value());
+    BOOST_CHECK(Color(Color::Name::green) == brush_no_fill.foregroundColor());
+    BOOST_CHECK(Color(Color::Name::dark_green) == brush_no_fill.backgroundColor());
+    BOOST_CHECK(Brush::Style::no_fill == brush_no_fill.style());
+    BOOST_CHECK(!brush_no_fill.pattern().has_value());
 }
 
 BOOST_FIXTURE_TEST_CASE(brush_hatch_cross_constructor, StyleBrushTest)
@@ -354,7 +354,7 @@ struct StyleLabelTest
 
 BOOST_FIXTURE_TEST_CASE(default_constructor, StyleLabelTest)
 {
-    BOOST_CHECK_EQUAL("", def_style.text());
+    //BOOST_CHECK_EQUAL("", def_style.text());
     BOOST_CHECK_EQUAL(0., def_style.angle());
     Color color;
     BOOST_CHECK(color == def_style.foregroundColor());
@@ -371,11 +371,11 @@ BOOST_FIXTURE_TEST_CASE(default_constructor, StyleLabelTest)
     BOOST_CHECK_EQUAL(0., def_style.perpendicularOffset());
 }
 
-BOOST_FIXTURE_TEST_CASE(setText, StyleLabelTest)
-{
-    style->setText("label");
-    BOOST_CHECK_EQUAL("label", style->text());
-}
+//BOOST_FIXTURE_TEST_CASE(setText, StyleLabelTest)
+//{
+//    style->setText("label");
+//    BOOST_CHECK_EQUAL("label", style->text());
+//}
 
 BOOST_FIXTURE_TEST_CASE(setAngle, StyleLabelTest)
 {

@@ -28,6 +28,11 @@
 namespace tl
 {
 
+GLineString3D::GLineString3D()
+    : GraphicEntity(GraphicEntity::Type::linestring_3d)
+{
+}
+
 GLineString3D::GLineString3D(size_t size)
   : mGeometry(size),
     GraphicEntity(GraphicEntity::Type::linestring_3d)

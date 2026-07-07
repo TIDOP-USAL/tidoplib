@@ -29,6 +29,11 @@
 namespace tl
 {
 
+GMultiPoint3D::GMultiPoint3D()
+  : GraphicEntity(GraphicEntity::Type::multipoint_3d)
+{
+}
+
 GMultiPoint3D::GMultiPoint3D(size_t size)
   : mGeometry(size),
     GraphicEntity(GraphicEntity::Type::multipoint_3d)

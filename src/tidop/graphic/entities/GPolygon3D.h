@@ -22,6 +22,17 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file GPolygon3D.h
+ * \brief 3D polygon graphic entity for rendering.
+ *
+ * This file defines the `GPolygon3D` class, which represents a 3D polygon
+ * as a graphic entity that can be rendered using a `Painter`. It inherits from
+ * `GraphicEntity` and stores a 3D polygon geometry (`Polygon<Point3d>`).
+ *
+ * \ingroup GraphicEntities
+ * \see tl::GraphicEntity, tl::Polygon, tl::Point3d
+ */
+
 #pragma once
 
 #include "tidop/geometry/primitives/Point.h"
@@ -40,7 +51,22 @@ class Painter;
 
 
 /*!
- * \brief 3D polygon graphics class
+ * \class GPolygon3D
+ * \brief 3D polygon graphic entity.
+ *
+ * This class wraps a 3D polygon geometry (`Polygon<Point3d>`) and provides
+ * the necessary interface for rendering via a `Painter`. It also implements
+ * the `clone()` method and computes the 2D window (bounding box) of the
+ * projected polygon.
+ *
+ * ### Example
+ * \code
+ * Polygon<Point3d> poly = ...;
+ * GPolygon3D gpoly(poly);
+ * gpoly.setPen(Pen(Color::Blue, 2.0));
+ * gpoly.setBrush(Brush(Color::Red));
+ * painter.draw(gpoly);
+ * \endcode
  */
 class TL_EXPORT GPolygon3D
   : public GraphicEntity
@@ -53,16 +79,20 @@ private:
 public:
 
     /*!
-     * \brief Default constructor
+     * \brief Default constructor.
+     * Constructs an empty 3D polygon graphic entity.
      */
-    GPolygon3D() = default;
+    GPolygon3D();
 
+    /*!
+     * \brief Constructs a polygon with a pre-allocated number of vertices.
+     * \param[in] size Initial number of vertices (outer ring size).
+     */
     explicit GPolygon3D(size_t size);
 
     /*!
-     * \brief Constructor from a 3D polygon
-     * \param[in] polygon Polygon object
-     * \see Polygon3D
+     * \brief Constructs from a 3D polygon.
+     * \param[in] polygon The 3D polygon geometry.
      */
     explicit GPolygon3D(const Polygon<Point3d> &polygon);
 
@@ -72,50 +102,54 @@ public:
      */
     GPolygon3D(const GPolygon3D &gPolygon3D) = default;
 
-    /*!
-     * \brief Move Constructor
-     * \param[in] gPolygon3D GPolygon object that moves
-     */
-    GPolygon3D(GPolygon3D &&gPolygon3D) noexcept = default;
-
     ~GPolygon3D() override = default;
 
     /*!
-     * \brief Copy assignment operator
-     * \param[in] gPolygon3D Object to be copied
-     * \return Object reference
+     * \brief Copy assignment operator.
+     * \param[in] gPolygon3D Object to copy.
+     * \return Reference to this object.
      */
-    auto operator =(const GPolygon3D& gPolygon3D) -> GPolygon3D& = default;
+    auto operator =(const GPolygon3D &gPolygon3D) -> GPolygon3D & = default;
 
     /*!
-     * \brief Move assignment operator
-     * \param[in] gPolygon3D GPolygon object that moves
-     * \return Object reference
+     * \brief Move assignment operator.
+     * \param[in] gPolygon3D Object to move.
+     * \return Reference to this object.
      */
-    auto operator =(GPolygon3D&& gPolygon3D) noexcept -> GPolygon3D& = default;
+    auto operator =(GPolygon3D &&gPolygon3D) noexcept -> GPolygon3D & = default;
 
+    /*!
+     * \brief Returns a const reference to the underlying polygon geometry.
+     * \return Const reference to `Polygon<Point3d>`.
+     */
     auto geometry() const -> const Polygon<Point3d> & { return mGeometry; }
+
+    /*!
+     * \brief Returns a mutable reference to the underlying polygon geometry.
+     * \return Reference to `Polygon<Point3d>`.
+     */
     auto geometry() -> Polygon<Point3d> & { return mGeometry; }
 
-    auto isMultiEntity() const -> bool override;
-    auto isSimpleEntity() const -> bool override;
+    /*!
+     * \brief Computes the 2D bounding box (window) of the projected polygon.
+     * \return A `BoundingBox<Point2d>` representing the window extent.
+     */
     auto window() const -> BoundingBox<Point2d> override;
+
+    /*!
+     * \brief Renders the polygon using the given painter.
+     * \param[in] painter The painter used for rendering.
+     */
     void draw(Painter &painter) const override;
+
+    /*!
+     * \brief Creates a deep copy of this graphic entity.
+     * \return A unique pointer to the cloned object.
+     */
     auto clone() const -> std::unique_ptr<GraphicEntity> override;
 };
 
 
-inline auto GPolygon3D::isMultiEntity() const -> bool
-{
-    return false;
-}
-
-inline auto GPolygon3D::isSimpleEntity() const -> bool
-{
-    return true;
-}
-
-
-/*! \} */ // Fin GraphicEntities
+/*! \} */ // GraphicEntities
 
 } // namespace tl

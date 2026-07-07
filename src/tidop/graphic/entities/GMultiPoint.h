@@ -22,6 +22,17 @@
  *                                                                        *
  **************************************************************************/
 
+/*! \file GMultiPoint.h
+ * \brief 2D multi-point graphic entity for rendering.
+ *
+ * This file defines the `GMultiPoint` class, which represents a collection
+ * of 2D points as a graphic entity that can be rendered using a `Painter`.
+ * It inherits from `GraphicEntity` and stores a `MultiPoint<Point<double>>` geometry.
+ *
+ * \ingroup GraphicEntities
+ * \see tl::GraphicEntity, tl::MultiPoint, tl::Point2d
+ */
+
 #pragma once
 
 #include "tidop/geometry/primitives/MultiPoint.h"
@@ -39,7 +50,21 @@ class Painter;
  */
 
 /*!
- * \brief Multi-point graphic class
+ * \class GMultiPoint
+ * \brief 2D multi-point graphic entity.
+ *
+ * This class wraps a 2D multi-point geometry (`MultiPoint<Point<double>>`) and
+ * provides the necessary interface for rendering via a `Painter`. It also
+ * implements the `clone()` method and computes the bounding window of the
+ * multi-point collection.
+ *
+ * ### Example
+ * \code
+ * MultiPoint<Point2d> mp = {Point2d{10.0, 20.0}, Point2d{30.0, 40.0}, Point2d{50.0, 60.0}};
+ * GMultiPoint gmp(mp);
+ * gmp.setSymbol(Symbol(Symbol::Type::Square, 6.0));
+ * painter.draw(gmp);
+ * \endcode
  */
 class TL_EXPORT GMultiPoint
   : public GraphicEntity
@@ -50,39 +75,85 @@ private:
 
 public:
 
-    GMultiPoint() = default;
+    /*!
+     * \brief Default constructor.
+     * Constructs an empty 2D multi-point graphic entity.
+     */
+    GMultiPoint();
+
+    /*!
+     * \brief Constructs with a pre-allocated number of points.
+     * \param[in] size Initial number of points in the collection.
+     */
     explicit GMultiPoint(size_t size);
+
+    /*!
+     * \brief Constructs from a 2D multi-point.
+     * \param[in] multiPoint The 2D multi-point geometry.
+     */
     explicit GMultiPoint(const MultiPoint<Point<double>> &multiPoint);
+
+    /*!
+     * \brief Copy constructor.
+     * \param[in] gMultiPoint Object to copy.
+     */
     GMultiPoint(const GMultiPoint &gMultiPoint) = default;
+
+    /*!
+     * \brief Move constructor.
+     * \param[in] gMultiPoint Object to move.
+     */
     GMultiPoint(GMultiPoint &&gMultiPoint) noexcept = default;
+
     ~GMultiPoint() override = default;
 
-    auto operator =(const GMultiPoint& gMultiPoint) -> GMultiPoint& = default;
-    auto operator =(GMultiPoint &&gMultiPoint) noexcept -> GMultiPoint& = default;
+    /*!
+     * \brief Copy assignment operator.
+     * \param[in] gMultiPoint Object to copy.
+     * \return Reference to this object.
+     */
+    auto operator =(const GMultiPoint &gMultiPoint) -> GMultiPoint & = default;
 
+    /*!
+     * \brief Move assignment operator.
+     * \param[in] gMultiPoint Object to move.
+     * \return Reference to this object.
+     */
+    auto operator =(GMultiPoint &&gMultiPoint) noexcept -> GMultiPoint & = default;
+
+    /*!
+     * \brief Returns a const reference to the underlying multi-point geometry.
+     * \return Const reference to `MultiPoint<Point<double>>`.
+     */
     auto geometry() const -> const MultiPoint<Point<double>> & { return mGeometry; }
+
+    /*!
+     * \brief Returns a mutable reference to the underlying multi-point geometry.
+     * \return Reference to `MultiPoint<Point<double>>`.
+     */
     auto geometry() -> MultiPoint<Point<double>> & { return mGeometry; }
 
-    auto isMultiEntity() const -> bool override;
-    auto isSimpleEntity() const -> bool override;
-    auto window() const ->BoundingBox<Point2d> override;
+    /*!
+     * \brief Computes the 2D bounding window of the multi-point collection.
+     * \return A `BoundingBox<Point2d>` enclosing the multi-point.
+     */
+    auto window() const -> BoundingBox<Point2d> override;
+
+    /*!
+     * \brief Renders the multi-point collection using the given painter.
+     * \param[in] painter The painter used for rendering.
+     */
     void draw(Painter &painter) const override;
+
+    /*!
+     * \brief Creates a deep copy of this graphic entity.
+     * \return A unique pointer to the cloned object.
+     */
     auto clone() const -> std::unique_ptr<GraphicEntity> override;
 };
 
 
-inline auto GMultiPoint::isMultiEntity() const -> bool
-{
-    return true;
-}
-
-inline auto GMultiPoint::isSimpleEntity() const -> bool
-{
-    return false;
-}
-
-
-/*! \} */ // Fin GraphicEntities
+/*! \} */
 
 } // namespace tl
 
