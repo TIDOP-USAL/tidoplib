@@ -53,6 +53,407 @@ TL_DEFAULT_WARNINGS
 namespace tl
 {
 
+void writePoint2D(OGRFeature *ogrFeature, const GPoint *gPoint)
+{
+    try {
+
+        OGRPoint ogr_point;
+
+        auto &geometry = gPoint->geometry();
+        ogr_point.setX(geometry.x());
+        ogr_point.setY(geometry.y());
+
+        auto ogr_err = ogrFeature->SetGeometry(&ogr_point);
+
+        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
+}
+
+void writePoint3D(OGRFeature *ogrFeature, const GPoint3D *gPoint3D)
+{
+    try {
+
+        OGRPoint ogr_point;
+
+        auto &geometry = gPoint3D->geometry();
+        ogr_point.setX(geometry.x());
+        ogr_point.setY(geometry.y());
+        ogr_point.setZ(geometry.z());
+
+        auto ogr_err = ogrFeature->SetGeometry(&ogr_point);
+
+        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
+}
+
+void writeLineString2D(OGRFeature *ogrFeature, const GLineString *gLineString)
+{
+
+    try {
+
+        OGRLineString ogr_line_string;
+
+        const auto &geometry = gLineString->geometry();
+
+        for (const auto &point : geometry) {
+            OGRPoint pt(point.x(), point.y());
+            ogr_line_string.addPoint(&pt);
+        }
+
+        auto ogr_err = ogrFeature->SetGeometry(&ogr_line_string);
+
+        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
+
+}
+
+void writeLineString3D(OGRFeature *ogrFeature, const GLineString3D *gLineString3D)
+{
+    try {
+
+        OGRLineString ogr_line_string;
+
+        for (const auto &point : gLineString3D->geometry()) {
+            OGRPoint pt(point.x(), point.y(), point.z());
+            ogr_line_string.addPoint(&pt);
+        }
+
+        auto ogr_err = ogrFeature->SetGeometry(&ogr_line_string);
+
+        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
+}
+
+void writePolygon2D(OGRFeature *ogrFeature, const GPolygon *gPolygon)
+{
+    try {
+
+        OGRPolygon ogr_polygon;
+        OGRLinearRing ogr_linear_ring;
+
+        const auto &geometry = gPolygon->geometry();
+
+        for (const auto &point : geometry.outer()) {
+            OGRPoint pt(point.x(), point.y());
+            ogr_linear_ring.addPoint(&pt);
+        }
+        ogr_linear_ring.closeRings();
+
+        auto ogr_err = ogr_polygon.addRing(&ogr_linear_ring);
+
+        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+
+        for (size_t i = 0; i < geometry.numInners(); i++) {
+            auto &hole = geometry.inner(i);
+            OGRLinearRing ogr_inner_linear_ring;
+
+            for (const auto &point : hole) {
+                OGRPoint pt(point.x(), point.y());
+                ogr_inner_linear_ring.addPoint(&pt);
+            }
+            ogr_inner_linear_ring.closeRings();
+
+            ogr_err = ogr_polygon.addRing(&ogr_inner_linear_ring);
+
+            TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+        }
+
+        ogr_err = ogrFeature->SetGeometry(&ogr_polygon);
+
+        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
+}
+
+void writePolygon3D(OGRFeature *ogrFeature, const GPolygon3D *gPolygon3D)
+{
+    try {
+
+        OGRPolygon ogr_polygon;
+        OGRLinearRing ogr_linear_ring;
+
+        const auto &geometry = gPolygon3D->geometry();
+
+        for (const auto &point : geometry.outer()) {
+            OGRPoint pt(point.x(), point.y(), point.z());
+            ogr_linear_ring.addPoint(&pt);
+        }
+        ogr_linear_ring.closeRings();
+
+        auto ogr_err = ogr_polygon.addRing(&ogr_linear_ring);
+
+        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+
+        for (size_t i = 0; i < geometry.numInners(); i++) {
+
+            auto hole = geometry.inner(i);
+            OGRLinearRing inner_linear_ring;
+
+            for (const auto &point : hole) {
+                OGRPoint pt(point.x(), point.y(), point.z());
+                inner_linear_ring.addPoint(&pt);
+            }
+            inner_linear_ring.closeRings();
+
+            ogr_err = ogr_polygon.addRing(&inner_linear_ring);
+
+            TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+        }
+
+        ogr_err = ogrFeature->SetGeometry(&ogr_polygon);
+
+        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
+}
+
+void writeMultiPoint2D(OGRFeature *ogrFeature, const GMultiPoint *gMultiPoint)
+{
+    try {
+
+        OGRMultiPoint ogr_multi_point;
+
+        const auto &geometry = gMultiPoint->geometry();
+
+        for (auto &point : geometry) {
+            OGRPoint ogrPoint;
+            ogrPoint.setX(point.x());
+            ogrPoint.setY(point.y());
+
+            auto ogr_err = ogr_multi_point.addGeometry(&ogrPoint);
+            TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+        }
+
+        auto ogr_err = ogrFeature->SetGeometry(&ogr_multi_point);
+
+        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
+}
+
+void writeMultiPoint3D(OGRFeature *ogrFeature, const GMultiPoint3D *gMultiPoint3D)
+{
+    try {
+
+        OGRMultiPoint ogr_multi_point;
+
+        const auto &geometry = gMultiPoint3D->geometry();
+
+        for (auto &point : geometry) {
+
+            OGRPoint ogr_point;
+            ogr_point.setX(point.x());
+            ogr_point.setY(point.y());
+            ogr_point.setZ(point.z());
+
+            auto ogr_err = ogr_multi_point.addGeometry(&ogr_point);
+
+            TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+
+        }
+
+        auto ogr_err = ogrFeature->SetGeometry(&ogr_multi_point);
+
+        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
+}
+
+void writeMultiLineString2D(OGRFeature *ogrFeature, const GMultiLineString *gMultiLineString)
+{
+    try {
+
+        OGRMultiLineString ogr_multi_line_string;
+
+        const auto &geometry = gMultiLineString->geometry();
+
+        for (auto &line_string : geometry) {
+
+            OGRLineString ogr_line_string;
+            for (const auto &point : line_string) {
+                OGRPoint pt(point.x(), point.y());
+                ogr_line_string.addPoint(&pt);
+            }
+
+            auto ogr_err = ogr_multi_line_string.addGeometry(&ogr_line_string);
+
+            TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+        }
+
+        auto ogr_err = ogrFeature->SetGeometry(&ogr_multi_line_string);
+
+        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
+}
+
+void writeMultiLineString3D(OGRFeature *ogrFeature, const GMultiLineString3D *gMultiLineString3D)
+{
+    try {
+
+        OGRMultiLineString ogr_multi_line_string;
+
+        const auto &geometry = gMultiLineString3D->geometry();
+
+        for (auto &line_string : geometry) {
+
+            OGRLineString ogr_line_string;
+            for (const auto &point : line_string) {
+                OGRPoint pt(point.x(), point.y(), point.z());
+                ogr_line_string.addPoint(&pt);
+            }
+
+            auto ogr_err = ogr_multi_line_string.addGeometry(&ogr_line_string);
+
+            TL_ASSERT(ogr_err == OGRERR_NONE, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+        }
+
+        auto ogr_err = ogrFeature->SetGeometry(&ogr_multi_line_string);
+
+        TL_ASSERT(ogr_err == OGRERR_NONE, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
+}
+
+void writeMultiPolygon2D(OGRFeature *ogrFeature, const GMultiPolygon *gMultiPolygon)
+{
+    try {
+
+        OGRMultiPolygon ogr_multi_polygon;
+
+        const auto &geometry = gMultiPolygon->geometry();
+
+        for (auto &polygon : geometry) {
+
+            OGRPolygon ogr_polygon;
+            OGRLinearRing ogr_linear_ring;
+
+            for (const auto &point : polygon.outer()) {
+                OGRPoint pt(point.x(), point.y());
+                ogr_linear_ring.addPoint(&pt);
+            }
+
+            auto ogr_err = ogr_polygon.addRing(&ogr_linear_ring);
+
+            TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+
+            for (size_t i = 0; i < polygon.numInners(); i++) {
+
+                const auto &hole = polygon.inner(i);
+                OGRLinearRing ogr_inner_linear_ring;
+                for (const auto &point : hole) {
+                    OGRPoint pt(point.x(), point.y());
+                    ogr_inner_linear_ring.addPoint(&pt);
+                }
+
+                ogr_err = ogr_polygon.addRing(&ogr_inner_linear_ring);
+
+                TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+
+            }
+
+            ogr_err = ogr_multi_polygon.addGeometry(&ogr_polygon);
+
+            TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+        }
+
+        auto ogr_err = ogrFeature->SetGeometry(&ogr_multi_polygon);
+
+        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
+}
+
+void writeMultiPolygon3D(OGRFeature *ogrFeature,
+                         const GMultiPolygon3D *gMultiPolygon3D)
+{
+    try {
+
+        OGRMultiPolygon ogr_multi_polygon;
+
+        const auto &geometry = gMultiPolygon3D->geometry();
+
+        for (auto &polygon : geometry) {
+
+            OGRPolygon ogr_polygon;
+            OGRLinearRing ogr_linear_ring;
+
+            for (const auto &point : polygon.outer()) {
+                OGRPoint pt(point.x(), point.y(), point.z());
+                ogr_linear_ring.addPoint(&pt);
+            }
+
+            auto ogr_err = ogr_polygon.addRing(&ogr_linear_ring);
+
+            TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+
+            for (size_t i = 0; i < polygon.numInners(); i++) {
+
+                const auto &hole = polygon.inner(i);
+                OGRLinearRing ogr_inner_linear_ring;
+                for (const auto &point : hole) {
+                    OGRPoint pt(point.x(), point.y(), point.z());
+                    ogr_inner_linear_ring.addPoint(&pt);
+                }
+
+                ogr_err = ogr_polygon.addRing(&ogr_inner_linear_ring);
+
+                TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+            }
+
+            ogr_err = ogr_multi_polygon.addGeometry(&ogr_polygon);
+
+            TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+
+        }
+
+        auto ogr_err = ogrFeature->SetGeometry(&ogr_multi_polygon);
+
+        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+
+    } catch (...) {
+        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
+    }
+}
+
+void writeStyles(OGRStyleMgr *ogrStyleMgr,
+    const GraphicEntity *gStyle)
+{
+    OGRStyleTool *ogr_style_tool = nullptr;
+
+    TL_TODO("Escribir los estilos. Hay que establecer un flag para ver si el estilo está activo");
+
+    delete ogr_style_tool;
+}
+
+
+
 VectorWriterGdal::VectorWriterGdal(Path file)
   : VectorWriterBase(std::move(file)),
     mDataset(nullptr),
@@ -154,7 +555,7 @@ void VectorWriterGdal::write(const GLayer &layer)
 
         OGRLayer *ogr_layer = mDataset->GetLayerByName(layer.name().c_str());
         if (!ogr_layer) {
-            ogr_layer = this->createLayer(layer.name());
+            ogr_layer = this->convertLayer(layer.name());
         }
 
         for (const auto &field : layer.tableFields()) {
@@ -195,22 +596,22 @@ void VectorWriterGdal::write(const GLayer &layer)
 
             switch (entity->type()) {
             case GraphicEntity::Type::point_2d:
-                VectorWriterGdal::writePoint(ogr_feature.get(), dynamic_cast<GPoint *>(entity.get()));
+                writePoint2D(ogr_feature.get(), dynamic_cast<GPoint *>(entity.get()));
                 break;
             case GraphicEntity::Type::point_3d:
-                VectorWriterGdal::writePoint(ogr_feature.get(), dynamic_cast<GPoint3D *>(entity.get()));
+                writePoint3D(ogr_feature.get(), dynamic_cast<GPoint3D *>(entity.get()));
                 break;
             case GraphicEntity::Type::linestring_2d:
-                VectorWriterGdal::writeLineString(ogr_feature.get(), dynamic_cast<GLineString *>(entity.get()));
+                writeLineString2D(ogr_feature.get(), dynamic_cast<GLineString *>(entity.get()));
                 break;
             case GraphicEntity::Type::linestring_3d:
-                VectorWriterGdal::writeLineString(ogr_feature.get(), dynamic_cast<GLineString3D *>(entity.get()));
+                writeLineString3D(ogr_feature.get(), dynamic_cast<GLineString3D *>(entity.get()));
                 break;
             case GraphicEntity::Type::polygon_2d:
-                VectorWriterGdal::writePolygon(ogr_feature.get(), dynamic_cast<GPolygon *>(entity.get()));
+                writePolygon2D(ogr_feature.get(), dynamic_cast<GPolygon *>(entity.get()));
                 break;
             case GraphicEntity::Type::polygon_3d:
-                VectorWriterGdal::writePolygon(ogr_feature.get(), dynamic_cast<GPolygon3D *>(entity.get()));
+                writePolygon3D(ogr_feature.get(), dynamic_cast<GPolygon3D *>(entity.get()));
                 break;
             case GraphicEntity::Type::segment_2d:
             case GraphicEntity::Type::segment_3d:
@@ -219,22 +620,22 @@ void VectorWriterGdal::write(const GLayer &layer)
                 supported_entity = false;
                 break;
             case GraphicEntity::Type::multipoint_2d:
-                VectorWriterGdal::writeMultiPoint(ogr_feature.get(), dynamic_cast<GMultiPoint *>(entity.get()));
+                writeMultiPoint2D(ogr_feature.get(), dynamic_cast<GMultiPoint *>(entity.get()));
                 break;
             case GraphicEntity::Type::multipoint_3d:
-                VectorWriterGdal::writeMultiPoint(ogr_feature.get(), dynamic_cast<GMultiPoint3D *>(entity.get()));
+                writeMultiPoint3D(ogr_feature.get(), dynamic_cast<GMultiPoint3D *>(entity.get()));
                 break;
             case GraphicEntity::Type::multiline_2d:
-                VectorWriterGdal::writeMultiLineString(ogr_feature.get(), dynamic_cast<GMultiLineString *>(entity.get()));
+                writeMultiLineString2D(ogr_feature.get(), dynamic_cast<GMultiLineString *>(entity.get()));
                 break;
             case GraphicEntity::Type::multiline_3d:
-                VectorWriterGdal::writeMultiLineString(ogr_feature.get(), dynamic_cast<GMultiLineString3D *>(entity.get()));
+                writeMultiLineString3D(ogr_feature.get(), dynamic_cast<GMultiLineString3D *>(entity.get()));
                 break;
             case GraphicEntity::Type::multipolygon_2d:
-                VectorWriterGdal::writeMultiPolygon(ogr_feature.get(), dynamic_cast<GMultiPolygon *>(entity.get()));
+                writeMultiPolygon2D(ogr_feature.get(), dynamic_cast<GMultiPolygon *>(entity.get()));
                 break;
             case GraphicEntity::Type::multipolygon_3d:
-                VectorWriterGdal::writeMultiPolygon(ogr_feature.get(), dynamic_cast<GMultiPolygon3D *>(entity.get()));
+                writeMultiPolygon3D(ogr_feature.get(), dynamic_cast<GMultiPolygon3D *>(entity.get()));
                 break;
             case GraphicEntity::Type::circle:
             case GraphicEntity::Type::ellipse:
@@ -247,7 +648,7 @@ void VectorWriterGdal::write(const GLayer &layer)
                 continue;
             }
 
-            VectorWriterGdal::writeStyles(&ogr_style_mgr, entity.get());
+            writeStyles(&ogr_style_mgr, entity.get());
 
             auto ogr_err = ogr_layer->CreateFeature(ogr_feature.get());
             TL_ASSERT(ogr_err == OGRERR_NONE, "Create Feature Error");
@@ -267,17 +668,7 @@ void VectorWriterGdal::setCRS(const std::string &crs)
   }
 }
 
-void VectorWriterGdal::writeStyles(OGRStyleMgr *ogrStyleMgr,
-                                   const GraphicEntity *gStyle)
-{
-    OGRStyleTool *ogr_style_tool = nullptr;
-
-    TL_TODO("Escribir los estilos. Hay que establecer un flag para ver si el estilo está activo");
-
-    delete ogr_style_tool;
-}
-
-auto VectorWriterGdal::createLayer(const std::string &layerName) const -> OGRLayer*
+auto VectorWriterGdal::convertLayer(const std::string &layerName) const -> OGRLayer *
 {
     OGRLayer *layer = nullptr;
 
@@ -292,20 +683,20 @@ auto VectorWriterGdal::createLayer(const std::string &layerName) const -> OGRLay
             if (mDataset->GetLayerCount() == 0) {
                 /// Sólo soportan la creación de una capa con lo cual se añadir siempre a la capa "0"
                 layer = mDataset->CreateLayer("0",
-                                              mSpatialReference,
-                                              static_cast<OGRwkbGeometryType>(wkbUnknown),
-                                              encoding);
+                    mSpatialReference,
+                    static_cast<OGRwkbGeometryType>(wkbUnknown),
+                    encoding);
             }
         } else if (strcmp(driver_name, "SHP") == 0) {
             layer = mDataset->CreateLayer(layerName.c_str(),
-                                          mSpatialReference,
-                                          static_cast<OGRwkbGeometryType>(wkbUnknown),
-                                          encoding);
+                mSpatialReference,
+                static_cast<OGRwkbGeometryType>(wkbUnknown),
+                encoding);
         } else {
             layer = mDataset->CreateLayer(layerName.c_str(),
-                                          mSpatialReference,
-                                          static_cast<OGRwkbGeometryType>(wkbUnknown),
-                                          encoding);
+                mSpatialReference,
+                static_cast<OGRwkbGeometryType>(wkbUnknown),
+                encoding);
         }
 
     } catch (...) {
@@ -315,410 +706,10 @@ auto VectorWriterGdal::createLayer(const std::string &layerName) const -> OGRLay
     return layer;
 }
 
-void VectorWriterGdal::writePoint(OGRFeature *ogrFeature,
-                                  const GPoint *gPoint)
-{
-    try {
-
-        OGRPoint ogr_point;
-
-        auto &geometry = gPoint->geometry();
-        ogr_point.setX(geometry.x());
-        ogr_point.setY(geometry.y());
-
-        auto ogr_err = ogrFeature->SetGeometry(&ogr_point);
-
-        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-
-    } catch (...) {
-        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-    }
-}
-
-void VectorWriterGdal::writePoint(OGRFeature *ogrFeature,
-                                  const GPoint3D *gPoint3D)
-{
-    try {
-
-        OGRPoint ogr_point;
-
-        auto &geometry = gPoint3D->geometry();
-        ogr_point.setX(geometry.x());
-        ogr_point.setY(geometry.y());
-        ogr_point.setZ(geometry.z());
-
-        auto ogr_err = ogrFeature->SetGeometry(&ogr_point);
-
-        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-
-    } catch (...) {
-        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-    }
-}
-
-void VectorWriterGdal::writeLineString(OGRFeature *ogrFeature,
-                                       const GLineString *gLineString)
-{
-
-    try {
-
-        OGRLineString ogr_line_string;
-
-        const auto &geometry = gLineString->geometry();
-
-        for (const auto &point : geometry) {
-            OGRPoint pt(point.x(), point.y());
-            ogr_line_string.addPoint(&pt);
-        }
-
-        auto ogr_err = ogrFeature->SetGeometry(&ogr_line_string);
-
-        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-
-    } catch (...) {
-        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-    }
-
-}
-
-void VectorWriterGdal::writeLineString(OGRFeature *ogrFeature,
-                                       const GLineString3D *gLineString3D)
-{
-    try {
-
-        OGRLineString ogr_line_string;
-
-        for (const auto &point : gLineString3D->geometry()) {
-            OGRPoint pt(point.x(), point.y(), point.z());
-            ogr_line_string.addPoint(&pt);
-        }
-
-        auto ogr_err = ogrFeature->SetGeometry(&ogr_line_string);
-
-        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-
-    } catch (...) {
-        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-    }
-}
-
-void VectorWriterGdal::writePolygon(OGRFeature *ogrFeature,
-                                    const GPolygon *gPolygon)
-{
-    try {
-
-        OGRPolygon ogr_polygon;
-        OGRLinearRing ogr_linear_ring;
-
-        const auto &geometry = gPolygon->geometry();
-
-        for (const auto &point : geometry.outer()) {
-            OGRPoint pt(point.x(), point.y());
-            ogr_linear_ring.addPoint(&pt);
-        }
-        ogr_linear_ring.closeRings();
-
-        auto ogr_err = ogr_polygon.addRing(&ogr_linear_ring);
-
-        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-
-        for (size_t i = 0; i < geometry.numInners(); i++) {
-            auto &hole = geometry.inner(i);
-            OGRLinearRing ogr_inner_linear_ring;
-
-            for (const auto &point : hole) {
-                OGRPoint pt(point.x(), point.y());
-                ogr_inner_linear_ring.addPoint(&pt);
-            }
-            ogr_inner_linear_ring.closeRings();
-
-            ogr_err = ogr_polygon.addRing(&ogr_inner_linear_ring);
-
-            TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-        }
-
-        ogr_err = ogrFeature->SetGeometry(&ogr_polygon);
-
-        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-
-    } catch (...) {
-        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-    }
-}
-
-void VectorWriterGdal::writePolygon(OGRFeature *ogrFeature,
-                                    const GPolygon3D *gPolygon3D)
-{
-    try {
-
-        OGRPolygon ogr_polygon;
-        OGRLinearRing ogr_linear_ring;
-
-        const auto &geometry = gPolygon3D->geometry();
-
-        for (const auto &point : geometry.outer()) {
-            OGRPoint pt(point.x(), point.y(), point.z());
-            ogr_linear_ring.addPoint(&pt);
-        }
-        ogr_linear_ring.closeRings();
-
-        auto ogr_err = ogr_polygon.addRing(&ogr_linear_ring);
-
-        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-
-        for (size_t i = 0; i < geometry.numInners(); i++) {
-
-            auto hole = geometry.inner(i);
-            OGRLinearRing inner_linear_ring;
-
-            for (const auto &point : hole) {
-                OGRPoint pt(point.x(), point.y(), point.z());
-                inner_linear_ring.addPoint(&pt);
-            }
-            inner_linear_ring.closeRings();
-
-            ogr_err = ogr_polygon.addRing(&inner_linear_ring);
-
-            TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-        }
-
-        ogr_err = ogrFeature->SetGeometry(&ogr_polygon);
-
-        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-
-    } catch (...) {
-        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-    }
-}
-
-void VectorWriterGdal::writeMultiPoint(OGRFeature *ogrFeature,
-                                       const GMultiPoint *gMultiPoint)
-{
-    try {
-
-        OGRMultiPoint ogr_multi_point;
-
-        const auto &geometry = gMultiPoint->geometry();
-
-        for (auto &point : geometry) {
-            OGRPoint ogrPoint;
-            ogrPoint.setX(point.x());
-            ogrPoint.setY(point.y());
-
-            auto ogr_err = ogr_multi_point.addGeometry(&ogrPoint);
-            TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-        }
-
-        auto ogr_err = ogrFeature->SetGeometry(&ogr_multi_point);
-
-        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-
-    } catch (...) {
-        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-    }
-}
-
-void VectorWriterGdal::writeMultiPoint(OGRFeature *ogrFeature,
-                                       const GMultiPoint3D *gMultiPoint3D)
-{
-    try {
-
-        OGRMultiPoint ogr_multi_point;
-
-        const auto &geometry = gMultiPoint3D->geometry();
-
-        for (auto &point : geometry) {
-
-            OGRPoint ogr_point;
-            ogr_point.setX(point.x());
-            ogr_point.setY(point.y());
-            ogr_point.setZ(point.z());
-
-            auto ogr_err = ogr_multi_point.addGeometry(&ogr_point);
-
-            TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-
-        }
-
-        auto ogr_err = ogrFeature->SetGeometry(&ogr_multi_point);
-
-        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-
-    } catch (...) {
-        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-    }
-}
-
-void VectorWriterGdal::writeMultiLineString(OGRFeature *ogrFeature,
-                                            const GMultiLineString *gMultiLineString)
-{
-    try {
-
-        OGRMultiLineString ogr_multi_line_string;
-
-        const auto &geometry = gMultiLineString->geometry();
-
-        for (auto &line_string : geometry) {
-
-            OGRLineString ogr_line_string;
-            for (const auto &point : line_string) {
-                OGRPoint pt(point.x(), point.y());
-                ogr_line_string.addPoint(&pt);
-            }
-
-            auto ogr_err = ogr_multi_line_string.addGeometry(&ogr_line_string);
-
-            TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-        }
-
-        auto ogr_err = ogrFeature->SetGeometry(&ogr_multi_line_string);
-
-        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-
-    } catch (...) {
-        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-    }
-}
-
-void VectorWriterGdal::writeMultiLineString(OGRFeature *ogrFeature,
-                                            const GMultiLineString3D *gMultiLineString3D)
-{
-    try {
-
-        OGRMultiLineString ogr_multi_line_string;
-
-        const auto &geometry = gMultiLineString3D->geometry();
-
-        for (auto &line_string : geometry) {
-
-            OGRLineString ogr_line_string;
-            for (const auto &point : line_string) {
-                OGRPoint pt(point.x(), point.y(), point.z());
-                ogr_line_string.addPoint(&pt);
-            }
-
-            auto ogr_err = ogr_multi_line_string.addGeometry(&ogr_line_string);
-
-            TL_ASSERT(ogr_err == OGRERR_NONE, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-        }
-
-        auto ogr_err = ogrFeature->SetGeometry(&ogr_multi_line_string);
-
-        TL_ASSERT(ogr_err == OGRERR_NONE, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-
-    } catch (...) {
-        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-    }
-}
-
-void VectorWriterGdal::writeMultiPolygon(OGRFeature *ogrFeature,
-                                         const GMultiPolygon *gMultiPolygon)
-{
-    try {
-
-        OGRMultiPolygon ogr_multi_polygon;
-
-        const auto &geometry = gMultiPolygon->geometry();
-
-        for (auto &polygon : geometry) {
-
-            OGRPolygon ogr_polygon;
-            OGRLinearRing ogr_linear_ring;
-
-            for (const auto& point : polygon.outer()) {
-                OGRPoint pt(point.x(), point.y());
-                ogr_linear_ring.addPoint(&pt);
-            }
-
-            auto ogr_err = ogr_polygon.addRing(&ogr_linear_ring);
-
-            TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-
-            for (size_t i = 0; i < polygon.numInners(); i++) {
-
-                const auto &hole = polygon.inner(i);
-                OGRLinearRing ogr_inner_linear_ring;
-                for (const auto &point : hole) {
-                    OGRPoint pt(point.x(), point.y());
-                    ogr_inner_linear_ring.addPoint(&pt);
-                }
-
-                ogr_err = ogr_polygon.addRing(&ogr_inner_linear_ring);
-
-                TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-
-            }
-
-            ogr_err = ogr_multi_polygon.addGeometry(&ogr_polygon);
-
-            TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-        }
-
-        auto ogr_err = ogrFeature->SetGeometry(&ogr_multi_polygon);
-
-        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-
-    } catch (...) {
-        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-    }
-}
-
-void VectorWriterGdal::writeMultiPolygon(OGRFeature *ogrFeature,
-                                         const GMultiPolygon3D *gMultiPolygon3D)
-{
-    try {
-
-        OGRMultiPolygon ogr_multi_polygon;
-
-        const auto &geometry = gMultiPolygon3D->geometry();
-
-        for (auto &polygon : geometry) {
-
-            OGRPolygon ogr_polygon;
-            OGRLinearRing ogr_linear_ring;
-
-            for (const auto &point : polygon.outer()){
-                OGRPoint pt(point.x(), point.y(), point.z());
-                ogr_linear_ring.addPoint(&pt);
-            }
-
-            auto ogr_err = ogr_polygon.addRing(&ogr_linear_ring);
-
-            TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-
-            for (size_t i = 0; i < polygon.numInners(); i++) {
-
-                const auto &hole = polygon.inner(i);
-                OGRLinearRing ogr_inner_linear_ring;
-                for (const auto &point : hole){
-                    OGRPoint pt(point.x(), point.y(), point.z());
-                    ogr_inner_linear_ring.addPoint(&pt);
-                }
-
-                ogr_err = ogr_polygon.addRing(&ogr_inner_linear_ring);
-
-                TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-            }
-
-            ogr_err = ogr_multi_polygon.addGeometry(&ogr_polygon);
-
-            TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-
-        }
-
-        auto ogr_err = ogrFeature->SetGeometry(&ogr_multi_polygon);
-
-        TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-
-    } catch (...) {
-        TL_THROW_EXCEPTION_WITH_NESTED("Catched exception");
-    }
-}
-
 void VectorWriterGdal::setGdalProjection(const std::string &crs) const
 {
     OGRErr ogr_err = mSpatialReference->importFromWkt(crs.c_str());
     TL_ASSERT(OGRERR_NONE == ogr_err, "GDAL ERROR ({}): {}", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 }
 
-} // End namespace tl
+} // namespace tl

@@ -74,20 +74,7 @@ public:
 
 private:
 
-    auto createLayer(const std::string &layerName) const -> OGRLayer*;
-    static void writePoint(OGRFeature *ogrFeature, const GPoint *gPoint);
-    static void writePoint(OGRFeature *ogrFeature, const GPoint3D *gPoint3D);
-    static void writeLineString(OGRFeature *ogrFeature, const GLineString *gLineString);
-    static void writeLineString(OGRFeature *ogrFeature, const GLineString3D *gLineString3D);
-    static void writePolygon(OGRFeature *ogrFeature, const GPolygon *gPolygon);
-    static void writePolygon(OGRFeature *ogrFeature, const GPolygon3D *gPolygon3D);
-    static void writeMultiPoint(OGRFeature *ogrFeature, const GMultiPoint *gMultiPoint);
-    static void writeMultiPoint(OGRFeature *ogrFeature, const GMultiPoint3D *gMultiPoint3D);
-    static void writeMultiLineString(OGRFeature *ogrFeature, const GMultiLineString *gMultiLineString);
-    static void writeMultiLineString(OGRFeature *ogrFeature, const GMultiLineString3D *gMultiLineString3D);
-    static void writeMultiPolygon(OGRFeature *ogrFeature, const GMultiPolygon *gMultiPolygon);
-    static void writeMultiPolygon(OGRFeature *ogrFeature, const GMultiPolygon3D *gMultiPolygon3D);
-    static void writeStyles(OGRStyleMgr *ogrStyleMgr, const GraphicEntity *gStyle);
+    auto convertLayer(const std::string &layerName) const -> OGRLayer*;
     void setGdalProjection(const std::string &crs) const;
 
 private:
@@ -105,4 +92,4 @@ private:
 /*! \} */ // end of raster
 
 
-} // End namespace tl
+} // namespace tl
