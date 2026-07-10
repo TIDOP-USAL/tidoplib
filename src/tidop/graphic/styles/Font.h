@@ -38,7 +38,7 @@
 #include <string>
 
 #include "tidop/core/base/Defs.h"
-#include "tidop/core/base/flags.h"
+#include "tidop/core/base/Flags.h"
 
 namespace tl
 {

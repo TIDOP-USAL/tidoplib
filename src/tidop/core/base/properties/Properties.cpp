@@ -29,18 +29,28 @@ namespace tl
 {
 
 Properties::Properties(std::string name)
-    : mName(std::move(name))
+  : mName(std::move(name))
 {
 }
 
-auto Properties::name() const TL_NOEXCEPT -> std::string
+Properties::Properties(const Properties &other)
+  : mName(other.mName)
 {
-    return mName;
+    for (const auto &[key, prop] : other.mProperties) {
+        mProperties[key] = prop->clone();
+    }
 }
 
-void Properties::setName(const std::string &name)
+auto Properties::operator=(const Properties &other) -> Properties &
 {
-    mName = name;
+    if (this != &other) {
+        mProperties.clear();
+        mName = other.mName;
+        for (const auto &[key, prop] : other.mProperties) {
+            mProperties[key] = prop->clone();
+        }
+    }
+    return *this;
 }
 
 auto Properties::getPropertyAsString(const std::string &key) const -> std::string
@@ -52,18 +62,18 @@ auto Properties::getPropertyAsString(const std::string &key) const -> std::strin
     return it->second->toString();
 }
 
-auto Properties::hasProperty(const std::string &key) const -> bool {
+auto Properties::hasProperty(const std::string &key) const -> bool
+{
     return mProperties.find(key) != mProperties.end();
 }
 
-auto Properties::getPropertyType(const std::string &key) const -> Type
+void Properties::print() const
 {
-    auto it = mProperties.find(key);
-    if (it == mProperties.end()) {
-        throw std::out_of_range("Property not found: " + key);
+    std::cout << "Properties: " << mName << std::endl;
+    for (const auto &property : mProperties) {
+        std::cout << "  " << property.first << "   " << property.second->toString() << std::endl;
     }
-    return it->second->type();
 }
 
-} // End namespace tl
+} // namespace tl
 

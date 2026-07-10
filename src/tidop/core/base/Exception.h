@@ -116,7 +116,7 @@ public:
      *
      * \param[in] error The error message describing the exception
      */
-    explicit Exception(std::string error) TL_NOEXCEPT
+    explicit Exception(std::string error) noexcept
       : mError(std::move(error)),
         mFile(""),
         mLine(-1),
@@ -138,7 +138,7 @@ public:
     explicit Exception(std::string error,
                        const std::string &file,
                        int line,
-                       std::string function) TL_NOEXCEPT
+                       std::string function) noexcept
       : mError(std::move(error)),
         mLine(line),
         mFunction(std::move(function))
@@ -147,7 +147,7 @@ public:
         messagef();
     }
 
-    ~Exception() TL_NOEXCEPT override = default;
+    ~Exception() noexcept override = default;
 
     /*!
      * \brief Returns a description of the error.
@@ -156,7 +156,7 @@ public:
      *
      * \return A pointer to the error message.
      */
-    auto what() const TL_NOEXCEPT -> const char* override
+    auto what() const noexcept -> const char* override
     {
         return mMessage.c_str();
     }
@@ -168,7 +168,7 @@ public:
      *
      * \return The name of the file where the error occurred.
      */
-    auto file() const TL_NOEXCEPT -> std::string
+    auto file() const noexcept -> std::string
     {
         return mFile;
     }
@@ -180,7 +180,7 @@ public:
      *
      * \return The name of the function where the error occurred.
      */
-    auto function() const TL_NOEXCEPT -> std::string
+    auto function() const noexcept -> std::string
     {
         return mFunction;
     }
@@ -192,7 +192,7 @@ public:
      *
      * \return The line number where the error occurred.
      */
-    auto line() const TL_NOEXCEPT -> int
+    auto line() const noexcept -> int
     {
         return mLine;
     }

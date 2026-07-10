@@ -28,7 +28,7 @@
 
 #include <opencv2/features2d.hpp>
 
-#include "tidop/core/base/flags.h"
+#include "tidop/core/base/Flags.h"
 #include "tidop/core/base/size.h"
 #include "tidop/core/base/Property.h"
 

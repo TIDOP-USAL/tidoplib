@@ -142,6 +142,7 @@ public:
      * \brief Get the type of this event.
      * \return The event type enumeration value
      */
+    [[nodiscard]]
     virtual auto type() const -> Type = 0;
 
     /*!
@@ -179,6 +180,7 @@ public:
      * \brief Get the type of this event.
      * \return The event type passed in constructor
      */
+    [[nodiscard]]
     auto type() const -> Type override;
 
 private:
@@ -226,6 +228,7 @@ public:
      * \brief Get the image path or URL.
      * \return The stored image path
      */
+    [[nodiscard]]
     auto image() const -> std::string;
 
     /*!

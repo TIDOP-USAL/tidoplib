@@ -42,7 +42,7 @@
 
 #include <algorithm>
 
-#include "tidop/core/base/flags.h"
+#include "tidop/core/base/Flags.h"
 #include "tidop/math/base/Lapack.h"
 #include "tidop/math/algebra/vector/Vector.h"
 #include "tidop/math/numeric/Arithmetic.h"

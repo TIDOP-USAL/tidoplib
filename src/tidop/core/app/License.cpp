@@ -40,77 +40,77 @@ License::License(std::string productName,
     
 }
 
-auto License::productName() const -> std::string
+auto License::productName() const noexcept -> std::string
 {
     return mProductName;
 }
 
-auto License::setProductName(const std::string &productName) -> void
+void License::setProductName(std::string productName) noexcept
 {
-    mProductName = productName;
+    mProductName = std::move(productName);
 }
 
-auto License::licenseName() const -> std::string
+auto License::licenseName() const noexcept -> std::string
 {
     return mLicense;
 }
 
-void License::setLicenseName(const std::string &license)
+void License::setLicenseName(std::string license) noexcept
 {
-    mLicense = license;
+    mLicense = std::move(license);
 }
 
-auto License::licenseText() const -> std::string
+auto License::licenseText() const noexcept -> std::string
 {
     return mLicenseText;
 }
 
-auto License::setLicenseText(const std::string &text) -> void
+void License::setLicenseText(std::string text) noexcept
 {
-    mLicenseText = text;
+    mLicenseText = std::move(text);
 }
 
-auto License::version() const -> std::string
+auto License::version() const noexcept -> std::string
 {
     return mVersion;
 }
 
-auto License::setVersion(const std::string &version) -> void
+void License::setVersion(std::string version) noexcept
 {
-    mVersion = version;
+    mVersion = std::move(version);
 }
 
-auto License::author() const -> std::string
+auto License::author() const noexcept -> std::string
 {
     return mAuthor;
 }
 
-void License::setAuthor(const std::string &author)
+void License::setAuthor(std::string author) noexcept
 {
-    mAuthor = author;
+    mAuthor = std::move(author);
 }
 
-auto License::authorEmail() const -> std::string
+auto License::authorEmail() const noexcept -> std::string
 {
     return mEmail;
 }
 
-auto License::setAuthorEmail(const std::string &authorEmail) -> void
+void License::setAuthorEmail(std::string authorEmail) noexcept
 {
-    mEmail = authorEmail;
+    mEmail = std::move(authorEmail);
 }
 
-auto License::url() const -> std::string
+auto License::url() const noexcept -> std::string
 {
     return mUrl;
 }
 
-auto License::setUrl(const std::string &url) -> void
+void License::setUrl(std::string url) noexcept
 {
-    mUrl = url;
+    mUrl = std::move(url);
 }
 
-auto License::empty() const -> bool
+auto License::empty() const noexcept -> bool
 {
     return mProductName.empty() && mLicenseText.empty();
 }
@@ -123,22 +123,22 @@ AppLicense::AppLicense()
 {
 }
 
-auto AppLicense::begin() TL_NOEXCEPT -> iterator
+auto AppLicense::begin() noexcept -> iterator
 {
     return mThirdPartyLicenses.begin();
 }
 
-auto AppLicense::begin() const TL_NOEXCEPT -> const_iterator
+auto AppLicense::begin() const noexcept -> const_iterator
 {
     return mThirdPartyLicenses.cbegin();
 }
 
-auto AppLicense::end() TL_NOEXCEPT -> iterator
+auto AppLicense::end() noexcept -> iterator
 {
     return mThirdPartyLicenses.end();
 }
 
-auto AppLicense::end() const TL_NOEXCEPT -> const_iterator
+auto AppLicense::end() const noexcept -> const_iterator
 {
     return mThirdPartyLicenses.cend();
 }
@@ -148,28 +148,28 @@ void AppLicense::push_back(const License &license)
     mThirdPartyLicenses.push_back(license);
 }
 
-void AppLicense::push_back(License &&license) TL_NOEXCEPT
+void AppLicense::push_back(License &&license)
 {
     mThirdPartyLicenses.push_back(std::move(license));
 }
 
-void AppLicense::clear() TL_NOEXCEPT
+void AppLicense::clear() noexcept
 {
     mThirdPartyLicenses.clear();
 }
 
 auto AppLicense::erase(const_iterator first,
-                       const_iterator last) -> iterator
+                                 const_iterator last) -> iterator
 {
     return mThirdPartyLicenses.erase(first, last);
 }
 
-auto AppLicense::empty() const TL_NOEXCEPT -> bool
+auto AppLicense::empty() const noexcept -> bool
 {
     return mThirdPartyLicenses.empty();
 }
 
-auto AppLicense::size() const TL_NOEXCEPT -> size_t
+auto AppLicense::size() const noexcept -> size_t
 {
     return mThirdPartyLicenses.size();
 }

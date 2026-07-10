@@ -46,7 +46,7 @@
 #include "tidop/core/base/Path.h"
 #include "tidop/core/base/Exception.h"
 #include "tidop/core/base/Concepts.h"
-#include "tidop/core/base/type.h"
+#include "tidop/core/base/Type.h"
 #include "tidop/math/statistic/base/Series.h"
 
 namespace tl

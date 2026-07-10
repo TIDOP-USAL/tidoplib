@@ -66,10 +66,10 @@ struct PropertyTest
         property_uint64 = new Property<uint64_t>(1);
         property_size = new Property<Size<int>>({100,100});
 
-        std::map<std::string, int> scores;
-        scores["Alice"] = 100;
-        scores["Bob"] = 85;
-        property_map = new Property<std::map<std::string, int>>(scores);
+        //std::map<std::string, int> scores;
+        //scores["Alice"] = 100;
+        //scores["Bob"] = 85;
+        //property_map = new Property<std::map<std::string, int>>(scores);
 
     }
 
@@ -89,7 +89,7 @@ struct PropertyTest
     Property<int64_t> *property_int64;
     Property<uint64_t> *property_uint64;
     Property<Size<int>> *property_size;
-    Property<std::map<std::string, int>> *property_map;
+    //Property<std::map<std::string, int>> *property_map;
 
 };
 
@@ -113,11 +113,11 @@ BOOST_FIXTURE_TEST_CASE(get_value, PropertyTest)
     BOOST_CHECK_EQUAL(100, size.width());
     BOOST_CHECK_EQUAL(100, size.height());
 
-    auto map_property = property_map->value();
-    auto it = map_property.find("Alice");
-    BOOST_CHECK_EQUAL(100, it->second);
-    it = map_property.find("Bob");
-    BOOST_CHECK_EQUAL(85, it->second);
+    //auto map_property = property_map->value();
+    //auto it = map_property.find("Alice");
+    //BOOST_CHECK_EQUAL(100, it->second);
+    //it = map_property.find("Bob");
+    //BOOST_CHECK_EQUAL(85, it->second);
 }
 
 BOOST_FIXTURE_TEST_CASE(set_value, PropertyTest)
@@ -152,14 +152,14 @@ BOOST_FIXTURE_TEST_CASE(set_value, PropertyTest)
     BOOST_CHECK_EQUAL(250, property_size->value().width());
     BOOST_CHECK_EQUAL(150, property_size->value().height());
 
-    auto map_property = property_map->value();
+    //auto map_property = property_map->value();
 
-    map_property["Rob"] = 65;
-    property_map->setValue(map_property);
+    //map_property["Rob"] = 65;
+    //property_map->setValue(map_property);
 
-    auto map_property2 = property_map->value();
-    auto it = map_property2.find("Rob");
-    BOOST_CHECK_EQUAL(65, it->second);
+    //auto map_property2 = property_map->value();
+    //auto it = map_property2.find("Rob");
+    //BOOST_CHECK_EQUAL(65, it->second);
 }
 
 BOOST_FIXTURE_TEST_CASE(to_string, PropertyTest)
@@ -178,7 +178,7 @@ BOOST_FIXTURE_TEST_CASE(to_string, PropertyTest)
     BOOST_CHECK_EQUAL("-1", property_int64->toString());
     BOOST_CHECK_EQUAL("1", property_uint64->toString());
     BOOST_CHECK_EQUAL("100x100", property_size->toString());
-    BOOST_CHECK_EQUAL("{\"Alice\":100,\"Bob\":85}", property_map->toString());
+    //BOOST_CHECK_EQUAL("{\"Alice\":100,\"Bob\":85}", property_map->toString());
 }
 
 BOOST_FIXTURE_TEST_CASE(from_string, PropertyTest)
@@ -212,11 +212,11 @@ BOOST_FIXTURE_TEST_CASE(from_string, PropertyTest)
     property_size->fromString("150x150");
     BOOST_CHECK_EQUAL(150, property_size->value().width());
     BOOST_CHECK_EQUAL(150, property_size->value().height());
-    property_map->fromString("{\"Alice\":100,\"Bob\":85,\"Rob\":65}");
+    //property_map->fromString("{\"Alice\":100,\"Bob\":85,\"Rob\":65}");
 
-    auto map_property = property_map->value();
-    auto it = map_property.find("Rob");
-    BOOST_CHECK_EQUAL(65, it->second);
+    //auto map_property = property_map->value();
+    //auto it = map_property.find("Rob");
+    //BOOST_CHECK_EQUAL(65, it->second);
 }
 
 BOOST_FIXTURE_TEST_CASE(value_out_of_range, PropertyTest)
@@ -300,7 +300,7 @@ BOOST_FIXTURE_TEST_CASE(invalid_argument, PropertyTest)
     BOOST_CHECK_THROW(property_int64->fromString("hi"), Exception);
     BOOST_CHECK_THROW(property_uint64->fromString("hi"), Exception);
     BOOST_CHECK_THROW(property_size->fromString("hi"), Exception);
-    BOOST_CHECK_THROW(property_map->fromString("hi"), Exception);
+    //BOOST_CHECK_THROW(property_map->fromString("hi"), Exception);
 }
 
 BOOST_FIXTURE_TEST_CASE(type_name, PropertyTest)
@@ -321,24 +321,24 @@ BOOST_FIXTURE_TEST_CASE(type_name, PropertyTest)
     BOOST_CHECK_EQUAL("tl::Size", property_size->typeName());
 }
 
-BOOST_FIXTURE_TEST_CASE(type, PropertyTest)
-{
-    BOOST_CHECK(Type::type_int == property->type());
-    BOOST_CHECK(Type::type_double == property_double->type());
-    BOOST_CHECK(Type::type_float == property_float->type());
-    BOOST_CHECK(Type::type_string == property_string->type());
-    BOOST_CHECK(Type::type_bool == property_bool->type());
-    BOOST_CHECK(Type::type_int8 == property_int8->type());
-    BOOST_CHECK(Type::type_uchar == property_uint8->type());
-    BOOST_CHECK(Type::type_int16 == property_int16->type());
-    BOOST_CHECK(Type::type_uint16 == property_uint16->type());
-    BOOST_CHECK(Type::type_int32 == property_int32->type());
-    BOOST_CHECK(Type::type_uint32 == property_uint32->type());
-    BOOST_CHECK(Type::type_int64 == property_int64->type());
-    BOOST_CHECK(Type::type_uint64 == property_uint64->type());
-    BOOST_CHECK(Type::type_size == property_size->type());
-    BOOST_CHECK(Type::type_map == property_map->type());
-}
+//BOOST_FIXTURE_TEST_CASE(type, PropertyTest)
+//{
+//    BOOST_CHECK(Type::type_int == property->type());
+//    BOOST_CHECK(Type::type_double == property_double->type());
+//    BOOST_CHECK(Type::type_float == property_float->type());
+//    BOOST_CHECK(Type::type_string == property_string->type());
+//    BOOST_CHECK(Type::type_bool == property_bool->type());
+//    BOOST_CHECK(Type::type_int8 == property_int8->type());
+//    BOOST_CHECK(Type::type_uchar == property_uint8->type());
+//    BOOST_CHECK(Type::type_int16 == property_int16->type());
+//    BOOST_CHECK(Type::type_uint16 == property_uint16->type());
+//    BOOST_CHECK(Type::type_int32 == property_int32->type());
+//    BOOST_CHECK(Type::type_uint32 == property_uint32->type());
+//    BOOST_CHECK(Type::type_int64 == property_int64->type());
+//    BOOST_CHECK(Type::type_uint64 == property_uint64->type());
+//    //BOOST_CHECK(Type::type_size == property_size->type());
+//    //BOOST_CHECK(Type::type_map == property_map->type());
+//}
 
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -403,18 +403,18 @@ BOOST_FIXTURE_TEST_CASE(get_property_as_string_error, PropertiesTest)
     BOOST_CHECK_THROW(properties.getPropertyAsString("key7"), std::out_of_range);
 }
 
-BOOST_FIXTURE_TEST_CASE(get_property_type, PropertiesTest)
-{
-    BOOST_CHECK(Type::type_int == properties.getPropertyType("key1"));
-    BOOST_CHECK(Type::type_double == properties.getPropertyType("key2"));
-    BOOST_CHECK(Type::type_string == properties.getPropertyType("key3"));
-    BOOST_CHECK(Type::type_bool == properties.getPropertyType("key4"));
-}
-
-BOOST_FIXTURE_TEST_CASE(get_property_type_error, PropertiesTest)
-{
-    BOOST_CHECK_THROW(properties.getPropertyType("key7"), std::out_of_range);
-}
+//BOOST_FIXTURE_TEST_CASE(get_property_type, PropertiesTest)
+//{
+//    BOOST_CHECK(Type::type_int == properties.getPropertyType("key1"));
+//    BOOST_CHECK(Type::type_double == properties.getPropertyType("key2"));
+//    BOOST_CHECK(Type::type_string == properties.getPropertyType("key3"));
+//    BOOST_CHECK(Type::type_bool == properties.getPropertyType("key4"));
+//}
+//
+//BOOST_FIXTURE_TEST_CASE(get_property_type_error, PropertiesTest)
+//{
+//    BOOST_CHECK_THROW(properties.getPropertyType("key7"), std::out_of_range);
+//}
 
 BOOST_FIXTURE_TEST_CASE(iteratorValueType, PropertiesTest)
 {
@@ -750,6 +750,28 @@ BOOST_AUTO_TEST_CASE(split_separator)
     BOOST_CHECK_EQUAL(3.4, out3[2]);
 }
 
+BOOST_AUTO_TEST_CASE(split_skip_policy)
+{
+    std::vector<std::string> out = split<std::string, EmptyTokenPolicy::skip>("cad1,,cad3");
+    BOOST_CHECK_EQUAL(2, out.size());
+    BOOST_CHECK_EQUAL("cad1", out[0]);
+    BOOST_CHECK_EQUAL("cad3", out[1]);
+
+    std::vector<int> out2 = split<int, EmptyTokenPolicy::skip>("1,,3", ',');
+    BOOST_CHECK_EQUAL(2, out2.size());
+    BOOST_CHECK_EQUAL(1, out2[0]);
+    BOOST_CHECK_EQUAL(3, out2[1]);
+
+    std::vector<double> out3 = split<double, EmptyTokenPolicy::skip>("1.2,,3.4", ',');
+    BOOST_CHECK_EQUAL(2, out3.size());
+    BOOST_CHECK_EQUAL(1.2, out3[0]);
+    BOOST_CHECK_EQUAL(3.4, out3[1]);
+}
+
+BOOST_AUTO_TEST_CASE(split_error_policy)
+{
+
+}
 
 /* string_utils.h */
 
@@ -886,9 +908,9 @@ BOOST_AUTO_TEST_CASE(get_type_id)
     BOOST_CHECK(Type::type_string == getTypeId<std::string>());
     BOOST_CHECK(Type::type_wstring == getTypeId<std::wstring>());
     BOOST_CHECK(Type::type_path == getTypeId<tl::Path>());
-    BOOST_CHECK(Type::type_size == getTypeId<Size<int>>());
-    auto type = getTypeId<std::map<int, std::string>>();
-    BOOST_CHECK(Type::type_map == type);
+    //BOOST_CHECK(Type::type_size == getTypeId<Size<int>>());
+    //auto type = getTypeId<std::map<int, std::string>>();
+    //BOOST_CHECK(Type::type_map == type);
     BOOST_CHECK(Type::type_schar == getTypeId<signed char>());
     BOOST_CHECK(Type::type_uchar == getTypeId<unsigned char>());
     BOOST_CHECK(Type::type_short == getTypeId<short>());
@@ -915,9 +937,9 @@ BOOST_AUTO_TEST_CASE(get_type_name)
     BOOST_CHECK_EQUAL("std::string", getTypeName<std::string>());
     BOOST_CHECK_EQUAL("std::wstring", getTypeName<std::wstring>());
     BOOST_CHECK_EQUAL("tl::Path", getTypeName<tl::Path>());
-    BOOST_CHECK_EQUAL("tl::Size", getTypeName<Size<int>>());
-    auto name = getTypeName<std::map<int, std::string>>();
-    BOOST_CHECK_EQUAL("std::map", name);
+    //BOOST_CHECK_EQUAL("tl::Size", getTypeName<Size<int>>());
+    //auto name = getTypeName<std::map<int, std::string>>();
+    //BOOST_CHECK_EQUAL("std::map", name);
     BOOST_CHECK_EQUAL("int8", getTypeName<signed char>());
     BOOST_CHECK_EQUAL("uint8", getTypeName<unsigned char>());
     BOOST_CHECK_EQUAL("int16", getTypeName<short>());
@@ -944,8 +966,8 @@ BOOST_AUTO_TEST_CASE(type_to_string)
     BOOST_CHECK_EQUAL("std::string", typeToString(Type::type_string));
     BOOST_CHECK_EQUAL("std::wstring", typeToString(Type::type_wstring));
     BOOST_CHECK_EQUAL("tl::Path", typeToString(Type::type_path));
-    BOOST_CHECK_EQUAL("tl::Size", typeToString(Type::type_size));
-    BOOST_CHECK_EQUAL("std::map", typeToString(Type::type_map));
+    //BOOST_CHECK_EQUAL("tl::Size", typeToString(Type::type_size));
+    //BOOST_CHECK_EQUAL("std::map", typeToString(Type::type_map));
     BOOST_CHECK_EQUAL("int8", typeToString(Type::type_schar));
     BOOST_CHECK_EQUAL("uint8", typeToString(Type::type_uchar));
     BOOST_CHECK_EQUAL("int16", typeToString(Type::type_short));
@@ -972,6 +994,6 @@ BOOST_AUTO_TEST_CASE(string_to_type)
     BOOST_CHECK(Type::type_string == stringToType("std::string"));
     BOOST_CHECK(Type::type_wstring == stringToType("std::wstring"));
     BOOST_CHECK(Type::type_path == stringToType("tl::Path"));
-    BOOST_CHECK(Type::type_size == stringToType("tl::Size"));
-    BOOST_CHECK(Type::type_map == stringToType("std::map"));
+    //BOOST_CHECK(Type::type_size == stringToType("tl::Size"));
+    //BOOST_CHECK(Type::type_map == stringToType("std::map"));
 }

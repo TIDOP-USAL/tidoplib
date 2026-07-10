@@ -1366,7 +1366,7 @@ BOOST_FIXTURE_TEST_CASE(read_shape_polygon, VectorReaderTest)
             auto data = polygon->attributes();
             BOOST_CHECK_EQUAL(lakes_with_elevations_data_id_shape, data.value(0));
             BOOST_CHECK_EQUAL(lakes_with_elevations_data_name, data.value(1));
-            BOOST_CHECK_EQUAL(tl::convertStringTo<int>(lakes_with_elevations_data_elevations[i]), tl::convertStringTo<int>(data.value(2)));
+            BOOST_CHECK_EQUAL(tl::convertStringTo<double>(lakes_with_elevations_data_elevations[i]), tl::convertStringTo<double>(data.value(2)));
 
             i++;
         }

@@ -28,7 +28,7 @@
 
 
 #include "tidop/core/base/Exception.h"
-#include "tidop/core/base/flags.h"
+#include "tidop/core/base/Flags.h"
 #include "tidop/core/base/Path.h"
 #include "tidop/core/base/endian.h"
 #include "tidop/geometry/primitives/Point.h"

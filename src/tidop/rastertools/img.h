@@ -29,7 +29,7 @@
 #include <limits>
 
 #include "tidop/core/base/Defs.h"
-#include "tidop/core/base/type.h"
+#include "tidop/core/base/Type.h"
 #include "tidop/rastertools/DataType.h"
 
 namespace tl

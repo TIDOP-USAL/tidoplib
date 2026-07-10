@@ -36,7 +36,7 @@
 #include <opencv2/cudafeatures2d.hpp>
 #endif // HAVE_OPENCV_CUDAFEATURES2D
 
-#include "tidop/core/base/flags.h"
+#include "tidop/core/base/Flags.h"
 #include "tidop/core/base/Property.h"
 
 namespace tl

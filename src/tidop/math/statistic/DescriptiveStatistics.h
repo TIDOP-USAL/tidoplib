@@ -32,7 +32,7 @@
 #include <optional>
 
 #include "tidop/core/base/Defs.h"
-#include "tidop/core/base/flags.h"
+#include "tidop/core/base/Flags.h"
 #include "tidop/math/statistic/algorithms/descriptive/Mean.h"
 #include "tidop/math/statistic/algorithms/descriptive/Median.h"
 #include "tidop/math/statistic/algorithms/descriptive/Mode.h"

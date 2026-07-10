@@ -121,7 +121,7 @@ Path::Path(const Path &path)
 {
 }
 
-Path::Path(Path &&path) TL_NOEXCEPT
+Path::Path(Path &&path) noexcept
   : mPath(std::move(path.mPath))
 {
 }
@@ -137,7 +137,7 @@ auto Path::operator=(const Path &path)  -> Path&
     return *this;
 }
 
-auto Path::operator=(Path &&path) TL_NOEXCEPT  -> Path&
+auto Path::operator=(Path &&path) noexcept  -> Path&
 {
     mPath = std::move(path.mPath);
 

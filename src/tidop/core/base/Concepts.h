@@ -56,6 +56,8 @@ template<typename T>
 concept SignedArithmetic = SignedIntegral<T> ||
                            Floating<T>;
 
+template <typename T>
+concept ArithmeticNoBool = Arithmetic<T> && !std::same_as<T, bool>;
 
 
 template<typename R>

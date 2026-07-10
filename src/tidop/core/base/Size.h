@@ -216,14 +216,12 @@ constexpr Size<T>::Size(T width, T height)
 }
 
 template<typename T>
-[[nodiscard]]
 constexpr auto Size<T>::width() const noexcept -> T
 {
     return mDimensions[0];
 }
 
 template<typename T>
-[[nodiscard]]
 constexpr auto Size<T>::height() const noexcept -> T
 {
     return mDimensions[1];

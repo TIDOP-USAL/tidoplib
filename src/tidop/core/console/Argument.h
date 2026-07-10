@@ -59,7 +59,7 @@
 
 #include "tidop/core/base/TextEncoding.h"
 #include "tidop/core/base/Path.h"
-#include "tidop/core/base/type.h"
+#include "tidop/core/base/Type.h"
 #include "tidop/core/base/TypeConversions.h"
 #include "tidop/core/base/Exception.h"
 #include "tidop/core/base/macros/SmartPtr.h"

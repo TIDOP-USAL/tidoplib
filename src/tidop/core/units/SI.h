@@ -25,7 +25,7 @@
 #pragma once
 
 #include "tidop/config.h"
-#include "tidop/core/base/type.h"
+#include "tidop/core/base/Concepts.h"
 
 namespace tl
 {
@@ -56,53 +56,38 @@ constexpr double square_kilometre = 1.e6;     /*!< Factor to convert 1 square ki
 
 }
 
-template<typename T>
-constexpr enableIfFloating<T, T> to_kilo = static_cast<T>(si::metre / si::kilo); /*!< Converts meters to kilometers. */
-template<typename T>
-constexpr enableIfFloating<T ,T> from_kilo = static_cast<T>(si::kilo); /*!< Converts kilometers to meters. */
-template<typename T>
-constexpr enableIfFloating<T, T> to_hecto = static_cast<T>(si::metre / si::hecto); /*!< Converts meters to hectometers. */
-template<typename T>
-constexpr enableIfFloating<T, T> from_hecto = static_cast<T>(si::hecto); /*!< Converts hectometers to meters. */
-template<typename T>
-constexpr enableIfFloating<T, T> to_deca = static_cast<T>(si::metre / si::deca); /*!< Converts meters to decameters. */
-template<typename T>
-constexpr enableIfFloating<T, T> from_deca = static_cast<T>(si::deca); /*!< Converts decameters to meters. */
-template<typename T>
-constexpr enableIfFloating<T, T> to_deci = static_cast<T>(si::metre / si::deci); /*!< Converts meters to decimeters. */
-template<typename T>
-constexpr enableIfFloating<T, T> from_deci = static_cast<T>(si::deci); /*!< Converts decimeters to meters. */
-template<typename T>
-constexpr enableIfFloating<T, T> to_centi = static_cast<T>(si::metre / si::centi); /*!< Converts meters to centimeters. */
-template<typename T>
-constexpr enableIfFloating<T, T> from_centi = static_cast<T>(si::centi); /*!< Converts centimeters to meters. */
-template<typename T>
-constexpr enableIfFloating<T, T> to_milli = static_cast<T>(si::metre / si::milli); /*!< Converts meters to millimeters. */
-template<typename T>
-constexpr enableIfFloating<T, T> from_milli = static_cast<T>(si::milli); /*!< Converts millimeters to meters. */
-template<typename T>
-constexpr enableIfFloating<T, T> to_micro = static_cast<T>(si::metre / si::micro); /*!< Converts meters to micrometers. */
-template<typename T>
-constexpr enableIfFloating<T, T> from_micro = static_cast<T>(si::micro); /*!< Converts micrometers to meters. */
-template<typename T>
-constexpr enableIfFloating<T, T> to_nano = static_cast<T>(1.e+9); /*!< Converts meters to nanometers. */
-template<typename T>
-constexpr enableIfFloating<T, T> from_nano = static_cast<T>(si::nano); /*!< Converts nanometers to meters. */
-
-/* Area */
-
-template<typename T>
-constexpr enableIfFloating<T, T> to_square_deca = static_cast<T>(si::square_metre / si::square_decametre);
-template<typename T>
-constexpr enableIfFloating<T, T> from_square_deca = static_cast<T>(si::square_decametre);
-template<typename T>
-constexpr enableIfFloating<T, T> to_square_hecto = static_cast<T>(si::square_metre / si::square_hectometre);
-template<typename T>
-constexpr enableIfFloating<T, T> from_square_hecto = static_cast<T>(si::square_hectometre);
-template<typename T>
-constexpr enableIfFloating<T, T> to_square_kilo = static_cast<T>(si::square_metre / si::square_kilometre);
-template<typename T>
-constexpr enableIfFloating<T, T> from_square_kilo = static_cast<T>(si::square_kilometre);
+template<Floating T>
+constexpr T to_kilo = static_cast<T>(si::metre / si::kilo); /*!< Converts meters to kilometers. */
+template<Floating T>
+constexpr T from_kilo = static_cast<T>(si::kilo); /*!< Converts kilometers to meters. */
+template<Floating T>
+constexpr T to_hecto = static_cast<T>(si::metre / si::hecto); /*!< Converts meters to hectometers. */
+template<Floating T>
+constexpr T from_hecto = static_cast<T>(si::hecto); /*!< Converts hectometers to meters. */
+template<Floating T>
+constexpr T to_deca = static_cast<T>(si::metre / si::deca); /*!< Converts meters to decameters. */
+template<Floating T>
+constexpr T from_deca = static_cast<T>(si::deca); /*!< Converts decameters to meters. */
+template<Floating T>
+constexpr T to_deci = static_cast<T>(si::metre / si::deci); /*!< Converts meters to decimeters. */
+template<Floating T>
+constexpr T from_deci = static_cast<T>(si::deci); /*!< Converts decimeters to meters. */
+template<Floating T>
+constexpr T to_centi = static_cast<T>(si::metre / si::centi); /*!< Converts meters to centimeters. */
+template<Floating T>
+constexpr T from_centi = static_cast<T>(si::centi); /*!< Converts centimeters to meters. */
+template<Floating T>
+constexpr T to_milli = static_cast<T>(si::metre / si::milli); /*!< Converts meters to millimeters. */
+template<Floating T>
+constexpr T from_milli = static_cast<T>(si::milli); /*!< Converts millimeters to meters. */
+template<Floating T>
+constexpr T to_micro = static_cast<T>(si::metre / si::micro); /*!< Converts meters to micrometers. */
+template<Floating T>
+constexpr T from_micro = static_cast<T>(si::micro); /*!< Converts micrometers to meters. */
+template<Floating T>
+constexpr T to_nano = static_cast<T>(1.e+9); /*!< Converts meters to nanometers. */
+template<Floating T>
+constexpr T from_nano = static_cast<T>(si::nano); /*!< Converts nanometers to meters. */
 
 
 /*! \} */

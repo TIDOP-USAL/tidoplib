@@ -206,6 +206,7 @@ public:
      *
      * \note This method does not modify the chronometer state
      */  
+    [[nodiscard]]
     auto currentTime() const -> double;
 
     /*!
@@ -260,7 +261,7 @@ class TL_EXPORT ChronoAuto final
 
 public:
 
-    explicit ChronoAuto(const std::string &message);
+    explicit ChronoAuto(std::string message);
     ~ChronoAuto() override;
 
     TL_DISABLE_COPY(ChronoAuto)

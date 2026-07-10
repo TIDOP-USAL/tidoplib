@@ -63,7 +63,7 @@
 #include <fstream>
 
 #include "tidop/core/base/Path.h"
-#include "tidop/core/base/type.h"
+#include "tidop/core/base/Concepts.h"
 
 namespace tl
 {
@@ -141,8 +141,8 @@ inline endianness getNativeEndianness()
  *
  * \note This function only works with arithmetic types
  */
-template <typename T>
-auto swapEndian(T val) -> enableIfArithmetic<T, T>
+template <Arithmetic T>
+auto swapEndian(T val) -> T
 {
     union U
     {

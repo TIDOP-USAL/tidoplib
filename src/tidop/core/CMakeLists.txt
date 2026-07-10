@@ -43,11 +43,11 @@ if(BUILD_TL_CORE)
                              base/Event.cpp
                              base/Exception.cpp
                              base/Path.cpp
-                             base/Property.cpp
                              base/StringUtils.cpp
                              base/SystemCache.h
                              base/TypeConversions.cpp
                              base/TextEncoding.cpp
+                             base/properties/Properties.cpp
                              concurrency/Parallel.cpp
                              console/Console.cpp
                              console/Argument.cpp
@@ -61,9 +61,6 @@ if(BUILD_TL_CORE)
                              task/TaskList.cpp
                              task/TaskQueue.cpp
                              task/TaskTree.cpp
-                             units/Area.cpp
-                             units/Length.cpp
-                             units/Mass.cpp
                          HEADER_FILES
                              app/App.h
                              app/License.h
@@ -95,6 +92,9 @@ if(BUILD_TL_CORE)
                              base/macros/NonCopyable.h
                              base/macros/SmartPtr.h
                              base/macros/Warnings.h
+                             base/properties/Properties.h
+                             base/properties/Property.h
+                             base/properties/PropertySerializer.h
                              concurrency/Consumer.h							 
                              concurrency/Parallel.h							 
                              concurrency/Producer.h							 
@@ -114,9 +114,9 @@ if(BUILD_TL_CORE)
                              task/TaskList.h
                              task/TaskQueue.h
                              task/TaskTree.h
-                             units/Area.h
-                             units/Length.h
-                             units/Mass.h
+                             units/AreaConverter.h
+                             units/LengthConverter.h
+                             units/MassConverter.h
                              units/Si.h
                              units/Imperial.h)
                          

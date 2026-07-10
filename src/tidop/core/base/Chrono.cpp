@@ -131,8 +131,8 @@ void Chrono::setMessage(const std::string &message)
 
 
 
-ChronoAuto::ChronoAuto(const std::string &message)
-  : Chrono(message)
+ChronoAuto::ChronoAuto(std::string message)
+  : Chrono(std::move(message))
 {
     run();
 }

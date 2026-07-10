@@ -49,7 +49,7 @@
 #include "tidop/config.h"
 
 #include <string>
-#include <list>
+#include <vector>
 
 
 namespace tl
@@ -129,85 +129,92 @@ public:
      * \brief Get the product name.
      * \return The product or library name
      */
-    auto productName() const -> std::string;
+    [[nodiscard]]
+    auto productName() const noexcept -> std::string;
 
     /*!
      * \brief Set the product name.
      * \param productName The product or library name to set
      */
-    void setProductName(const std::string &productName);
+    void setProductName(std::string productName) noexcept;
 
     /*!
      * \brief Get the license name or type.
      * \return The license identifier (e.g., "GPL-3.0", "MIT", "Apache-2.0")
      */
-    auto licenseName() const -> std::string;
+    [[nodiscard]]
+    auto licenseName() const noexcept -> std::string;
 
     /*!
      * \brief Set the license name or type.
      * \param[in] license The license identifier to set
      */
-    void setLicenseName(const std::string &license);
+    void setLicenseName(std::string license) noexcept;
 
     /*!
      * \brief Get the full license text.
      * \return The license text or summary
      */
-    auto licenseText() const -> std::string;
+    [[nodiscard]]
+    auto licenseText() const noexcept -> std::string;
 
     /*!
      * \brief Set the full license text.
      * \param[in] text The license text or summary to set
      */
-    auto setLicenseText(const std::string &text) -> void;
+    void setLicenseText(std::string text) noexcept;
 
     /*!
      * \brief Get the license version.
      * \return The version string (e.g., "3.0", "v2.1")
      */
-    auto version() const->std::string;
+    [[nodiscard]]
+    auto version() const noexcept -> std::string;
 
     /*!
      * \brief Set the license version.
      * \param[in] version The version string to set
      */
-    auto setVersion(const std::string &version) -> void;
+    void setVersion(std::string version) noexcept;
 
     /*!
      * \brief Get the author or copyright holder name.
      * \return The author's name or organization
      */
-    auto author() const -> std::string;
+    [[nodiscard]]
+    auto author() const noexcept -> std::string;
 
     /*!
      * \brief Set the author or copyright holder name.
      * \param[in] author The author's name or organization to set
      */
-    void setAuthor(const std::string &author);
+    void setAuthor(std::string author) noexcept;
 
     /*!
      * \brief Get the author's email address.
      * \return The contact email
      */
-    auto authorEmail() const->std::string;
+    [[nodiscard]]
+    auto authorEmail() const noexcept -> std::string;
 
     /*!
      * \brief Set the author's email.
      * \param[in] authorEmail The email to set.
      */
-    auto setAuthorEmail(const std::string &authorEmail) -> void;
+    void setAuthorEmail(std::string authorEmail) noexcept;
 
     /*!
      * \brief Get the reference URL.
      * \return URL to the project homepage, repository, or license page
      */
-    auto url() const->std::string;
+    [[nodiscard]]
+    auto url() const noexcept -> std::string;
 
     /*!
      * \brief Set the reference URL.
      * \param[in] url The URL to set
      */
-    auto setUrl(const std::string &url) -> void;
+    void setUrl(std::string url) noexcept;
 
     /*!
      * \brief Check if the license is empty.
@@ -217,7 +224,8 @@ public:
      *
      * \return True if the license is empty (no product name), false otherwise
      */
-    auto empty() const -> bool;
+    [[nodiscard]]
+    auto empty() const noexcept -> bool;
 
 };
 
@@ -273,21 +281,15 @@ class TL_EXPORT AppLicense
 
 public:
 
-
-    using allocator_type = std::list<License>::allocator_type;
-    using value_type = std::list<License>::value_type;
-    using size_type = std::list<License>::size_type;
-    using difference_type = std::list<License>::difference_type;
-    using pointer = std::list<License>::pointer;
-    using const_pointer = std::list<License>::const_pointer;
-    using reference = std::list<License>::reference;
-    using const_reference = std::list<License>::const_reference;
-    using iterator = std::list<License>::iterator;
-    using const_iterator = std::list<License>::const_iterator;
+    using value_type = std::vector<License>::value_type;
+    using reference = std::vector<License>::reference;
+    using const_reference = std::vector<License>::const_reference;
+    using iterator = std::vector<License>::iterator;
+    using const_iterator = std::vector<License>::const_iterator;
 
 private:
 
-    std::list<License> mThirdPartyLicenses;   /*!< List of third-party licenses */
+    std::vector<License> mThirdPartyLicenses;
 
 public:
 
@@ -303,25 +305,29 @@ public:
      * \brief Get an iterator to the beginning of the license list.
      * \return Iterator to the first license, or end() if empty
      */
-    auto begin() TL_NOEXCEPT -> iterator;
+    [[nodiscard]]
+    auto begin() noexcept -> iterator;
 
     /*!
      * \brief Get a const iterator to the beginning of the license list.
      * \return Const iterator to the first license, or end() if empty
      */
-    auto begin() const TL_NOEXCEPT -> const_iterator;
+    [[nodiscard]]
+    auto begin() const noexcept -> const_iterator;
 
     /*!
      * \brief Get an iterator to the end of the license list.
      * \return Iterator to one past the last license
      */
-    auto end() TL_NOEXCEPT -> iterator;
+    [[nodiscard]]
+    auto end() noexcept -> iterator;
 
     /*!
      * \brief Get a const iterator to the end of the license list.
      * \return Const iterator to one past the last license
      */
-    auto end() const TL_NOEXCEPT -> const_iterator;
+    [[nodiscard]]
+    auto end() const noexcept -> const_iterator;
 
     /*!
      * \brief Add a license to the list.
@@ -350,7 +356,7 @@ public:
      *
      * \see push_back(const License&)
      */
-    void push_back(License &&license) TL_NOEXCEPT;
+    void push_back(License &&license);
 
     /*!
      * \brief Remove all licenses from the list.
@@ -358,7 +364,7 @@ public:
      * Clears all third-party licenses. The application's own license
      * (from License base class) remains unchanged.
      */
-    void clear() TL_NOEXCEPT;
+    void clear() noexcept;
 
     /*!
      * \brief Erase a range of licenses from the list.
@@ -380,15 +386,16 @@ public:
      *       own license (from License base class). Use License::empty()
      *       to check the application license.
      */
-    auto empty() const TL_NOEXCEPT -> bool;
+    [[nodiscard]]
+    auto empty() const noexcept -> bool;
 
     /*!
      * \brief Get the number of third-party licenses.
      *
      * \return The number of licenses in the list
      */
-    auto size() const TL_NOEXCEPT -> size_type;
-
+    [[nodiscard]]
+    auto size() const noexcept -> size_t;
 
 };
 

@@ -61,10 +61,13 @@
 #include <numeric>
 #include <sstream>
 #include <iomanip>
+#include <charconv>
+#include <string_view>
 
 #include "tidop/core/base/Exception.h"
 #include "tidop/core/base/StringUtils.h"
-#include "tidop/core/base/type.h"
+#include "tidop/core/base/Type.h"
+#include "tidop/core/base/Concepts.h"
 
 namespace tl
 {
@@ -77,44 +80,35 @@ namespace tl
 
 
 /*!
- * \brief Performs a cast from one numeric type to another, with automatic rounding for integral types.
+ * \brief Converts a numeric value from one arithmetic type to another, with
+ *        automatic rounding for integral target types.
  *
- * This function safely converts a numeric value from type T2 to type T1. For integral target types,
- * the source value is rounded to the nearest integer. For floating-point target types, the value
- * is converted directly without rounding.
+ * This function safely converts a numeric value of type `T2` to type `T1`.
+ * For integral target types (`T1`), the source value is rounded to the nearest
+ * integer using `std::round` before casting. For floating-point target types,
+ * the value is converted directly without rounding.
  *
- * ### Template Specializations
+ * \tparam T1 Target arithmetic type (must satisfy `Arithmetic` concept).
+ * \tparam T2 Source arithmetic type (must satisfy `Arithmetic` concept).
  *
- * - **Integral T1**: Rounds the source value before casting
- * - **Floating-point T1**: Direct cast without rounding
- * - **Non-arithmetic T1**: Throws an exception
+ * \param[in] number The value to cast.
  *
- * ### Parameters
+ * \return The value cast to type `T1`.
  *
- * - `number` - The value to cast
- *
- * ### Returns
- *
- * The value cast to type T1
+ * \note The function is `constexpr` and `noexcept`, and can be used in
+ *       compile-time contexts when the inputs are constant expressions.
  *
  * ### Example
- *
- * \code{.cpp}
+ * \code
  * int rounded = tl::numberCast<int>(3.7);          // Result: 4 (rounded)
+ * int truncated = tl::numberCast<int>(3.2);        // Result: 3 (rounded)
  * float converted = tl::numberCast<float>(42);     // Result: 42.0f
+ * double from_int = tl::numberCast<double>(100);   // Result: 100.0
  * \endcode
- *
- * \tparam T1 The target numeric type
- * \tparam T2 The source numeric type
- * \param[in] number The number to cast
- * \return The number cast to type T1
- *
- * \exception Exception If T1 is not an arithmetic type
  *
  * \see convertStringTo
  */
-template<typename T1, typename T2>
-    requires std::is_arithmetic_v<T1> &&std::is_arithmetic_v<T2>
+template<Arithmetic T1, Arithmetic T2>
 constexpr T1 numberCast(T2 number) noexcept
 {
     if constexpr (std::is_integral_v<T1>) {
@@ -126,145 +120,104 @@ constexpr T1 numberCast(T2 number) noexcept
 
 
 /*!
- * \brief Converts a string to a numeric or boolean type, with range validation.
+ * \brief Converts a string to an arithmetic type (excluding `bool`), with range validation.
  *
- * This function converts an input string to the specified numeric type T.
- * It ensures that the value falls within the valid range for T using std::numeric_limits.
- * Specialized implementations are provided for `int8_t`, `uint8_t`, `int64_t`, `uint64_t`, and `bool`.
+ * This function converts an input string to the specified numeric type `T`.
+ * It ensures that the value falls within the valid range for `T`.
+ * The function handles:
+ * - Leading/trailing whitespace removal.
+ * - Optional suffixes for floating-point (`f`, `F`) and integral (`u`, `U`, `l`, `L`) types.
+ * - Exhaustive input validation (the entire string must be consumed).
  *
- * ### Supported Types
+ * \tparam T The target arithmetic type (must satisfy `ArithmeticNoBool` concept).
+ * \param[in] str The input string to convert.
+ * \return The converted value as type `T`.
  *
- * - Integral types: `int`, `long`, `long long`, `short`, `int8_t`, `uint8_t`, `int64_t`, `uint64_t`
- * - Floating-point types: `float`, `double`, `long double`
- * - Boolean: `bool` (accepts "true", "1", "false", "0")
+ * \throws `tl::Exception` if the string is empty, contains invalid characters,
+ *         or if the value is out of range for the target type.
  *
- * \tparam T The target type to convert the string into. Supported types include numeric types and `bool`.
- * \param[in] str The input string to convert
- * \return The converted value as type T
+ * ### Example
+ * \code
+ * int value1 = convertStringTo<int>("42");                    // value1 = 42
+ * uint8_t value2 = convertStringTo<uint8_t>("255");          // value2 = 255
+ * float value3 = convertStringTo<float>("3.14f");            // value3 = 3.14f
+ * long value4 = convertStringTo<long>("100L");               // value4 = 100L
  *
- * \note For `bool`, the function accepts "true", "1" (evaluating to \c true) and "false", "0" (evaluating to \c false).
- * \exception Exception Throws an exception if the input string is invalid or if the value is out of range.
- * 
- * ### Example Usage
- * \code{.cpp}
- * // Converting integers
- * int value1 = convertStringTo<int>("42");       // value1 = 42
- * uint8_t value2 = convertStringTo<uint8_t>("255"); // value2 = 255
- *
- * // Converting floating-point numbers
- * float value3 = convertStringTo<float>("3.14");   // value3 = 3.14f
- *
- * // Converting booleans
- * bool value4 = convertStringTo<bool>("true");     // value4 = true
- * bool value5 = convertStringTo<bool>("0");        // value5 = false
- *
- * // Handling out-of-range values
+ * // Out-of-range example (throws)
  * try {
- *     uint8_t value6 = convertStringTo<uint8_t>("300"); // Throws an exception: Value out of range
+ *     uint8_t value5 = convertStringTo<uint8_t>("300");      // Throws: Value out of range
  * } catch (const Exception &e) {
  *     std::cerr << e.what() << std::endl;
  * }
  * \endcode
+ *
+ * \see numberCast, TypeTraits
  */
-template <typename T>
-auto convertStringTo(const std::string &str) -> std::enable_if_t<std::is_arithmetic<T>::value && !std::is_same<T, bool>::value, T>
+template <ArithmeticNoBool T>
+auto convertStringTo(std::string_view str) -> T
 {
-    using Limits = std::numeric_limits<T>;
-    try {
-        long double value = std::stold(str);
-        if (value < Limits::lowest() || value > Limits::max())
-            throw std::out_of_range("Value out of range");
-        return static_cast<T>(value);
-    } catch (const std::out_of_range &) {
+    TL_ASSERT(!str.empty(), "Invalid argument for {}: empty string", TypeTraits<T>::name_type);
+
+    while (!str.empty() && std::isspace(str.front())) str.remove_prefix(1);
+    while (!str.empty() && std::isspace(str.back()))  str.remove_suffix(1);
+
+    if constexpr (std::is_floating_point_v<T>) {
+        if (!str.empty() && (str.back() == 'f' || str.back() == 'F')) {
+            str.remove_suffix(1);
+        }
+    } else if constexpr (std::is_integral_v<T>) {
+        while (!str.empty() && (str.back() == 'u' || str.back() == 'U' ||
+            str.back() == 'l' || str.back() == 'L')) {
+            str.remove_suffix(1);
+        }
+    }
+
+    T value{};
+
+    auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), value);
+
+    if (ec == std::errc::result_out_of_range) {
         TL_THROW_EXCEPTION("Value out of range for {}: {}", TypeTraits<T>::name_type, str);
-    } catch (const std::invalid_argument &) {
+    }
+    if (ec == std::errc::invalid_argument || ptr != str.data() + str.size()) {
         TL_THROW_EXCEPTION("Invalid argument for {}: {}", TypeTraits<T>::name_type, str);
     }
+
+    return value;
 }
 
-/// \cond
-
-template <>
-inline auto convertStringTo<int8_t>(const std::string &str) -> int8_t
-{
-    using Limits = std::numeric_limits<int8_t>;
-    try {
-        int value = std::stoi(str);
-        if (value < Limits::min() || value > Limits::max())
-            throw std::out_of_range("Index out of range");
-        return static_cast<int8_t>(value);
-    } catch (const std::out_of_range &) {
-        TL_THROW_EXCEPTION("Value out of range for int8_t: {}", str);
-    } catch (const std::invalid_argument &) {
-        TL_THROW_EXCEPTION("Invalid argument for int8_t: {}", str);
-    }
-}
-
-template <>
-inline auto convertStringTo<uint8_t>(const std::string &str) -> uint8_t
-{
-    try {
-        int value = std::stoi(str);
-        if (value < 0 || value > std::numeric_limits<uint8_t>::max())
-            throw std::out_of_range("Index out of range");
-        return static_cast<uint8_t>(value);
-    } catch (const std::out_of_range &) {
-        TL_THROW_EXCEPTION("Value out of range for uint8_t: {}", str);
-    } catch (const std::invalid_argument &) {
-        TL_THROW_EXCEPTION("Invalid argument for uint8_t: {}", str);
-    }
-}
-
-template <>
-inline auto convertStringTo<int64_t>(const std::string &str) -> int64_t
-{
-    try {
-        return std::stoll(str);
-    } catch (const std::out_of_range &) {
-        TL_THROW_EXCEPTION("Value out of range for int64_t: {}", str);
-    } catch (const std::invalid_argument &) {
-        TL_THROW_EXCEPTION("Invalid argument for int64_t: {}", str);
-    }
-}
-
-template <>
-inline auto convertStringTo<uint64_t>(const std::string &str) -> uint64_t
-{
-    try {
-        if (str[0] == '-') {
-            throw std::out_of_range("Index out of range");
-        }
-        return std::stoull(str);
-    } catch (const std::out_of_range &) {
-        TL_THROW_EXCEPTION("Value out of range for uint64_t: {}", str);
-    } catch (const std::invalid_argument &) {
-        TL_THROW_EXCEPTION("Invalid argument for uint64_t: {}", str);
-    }
-}
-
+/*!
+ * \brief Converts a string to a `bool` value.
+ *
+ * This overload handles the conversion of a string to `bool`.
+ * It accepts the strings `"true"`, `"1"`, `"false"`, and `"0"`,
+ * ignoring leading/trailing whitespace.
+ *
+ * \param[in] str The input string to convert.
+ * \return `true` if the string is `"true"` or `"1"`; `false` if `"false"` or `"0"`.
+ *
+ * \throws `tl::Exception` if the string does not match any of the accepted values.
+ *
+ * ### Example
+ * \code
+ * bool b1 = convertStringTo<bool>("true");   // b1 = true
+ * bool b2 = convertStringTo<bool>("0");      // b2 = false
+ * bool b3 = convertStringTo<bool>("1");      // b3 = true
+ * bool b4 = convertStringTo<bool>("TRUE");   // Throws (case-sensitive)
+ * \endcode
+ */
 template <typename T>
-auto convertStringTo(const std::string &str) -> enableIfBool<T,T>
+    requires std::same_as<T, bool>
+auto convertStringTo(std::string_view str) -> bool
 {
-    if (str == "true" || str == "1") {
-        return true;
-    } else if (str == "false" || str == "0") {
-        return false;
-    }
+    while (!str.empty() && std::isspace(str.front())) str.remove_prefix(1);
+    while (!str.empty() && std::isspace(str.back()))  str.remove_suffix(1);
 
-    TL_THROW_EXCEPTION("Invalid value for bool");
+    if (str == "true" || str == "1") return true;
+    if (str == "false" || str == "0") return false;
+
+    TL_THROW_EXCEPTION("Invalid value for bool: {}", str);
 }
-
-
-template <typename T>
-auto convertStringTo(const std::string &/*str*/) -> enableIfNotArithmetic<T,T>
-{
-    //En linux me sale siempre el error aunque no se llame a la función.
-    //TL_COMPILER_WARNING("Invalid conversion. It isn't an arithmetic type.")
-    throw Exception("Invalid conversion. It isn't an arithmetic type.", __FILE__, __LINE__, TL_FUNCTION);
-    return T{0};
-}
-
-/// \endcond
 
 
 /*!
@@ -289,7 +242,7 @@ auto convertStringTo(const std::string &/*str*/) -> enableIfNotArithmetic<T,T>
  *
  * \see convertStringTo
  */
-template <typename T>
+template <Floating T>
 auto toStringWithPrecision(T value, int precision) -> std::string
 {
     std::ostringstream out;
@@ -372,7 +325,7 @@ TL_EXPORT int stringToInteger(const std::string &text, Base base = Base::decimal
  * \return The rounded integer value.
  * \details This avoids warnings (e.g., C4244) about implicit conversions and ensures proper rounding.
  */
-template<typename T>
+template<Floating T>
 constexpr auto roundToInteger(T n) 
 {
     return static_cast<int>(round(n));

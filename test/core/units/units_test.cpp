@@ -22,11 +22,12 @@
  *                                                                        *
  **************************************************************************/
  
-#define BOOST_TEST_MODULE Tidop Units test
+#define BOOST_TEST_MODULE Tidop Unit test
 #include <boost/test/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
-#include <tidop/core/units/length.h>
-#include <tidop/core/units/mass.h>
+#include <tidop/core/units/LengthConverter.h>
+#include <tidop/core/units/MassConverter.h>
+#include <tidop/core/units/AreaConverter.h>
 
 using namespace tl;
 
@@ -76,676 +77,676 @@ struct LengthConverterTest
 
 BOOST_FIXTURE_TEST_CASE(from_metres, LengthConverterTest)
 {
-    double _decimetres = LengthConverter::convert(metres, LengthConverter::Units::metre, LengthConverter::Units::decimetre);
+    double _decimetres = LengthConverter::convert(metres, LengthUnit::metre, LengthUnit::decimetre);
     BOOST_CHECK_EQUAL(decimetres, _decimetres);
 
-    double _centimetres = LengthConverter::convert(metres, LengthConverter::Units::metre, LengthConverter::Units::centimetre);
+    double _centimetres = LengthConverter::convert(metres, LengthUnit::metre, LengthUnit::centimetre);
     BOOST_CHECK_EQUAL(centimetres, _centimetres);
 
-    double _millimetres = LengthConverter::convert(metres, LengthConverter::Units::metre, LengthConverter::Units::millimetre);
+    double _millimetres = LengthConverter::convert(metres, LengthUnit::metre, LengthUnit::millimetre);
     BOOST_CHECK_EQUAL(millimetres, _millimetres);
 
-    double _micrometres = LengthConverter::convert(metres, LengthConverter::Units::metre, LengthConverter::Units::micrometre);
+    double _micrometres = LengthConverter::convert(metres, LengthUnit::metre, LengthUnit::micrometre);
     BOOST_CHECK_EQUAL(micrometres, _micrometres);
 
-    double _nanometres = LengthConverter::convert(metres, LengthConverter::Units::metre, LengthConverter::Units::nanometre);
+    double _nanometres = LengthConverter::convert(metres, LengthUnit::metre, LengthUnit::nanometre);
     BOOST_CHECK_EQUAL(nanometres, _nanometres);
 
-    double _kilometres = LengthConverter::convert(metres, LengthConverter::Units::metre, LengthConverter::Units::kilometre);
+    double _kilometres = LengthConverter::convert(metres, LengthUnit::metre, LengthUnit::kilometre);
     BOOST_CHECK_EQUAL(kilometres, _kilometres);
 
-    double _hectometres = LengthConverter::convert(metres, LengthConverter::Units::metre, LengthConverter::Units::hectometre);
+    double _hectometres = LengthConverter::convert(metres, LengthUnit::metre, LengthUnit::hectometre);
     BOOST_CHECK_EQUAL(hectometres, _hectometres);
 
-    double _decametres = LengthConverter::convert(metres, LengthConverter::Units::metre, LengthConverter::Units::decametre);
+    double _decametres = LengthConverter::convert(metres, LengthUnit::metre, LengthUnit::decametre);
     BOOST_CHECK_EQUAL(decametres, _decametres);
 
-    double _inches = LengthConverter::convert(metres, LengthConverter::Units::metre, LengthConverter::Units::inch);
+    double _inches = LengthConverter::convert(metres, LengthUnit::metre, LengthUnit::inch);
     BOOST_CHECK_CLOSE(inches, _inches, 0.001);
 
-    double _feet = LengthConverter::convert(metres, LengthConverter::Units::metre, LengthConverter::Units::foot);
+    double _feet = LengthConverter::convert(metres, LengthUnit::metre, LengthUnit::foot);
     BOOST_CHECK_CLOSE(feet, _feet, 0.001);
 
-    double _yards = LengthConverter::convert(metres, LengthConverter::Units::metre, LengthConverter::Units::yard);
+    double _yards = LengthConverter::convert(metres, LengthUnit::metre, LengthUnit::yard);
     BOOST_CHECK_CLOSE(yards, _yards, 0.001);
 
-    double _chains = LengthConverter::convert(metres, LengthConverter::Units::metre, LengthConverter::Units::chain);
+    double _chains = LengthConverter::convert(metres, LengthUnit::metre, LengthUnit::chain);
     BOOST_CHECK_CLOSE(chains, _chains, 0.001);
 
-    double _furlongs = LengthConverter::convert(metres, LengthConverter::Units::metre, LengthConverter::Units::furlong);
+    double _furlongs = LengthConverter::convert(metres, LengthUnit::metre, LengthUnit::furlong);
     BOOST_CHECK_CLOSE(furlongs, _furlongs, 0.001);
 
-    double _miles = LengthConverter::convert(metres, LengthConverter::Units::metre, LengthConverter::Units::mile);
+    double _miles = LengthConverter::convert(metres, LengthUnit::metre, LengthUnit::mile);
     BOOST_CHECK_CLOSE(miles, _miles, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_decimetres, LengthConverterTest)
 {
-    double _metres = LengthConverter::convert(decimetres, LengthConverter::Units::decimetre, LengthConverter::Units::metre);
+    double _metres = LengthConverter::convert(decimetres, LengthUnit::decimetre, LengthUnit::metre);
     BOOST_CHECK_EQUAL(metres, _metres);
 
-    double _centimetres = LengthConverter::convert(decimetres, LengthConverter::Units::decimetre, LengthConverter::Units::centimetre);
+    double _centimetres = LengthConverter::convert(decimetres, LengthUnit::decimetre, LengthUnit::centimetre);
     BOOST_CHECK_EQUAL(centimetres, _centimetres);
 
-    double _millimetres = LengthConverter::convert(decimetres, LengthConverter::Units::decimetre, LengthConverter::Units::millimetre);
+    double _millimetres = LengthConverter::convert(decimetres, LengthUnit::decimetre, LengthUnit::millimetre);
     BOOST_CHECK_EQUAL(millimetres, _millimetres);
 
-    double _micrometres = LengthConverter::convert(decimetres, LengthConverter::Units::decimetre, LengthConverter::Units::micrometre);
+    double _micrometres = LengthConverter::convert(decimetres, LengthUnit::decimetre, LengthUnit::micrometre);
     BOOST_CHECK_EQUAL(micrometres, _micrometres);
 
-    double _nanometres = LengthConverter::convert(decimetres, LengthConverter::Units::decimetre, LengthConverter::Units::nanometre);
+    double _nanometres = LengthConverter::convert(decimetres, LengthUnit::decimetre, LengthUnit::nanometre);
     BOOST_CHECK_EQUAL(nanometres, _nanometres);
 
-    double _kilometres = LengthConverter::convert(decimetres, LengthConverter::Units::decimetre, LengthConverter::Units::kilometre);
+    double _kilometres = LengthConverter::convert(decimetres, LengthUnit::decimetre, LengthUnit::kilometre);
     BOOST_CHECK_EQUAL(kilometres, _kilometres);
 
-    double _hectometres = LengthConverter::convert(decimetres, LengthConverter::Units::decimetre, LengthConverter::Units::hectometre);
+    double _hectometres = LengthConverter::convert(decimetres, LengthUnit::decimetre, LengthUnit::hectometre);
     BOOST_CHECK_EQUAL(hectometres, _hectometres);
 
-    double _decametres = LengthConverter::convert(decimetres, LengthConverter::Units::decimetre, LengthConverter::Units::decametre);
+    double _decametres = LengthConverter::convert(decimetres, LengthUnit::decimetre, LengthUnit::decametre);
     BOOST_CHECK_CLOSE(decametres, _decametres, 0.001);
 
-    double _inches = LengthConverter::convert(decimetres, LengthConverter::Units::decimetre, LengthConverter::Units::inch);
+    double _inches = LengthConverter::convert(decimetres, LengthUnit::decimetre, LengthUnit::inch);
     BOOST_CHECK_CLOSE(inches, _inches, 0.001);
 
-    double _feet = LengthConverter::convert(decimetres, LengthConverter::Units::decimetre, LengthConverter::Units::foot);
+    double _feet = LengthConverter::convert(decimetres, LengthUnit::decimetre, LengthUnit::foot);
     BOOST_CHECK_CLOSE(feet, _feet, 0.001);
 
-    double _yards = LengthConverter::convert(decimetres, LengthConverter::Units::decimetre, LengthConverter::Units::yard);
+    double _yards = LengthConverter::convert(decimetres, LengthUnit::decimetre, LengthUnit::yard);
     BOOST_CHECK_CLOSE(yards, _yards, 0.001);
 
-    double _chains = LengthConverter::convert(decimetres, LengthConverter::Units::decimetre, LengthConverter::Units::chain);
+    double _chains = LengthConverter::convert(decimetres, LengthUnit::decimetre, LengthUnit::chain);
     BOOST_CHECK_CLOSE(chains, _chains, 0.001);
 
-    double _furlongs = LengthConverter::convert(decimetres, LengthConverter::Units::decimetre, LengthConverter::Units::furlong);
+    double _furlongs = LengthConverter::convert(decimetres, LengthUnit::decimetre, LengthUnit::furlong);
     BOOST_CHECK_CLOSE(furlongs, _furlongs, 0.001);
 
-    double _miles = LengthConverter::convert(decimetres, LengthConverter::Units::decimetre, LengthConverter::Units::mile);
+    double _miles = LengthConverter::convert(decimetres, LengthUnit::decimetre, LengthUnit::mile);
     BOOST_CHECK_CLOSE(miles, _miles, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_centimetres, LengthConverterTest)
 {
-    double _metres = LengthConverter::convert(centimetres, LengthConverter::Units::centimetre, LengthConverter::Units::metre);
+    double _metres = LengthConverter::convert(centimetres, LengthUnit::centimetre, LengthUnit::metre);
     BOOST_CHECK_EQUAL(metres, _metres);
 
-    double _decimetres = LengthConverter::convert(centimetres, LengthConverter::Units::centimetre, LengthConverter::Units::decimetre);
+    double _decimetres = LengthConverter::convert(centimetres, LengthUnit::centimetre, LengthUnit::decimetre);
     BOOST_CHECK_EQUAL(decimetres, _decimetres);
 
-    double _millimetres = LengthConverter::convert(centimetres, LengthConverter::Units::centimetre, LengthConverter::Units::millimetre);
+    double _millimetres = LengthConverter::convert(centimetres, LengthUnit::centimetre, LengthUnit::millimetre);
     BOOST_CHECK_EQUAL(millimetres, _millimetres);
 
-    double _micrometres = LengthConverter::convert(centimetres, LengthConverter::Units::centimetre, LengthConverter::Units::micrometre);
+    double _micrometres = LengthConverter::convert(centimetres, LengthUnit::centimetre, LengthUnit::micrometre);
     BOOST_CHECK_EQUAL(micrometres, _micrometres);
 
-    double _nanometres = LengthConverter::convert(centimetres, LengthConverter::Units::centimetre, LengthConverter::Units::nanometre);
+    double _nanometres = LengthConverter::convert(centimetres, LengthUnit::centimetre, LengthUnit::nanometre);
     BOOST_CHECK_EQUAL(nanometres, _nanometres);
 
-    double _kilometres = LengthConverter::convert(centimetres, LengthConverter::Units::centimetre, LengthConverter::Units::kilometre);
+    double _kilometres = LengthConverter::convert(centimetres, LengthUnit::centimetre, LengthUnit::kilometre);
     BOOST_CHECK_CLOSE(kilometres, _kilometres, 0.001);
 
-    double _hectometres = LengthConverter::convert(centimetres, LengthConverter::Units::centimetre, LengthConverter::Units::hectometre);
+    double _hectometres = LengthConverter::convert(centimetres, LengthUnit::centimetre, LengthUnit::hectometre);
     BOOST_CHECK_EQUAL(hectometres, _hectometres);
 
-    double _decametres = LengthConverter::convert(centimetres, LengthConverter::Units::centimetre, LengthConverter::Units::decametre);
+    double _decametres = LengthConverter::convert(centimetres, LengthUnit::centimetre, LengthUnit::decametre);
     BOOST_CHECK_CLOSE(decametres, _decametres, 0.001);
 
-    double _inches = LengthConverter::convert(centimetres, LengthConverter::Units::centimetre, LengthConverter::Units::inch);
+    double _inches = LengthConverter::convert(centimetres, LengthUnit::centimetre, LengthUnit::inch);
     BOOST_CHECK_CLOSE(inches, _inches, 0.001);
 
-    double _feet = LengthConverter::convert(centimetres, LengthConverter::Units::centimetre, LengthConverter::Units::foot);
+    double _feet = LengthConverter::convert(centimetres, LengthUnit::centimetre, LengthUnit::foot);
     BOOST_CHECK_CLOSE(feet, _feet, 0.001);
 
-    double _yards = LengthConverter::convert(centimetres, LengthConverter::Units::centimetre, LengthConverter::Units::yard);
+    double _yards = LengthConverter::convert(centimetres, LengthUnit::centimetre, LengthUnit::yard);
     BOOST_CHECK_CLOSE(yards, _yards, 0.001);
 
-    double _chains = LengthConverter::convert(centimetres, LengthConverter::Units::centimetre, LengthConverter::Units::chain);
+    double _chains = LengthConverter::convert(centimetres, LengthUnit::centimetre, LengthUnit::chain);
     BOOST_CHECK_CLOSE(chains, _chains, 0.001);
 
-    double _furlongs = LengthConverter::convert(centimetres, LengthConverter::Units::centimetre, LengthConverter::Units::furlong);
+    double _furlongs = LengthConverter::convert(centimetres, LengthUnit::centimetre, LengthUnit::furlong);
     BOOST_CHECK_CLOSE(furlongs, _furlongs, 0.001);
 
-    double _miles = LengthConverter::convert(centimetres, LengthConverter::Units::centimetre, LengthConverter::Units::mile);
+    double _miles = LengthConverter::convert(centimetres, LengthUnit::centimetre, LengthUnit::mile);
     BOOST_CHECK_CLOSE(miles, _miles, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_millimetres, LengthConverterTest)
 {
-    double _metres = LengthConverter::convert(millimetres, LengthConverter::Units::millimetre, LengthConverter::Units::metre);
+    double _metres = LengthConverter::convert(millimetres, LengthUnit::millimetre, LengthUnit::metre);
     BOOST_CHECK_EQUAL(metres, _metres);
 
-    double _centimetres = LengthConverter::convert(millimetres, LengthConverter::Units::millimetre, LengthConverter::Units::centimetre);
+    double _centimetres = LengthConverter::convert(millimetres, LengthUnit::millimetre, LengthUnit::centimetre);
     BOOST_CHECK_EQUAL(centimetres, _centimetres);
 
-    double _decimetres = LengthConverter::convert(millimetres, LengthConverter::Units::millimetre, LengthConverter::Units::decimetre);
+    double _decimetres = LengthConverter::convert(millimetres, LengthUnit::millimetre, LengthUnit::decimetre);
     BOOST_CHECK_EQUAL(decimetres, _decimetres);
 
-    double _micrometres = LengthConverter::convert(millimetres, LengthConverter::Units::millimetre, LengthConverter::Units::micrometre);
+    double _micrometres = LengthConverter::convert(millimetres, LengthUnit::millimetre, LengthUnit::micrometre);
     BOOST_CHECK_EQUAL(micrometres, _micrometres);
 
-    double _nanometres = LengthConverter::convert(millimetres, LengthConverter::Units::millimetre, LengthConverter::Units::nanometre);
+    double _nanometres = LengthConverter::convert(millimetres, LengthUnit::millimetre, LengthUnit::nanometre);
     BOOST_CHECK_EQUAL(nanometres, _nanometres);
 
-    double _kilometres = LengthConverter::convert(millimetres, LengthConverter::Units::millimetre, LengthConverter::Units::kilometre);
+    double _kilometres = LengthConverter::convert(millimetres, LengthUnit::millimetre, LengthUnit::kilometre);
     BOOST_CHECK_CLOSE(kilometres, _kilometres, 0.001);
 
-    double _hectometres = LengthConverter::convert(millimetres, LengthConverter::Units::millimetre, LengthConverter::Units::hectometre);
+    double _hectometres = LengthConverter::convert(millimetres, LengthUnit::millimetre, LengthUnit::hectometre);
     BOOST_CHECK_EQUAL(hectometres, _hectometres);
 
-    double _decametres = LengthConverter::convert(millimetres, LengthConverter::Units::millimetre, LengthConverter::Units::decametre);
+    double _decametres = LengthConverter::convert(millimetres, LengthUnit::millimetre, LengthUnit::decametre);
     BOOST_CHECK_CLOSE(decametres, _decametres, 0.001);
 
-    double _inches = LengthConverter::convert(millimetres, LengthConverter::Units::millimetre, LengthConverter::Units::inch);
+    double _inches = LengthConverter::convert(millimetres, LengthUnit::millimetre, LengthUnit::inch);
     BOOST_CHECK_CLOSE(inches, _inches, 0.001);
 
-    double _feet = LengthConverter::convert(millimetres, LengthConverter::Units::millimetre, LengthConverter::Units::foot);
+    double _feet = LengthConverter::convert(millimetres, LengthUnit::millimetre, LengthUnit::foot);
     BOOST_CHECK_CLOSE(feet, _feet, 0.001);
 
-    double _yards = LengthConverter::convert(millimetres, LengthConverter::Units::millimetre, LengthConverter::Units::yard);
+    double _yards = LengthConverter::convert(millimetres, LengthUnit::millimetre, LengthUnit::yard);
     BOOST_CHECK_CLOSE(yards, _yards, 0.001);
 
-    double _chains = LengthConverter::convert(millimetres, LengthConverter::Units::millimetre, LengthConverter::Units::chain);
+    double _chains = LengthConverter::convert(millimetres, LengthUnit::millimetre, LengthUnit::chain);
     BOOST_CHECK_CLOSE(chains, _chains, 0.001);
 
-    double _furlongs = LengthConverter::convert(millimetres, LengthConverter::Units::millimetre, LengthConverter::Units::furlong);
+    double _furlongs = LengthConverter::convert(millimetres, LengthUnit::millimetre, LengthUnit::furlong);
     BOOST_CHECK_CLOSE(furlongs, _furlongs, 0.001);
 
-    double _miles = LengthConverter::convert(millimetres, LengthConverter::Units::millimetre, LengthConverter::Units::mile);
+    double _miles = LengthConverter::convert(millimetres, LengthUnit::millimetre, LengthUnit::mile);
     BOOST_CHECK_CLOSE(miles, _miles, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_micrometres, LengthConverterTest)
 {
-    double _metres = LengthConverter::convert(micrometres, LengthConverter::Units::micrometre, LengthConverter::Units::metre);
+    double _metres = LengthConverter::convert(micrometres, LengthUnit::micrometre, LengthUnit::metre);
     BOOST_CHECK_CLOSE(metres, _metres, 0.001);
 
-    double _centimetres = LengthConverter::convert(micrometres, LengthConverter::Units::micrometre, LengthConverter::Units::centimetre);
+    double _centimetres = LengthConverter::convert(micrometres, LengthUnit::micrometre, LengthUnit::centimetre);
     BOOST_CHECK_EQUAL(centimetres, _centimetres);
 
-    double _decimetres = LengthConverter::convert(micrometres, LengthConverter::Units::micrometre, LengthConverter::Units::decimetre);
+    double _decimetres = LengthConverter::convert(micrometres, LengthUnit::micrometre, LengthUnit::decimetre);
     BOOST_CHECK_EQUAL(decimetres, _decimetres);
 
-    double _millimetres = LengthConverter::convert(micrometres, LengthConverter::Units::micrometre, LengthConverter::Units::millimetre);
+    double _millimetres = LengthConverter::convert(micrometres, LengthUnit::micrometre, LengthUnit::millimetre);
     BOOST_CHECK_EQUAL(millimetres, _millimetres);
 
-    double _nanometres = LengthConverter::convert(micrometres, LengthConverter::Units::micrometre, LengthConverter::Units::nanometre);
+    double _nanometres = LengthConverter::convert(micrometres, LengthUnit::micrometre, LengthUnit::nanometre);
     BOOST_CHECK_EQUAL(nanometres, _nanometres);
 
-    double _kilometres = LengthConverter::convert(micrometres, LengthConverter::Units::micrometre, LengthConverter::Units::kilometre);
+    double _kilometres = LengthConverter::convert(micrometres, LengthUnit::micrometre, LengthUnit::kilometre);
     BOOST_CHECK_CLOSE(kilometres, _kilometres, 0.001);
 
-    double _hectometres = LengthConverter::convert(micrometres, LengthConverter::Units::micrometre, LengthConverter::Units::hectometre);
+    double _hectometres = LengthConverter::convert(micrometres, LengthUnit::micrometre, LengthUnit::hectometre);
     BOOST_CHECK_EQUAL(hectometres, _hectometres);
 
-    double _decametres = LengthConverter::convert(micrometres, LengthConverter::Units::micrometre, LengthConverter::Units::decametre);
+    double _decametres = LengthConverter::convert(micrometres, LengthUnit::micrometre, LengthUnit::decametre);
     BOOST_CHECK_CLOSE(decametres, _decametres, 0.001);
 
-    double _inches = LengthConverter::convert(micrometres, LengthConverter::Units::micrometre, LengthConverter::Units::inch);
+    double _inches = LengthConverter::convert(micrometres, LengthUnit::micrometre, LengthUnit::inch);
     BOOST_CHECK_CLOSE(inches, _inches, 0.001);
 
-    double _feet = LengthConverter::convert(micrometres, LengthConverter::Units::micrometre, LengthConverter::Units::foot);
+    double _feet = LengthConverter::convert(micrometres, LengthUnit::micrometre, LengthUnit::foot);
     BOOST_CHECK_CLOSE(feet, _feet, 0.001);
 
-    double _yards = LengthConverter::convert(micrometres, LengthConverter::Units::micrometre, LengthConverter::Units::yard);
+    double _yards = LengthConverter::convert(micrometres, LengthUnit::micrometre, LengthUnit::yard);
     BOOST_CHECK_CLOSE(yards, _yards, 0.001);
 
-    double _chains = LengthConverter::convert(micrometres, LengthConverter::Units::micrometre, LengthConverter::Units::chain);
+    double _chains = LengthConverter::convert(micrometres, LengthUnit::micrometre, LengthUnit::chain);
     BOOST_CHECK_CLOSE(chains, _chains, 0.001);
 
-    double _furlongs = LengthConverter::convert(micrometres, LengthConverter::Units::micrometre, LengthConverter::Units::furlong);
+    double _furlongs = LengthConverter::convert(micrometres, LengthUnit::micrometre, LengthUnit::furlong);
     BOOST_CHECK_CLOSE(furlongs, _furlongs, 0.001);
 
-    double _miles = LengthConverter::convert(micrometres, LengthConverter::Units::micrometre, LengthConverter::Units::mile);
+    double _miles = LengthConverter::convert(micrometres, LengthUnit::micrometre, LengthUnit::mile);
     BOOST_CHECK_CLOSE(miles, _miles, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_nanometres, LengthConverterTest)
 {
-    double _metres = LengthConverter::convert(nanometres, LengthConverter::Units::nanometre, LengthConverter::Units::metre);
+    double _metres = LengthConverter::convert(nanometres, LengthUnit::nanometre, LengthUnit::metre);
     BOOST_CHECK_CLOSE(metres, _metres, 0.001);
 
-    double _centimetres = LengthConverter::convert(nanometres, LengthConverter::Units::nanometre, LengthConverter::Units::centimetre);
+    double _centimetres = LengthConverter::convert(nanometres, LengthUnit::nanometre, LengthUnit::centimetre);
     BOOST_CHECK_CLOSE(centimetres, _centimetres, 0.001);
 
-    double _decimetres = LengthConverter::convert(nanometres, LengthConverter::Units::nanometre, LengthConverter::Units::decimetre);
+    double _decimetres = LengthConverter::convert(nanometres, LengthUnit::nanometre, LengthUnit::decimetre);
     BOOST_CHECK_CLOSE(decimetres, _decimetres, 0.001);
 
-    double _millimetres = LengthConverter::convert(nanometres, LengthConverter::Units::nanometre, LengthConverter::Units::millimetre);
+    double _millimetres = LengthConverter::convert(nanometres, LengthUnit::nanometre, LengthUnit::millimetre);
     BOOST_CHECK_CLOSE(millimetres, _millimetres, 0.001);
 
-    double _micrometres = LengthConverter::convert(nanometres, LengthConverter::Units::nanometre, LengthConverter::Units::micrometre);
+    double _micrometres = LengthConverter::convert(nanometres, LengthUnit::nanometre, LengthUnit::micrometre);
     BOOST_CHECK_EQUAL(micrometres, _micrometres);
 
-    double _kilometres = LengthConverter::convert(nanometres, LengthConverter::Units::nanometre, LengthConverter::Units::kilometre);
+    double _kilometres = LengthConverter::convert(nanometres, LengthUnit::nanometre, LengthUnit::kilometre);
     BOOST_CHECK_CLOSE(kilometres, _kilometres, 0.001);
 
-    double _hectometres = LengthConverter::convert(nanometres, LengthConverter::Units::nanometre, LengthConverter::Units::hectometre);
+    double _hectometres = LengthConverter::convert(nanometres, LengthUnit::nanometre, LengthUnit::hectometre);
     BOOST_CHECK_EQUAL(hectometres, _hectometres);
 
-    double _decametres = LengthConverter::convert(nanometres, LengthConverter::Units::nanometre, LengthConverter::Units::decametre);
+    double _decametres = LengthConverter::convert(nanometres, LengthUnit::nanometre, LengthUnit::decametre);
     BOOST_CHECK_CLOSE(decametres, _decametres, 0.001);
 
-    double _inches = LengthConverter::convert(nanometres, LengthConverter::Units::nanometre, LengthConverter::Units::inch);
+    double _inches = LengthConverter::convert(nanometres, LengthUnit::nanometre, LengthUnit::inch);
     BOOST_CHECK_CLOSE(inches, _inches, 0.001);
 
-    double _feet = LengthConverter::convert(nanometres, LengthConverter::Units::nanometre, LengthConverter::Units::foot);
+    double _feet = LengthConverter::convert(nanometres, LengthUnit::nanometre, LengthUnit::foot);
     BOOST_CHECK_CLOSE(feet, _feet, 0.001);
 
-    double _yards = LengthConverter::convert(nanometres, LengthConverter::Units::nanometre, LengthConverter::Units::yard);
+    double _yards = LengthConverter::convert(nanometres, LengthUnit::nanometre, LengthUnit::yard);
     BOOST_CHECK_CLOSE(yards, _yards, 0.001);
 
-    double _chains = LengthConverter::convert(nanometres, LengthConverter::Units::nanometre, LengthConverter::Units::chain);
+    double _chains = LengthConverter::convert(nanometres, LengthUnit::nanometre, LengthUnit::chain);
     BOOST_CHECK_CLOSE(chains, _chains, 0.001);
 
-    double _furlongs = LengthConverter::convert(nanometres, LengthConverter::Units::nanometre, LengthConverter::Units::furlong);
+    double _furlongs = LengthConverter::convert(nanometres, LengthUnit::nanometre, LengthUnit::furlong);
     BOOST_CHECK_CLOSE(furlongs, _furlongs, 0.001);
 
-    double _miles = LengthConverter::convert(nanometres, LengthConverter::Units::nanometre, LengthConverter::Units::mile);
+    double _miles = LengthConverter::convert(nanometres, LengthUnit::nanometre, LengthUnit::mile);
     BOOST_CHECK_CLOSE(miles, _miles, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_kilometres, LengthConverterTest)
 {
-    double _metres = LengthConverter::convert(kilometres, LengthConverter::Units::kilometre, LengthConverter::Units::metre);
+    double _metres = LengthConverter::convert(kilometres, LengthUnit::kilometre, LengthUnit::metre);
     BOOST_CHECK_CLOSE(metres, _metres, 0.001);
 
-    double _centimetres = LengthConverter::convert(kilometres, LengthConverter::Units::kilometre, LengthConverter::Units::centimetre);
+    double _centimetres = LengthConverter::convert(kilometres, LengthUnit::kilometre, LengthUnit::centimetre);
     BOOST_CHECK_CLOSE(centimetres, _centimetres, 0.001);
 
-    double _decimetres = LengthConverter::convert(kilometres, LengthConverter::Units::kilometre, LengthConverter::Units::decimetre);
+    double _decimetres = LengthConverter::convert(kilometres, LengthUnit::kilometre, LengthUnit::decimetre);
     BOOST_CHECK_CLOSE(decimetres, _decimetres, 0.001);
 
-    double _millimetres = LengthConverter::convert(kilometres, LengthConverter::Units::kilometre, LengthConverter::Units::millimetre);
+    double _millimetres = LengthConverter::convert(kilometres, LengthUnit::kilometre, LengthUnit::millimetre);
     BOOST_CHECK_CLOSE(millimetres, _millimetres, 0.001);
 
-    double _micrometres = LengthConverter::convert(kilometres, LengthConverter::Units::kilometre, LengthConverter::Units::micrometre);
+    double _micrometres = LengthConverter::convert(kilometres, LengthUnit::kilometre, LengthUnit::micrometre);
     BOOST_CHECK_EQUAL(micrometres, _micrometres);
 
-    double _nanometres = LengthConverter::convert(kilometres, LengthConverter::Units::kilometre, LengthConverter::Units::nanometre);
+    double _nanometres = LengthConverter::convert(kilometres, LengthUnit::kilometre, LengthUnit::nanometre);
     BOOST_CHECK_CLOSE(nanometres, _nanometres, 0.001);
 
-    double _hectometres = LengthConverter::convert(kilometres, LengthConverter::Units::kilometre, LengthConverter::Units::hectometre);
+    double _hectometres = LengthConverter::convert(kilometres, LengthUnit::kilometre, LengthUnit::hectometre);
     BOOST_CHECK_EQUAL(hectometres, _hectometres);
 
-    double _decametres = LengthConverter::convert(kilometres, LengthConverter::Units::kilometre, LengthConverter::Units::decametre);
+    double _decametres = LengthConverter::convert(kilometres, LengthUnit::kilometre, LengthUnit::decametre);
     BOOST_CHECK_CLOSE(decametres, _decametres, 0.001);
 
-    double _inches = LengthConverter::convert(kilometres, LengthConverter::Units::kilometre, LengthConverter::Units::inch);
+    double _inches = LengthConverter::convert(kilometres, LengthUnit::kilometre, LengthUnit::inch);
     BOOST_CHECK_CLOSE(inches, _inches, 0.001);
 
-    double _feet = LengthConverter::convert(kilometres, LengthConverter::Units::kilometre, LengthConverter::Units::foot);
+    double _feet = LengthConverter::convert(kilometres, LengthUnit::kilometre, LengthUnit::foot);
     BOOST_CHECK_CLOSE(feet, _feet, 0.001);
 
-    double _yards = LengthConverter::convert(kilometres, LengthConverter::Units::kilometre, LengthConverter::Units::yard);
+    double _yards = LengthConverter::convert(kilometres, LengthUnit::kilometre, LengthUnit::yard);
     BOOST_CHECK_CLOSE(yards, _yards, 0.001);
 
-    double _chains = LengthConverter::convert(kilometres, LengthConverter::Units::kilometre, LengthConverter::Units::chain);
+    double _chains = LengthConverter::convert(kilometres, LengthUnit::kilometre, LengthUnit::chain);
     BOOST_CHECK_CLOSE(chains, _chains, 0.001);
 
-    double _furlongs = LengthConverter::convert(kilometres, LengthConverter::Units::kilometre, LengthConverter::Units::furlong);
+    double _furlongs = LengthConverter::convert(kilometres, LengthUnit::kilometre, LengthUnit::furlong);
     BOOST_CHECK_CLOSE(furlongs, _furlongs, 0.001);
 
-    double _miles = LengthConverter::convert(kilometres, LengthConverter::Units::kilometre, LengthConverter::Units::mile);
+    double _miles = LengthConverter::convert(kilometres, LengthUnit::kilometre, LengthUnit::mile);
     BOOST_CHECK_CLOSE(miles, _miles, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_hectometres, LengthConverterTest)
 {
-    double _metres = LengthConverter::convert(hectometres, LengthConverter::Units::hectometre, LengthConverter::Units::metre);
+    double _metres = LengthConverter::convert(hectometres, LengthUnit::hectometre, LengthUnit::metre);
     BOOST_CHECK_CLOSE(metres, _metres, 0.001);
 
-    double _centimetres = LengthConverter::convert(hectometres, LengthConverter::Units::hectometre, LengthConverter::Units::centimetre);
+    double _centimetres = LengthConverter::convert(hectometres, LengthUnit::hectometre, LengthUnit::centimetre);
     BOOST_CHECK_CLOSE(centimetres, _centimetres, 0.001);
 
-    double _decimetres = LengthConverter::convert(hectometres, LengthConverter::Units::hectometre, LengthConverter::Units::decimetre);
+    double _decimetres = LengthConverter::convert(hectometres, LengthUnit::hectometre, LengthUnit::decimetre);
     BOOST_CHECK_CLOSE(decimetres, _decimetres, 0.001);
 
-    double _millimetres = LengthConverter::convert(hectometres, LengthConverter::Units::hectometre, LengthConverter::Units::millimetre);
+    double _millimetres = LengthConverter::convert(hectometres, LengthUnit::hectometre, LengthUnit::millimetre);
     BOOST_CHECK_CLOSE(millimetres, _millimetres, 0.001);
 
-    double _micrometres = LengthConverter::convert(hectometres, LengthConverter::Units::hectometre, LengthConverter::Units::micrometre);
+    double _micrometres = LengthConverter::convert(hectometres, LengthUnit::hectometre, LengthUnit::micrometre);
     BOOST_CHECK_CLOSE(micrometres, _micrometres, 0.001);
 
-    double _nanometres = LengthConverter::convert(hectometres, LengthConverter::Units::hectometre, LengthConverter::Units::nanometre);
+    double _nanometres = LengthConverter::convert(hectometres, LengthUnit::hectometre, LengthUnit::nanometre);
     BOOST_CHECK_CLOSE(nanometres, _nanometres, 0.001);
 
-    double _kilometres = LengthConverter::convert(hectometres, LengthConverter::Units::hectometre, LengthConverter::Units::kilometre);
+    double _kilometres = LengthConverter::convert(hectometres, LengthUnit::hectometre, LengthUnit::kilometre);
     BOOST_CHECK_CLOSE(kilometres, _kilometres, 0.001);
 
-    double _decametres = LengthConverter::convert(hectometres, LengthConverter::Units::hectometre, LengthConverter::Units::decametre);
+    double _decametres = LengthConverter::convert(hectometres, LengthUnit::hectometre, LengthUnit::decametre);
     BOOST_CHECK_CLOSE(decametres, _decametres, 0.001);
 
-    double _inches = LengthConverter::convert(hectometres, LengthConverter::Units::hectometre, LengthConverter::Units::inch);
+    double _inches = LengthConverter::convert(hectometres, LengthUnit::hectometre, LengthUnit::inch);
     BOOST_CHECK_CLOSE(inches, _inches, 0.001);
 
-    double _feet = LengthConverter::convert(hectometres, LengthConverter::Units::hectometre, LengthConverter::Units::foot);
+    double _feet = LengthConverter::convert(hectometres, LengthUnit::hectometre, LengthUnit::foot);
     BOOST_CHECK_CLOSE(feet, _feet, 0.001);
 
-    double _yards = LengthConverter::convert(hectometres, LengthConverter::Units::hectometre, LengthConverter::Units::yard);
+    double _yards = LengthConverter::convert(hectometres, LengthUnit::hectometre, LengthUnit::yard);
     BOOST_CHECK_CLOSE(yards, _yards, 0.001);
 
-    double _chains = LengthConverter::convert(hectometres, LengthConverter::Units::hectometre, LengthConverter::Units::chain);
+    double _chains = LengthConverter::convert(hectometres, LengthUnit::hectometre, LengthUnit::chain);
     BOOST_CHECK_CLOSE(chains, _chains, 0.001);
 
-    double _furlongs = LengthConverter::convert(hectometres, LengthConverter::Units::hectometre, LengthConverter::Units::furlong);
+    double _furlongs = LengthConverter::convert(hectometres, LengthUnit::hectometre, LengthUnit::furlong);
     BOOST_CHECK_CLOSE(furlongs, _furlongs, 0.001);
 
-    double _miles = LengthConverter::convert(hectometres, LengthConverter::Units::hectometre, LengthConverter::Units::mile);
+    double _miles = LengthConverter::convert(hectometres, LengthUnit::hectometre, LengthUnit::mile);
     BOOST_CHECK_CLOSE(miles, _miles, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_decametres, LengthConverterTest)
 {
-    double _metres = LengthConverter::convert(decametres, LengthConverter::Units::decametre, LengthConverter::Units::metre);
+    double _metres = LengthConverter::convert(decametres, LengthUnit::decametre, LengthUnit::metre);
     BOOST_CHECK_CLOSE(metres, _metres, 0.001);
 
-    double _centimetres = LengthConverter::convert(decametres, LengthConverter::Units::decametre, LengthConverter::Units::centimetre);
+    double _centimetres = LengthConverter::convert(decametres, LengthUnit::decametre, LengthUnit::centimetre);
     BOOST_CHECK_CLOSE(centimetres, _centimetres, 0.001);
 
-    double _decimetres = LengthConverter::convert(decametres, LengthConverter::Units::decametre, LengthConverter::Units::decimetre);
+    double _decimetres = LengthConverter::convert(decametres, LengthUnit::decametre, LengthUnit::decimetre);
     BOOST_CHECK_CLOSE(decimetres, _decimetres, 0.001);
 
-    double _millimetres = LengthConverter::convert(decametres, LengthConverter::Units::decametre, LengthConverter::Units::millimetre);
+    double _millimetres = LengthConverter::convert(decametres, LengthUnit::decametre, LengthUnit::millimetre);
     BOOST_CHECK_CLOSE(millimetres, _millimetres, 0.001);
 
-    double _micrometres = LengthConverter::convert(decametres, LengthConverter::Units::decametre, LengthConverter::Units::micrometre);
+    double _micrometres = LengthConverter::convert(decametres, LengthUnit::decametre, LengthUnit::micrometre);
     BOOST_CHECK_CLOSE(micrometres, _micrometres, 0.001);
 
-    double _nanometres = LengthConverter::convert(decametres, LengthConverter::Units::decametre, LengthConverter::Units::nanometre);
+    double _nanometres = LengthConverter::convert(decametres, LengthUnit::decametre, LengthUnit::nanometre);
     BOOST_CHECK_CLOSE(nanometres, _nanometres, 0.001);
 
-    double _kilometres = LengthConverter::convert(decametres, LengthConverter::Units::decametre, LengthConverter::Units::kilometre);
+    double _kilometres = LengthConverter::convert(decametres, LengthUnit::decametre, LengthUnit::kilometre);
     BOOST_CHECK_CLOSE(kilometres, _kilometres, 0.001);
 
-    double _hectometres = LengthConverter::convert(decametres, LengthConverter::Units::decametre, LengthConverter::Units::hectometre);
+    double _hectometres = LengthConverter::convert(decametres, LengthUnit::decametre, LengthUnit::hectometre);
     BOOST_CHECK_CLOSE(hectometres, _hectometres, 0.001);
 
-    double _inches = LengthConverter::convert(decametres, LengthConverter::Units::decametre, LengthConverter::Units::inch);
+    double _inches = LengthConverter::convert(decametres, LengthUnit::decametre, LengthUnit::inch);
     BOOST_CHECK_CLOSE(inches, _inches, 0.001);
 
-    double _feet = LengthConverter::convert(decametres, LengthConverter::Units::decametre, LengthConverter::Units::foot);
+    double _feet = LengthConverter::convert(decametres, LengthUnit::decametre, LengthUnit::foot);
     BOOST_CHECK_CLOSE(feet, _feet, 0.001);
 
-    double _yards = LengthConverter::convert(decametres, LengthConverter::Units::decametre, LengthConverter::Units::yard);
+    double _yards = LengthConverter::convert(decametres, LengthUnit::decametre, LengthUnit::yard);
     BOOST_CHECK_CLOSE(yards, _yards, 0.001);
 
-    double _chains = LengthConverter::convert(decametres, LengthConverter::Units::decametre, LengthConverter::Units::chain);
+    double _chains = LengthConverter::convert(decametres, LengthUnit::decametre, LengthUnit::chain);
     BOOST_CHECK_CLOSE(chains, _chains, 0.001);
 
-    double _furlongs = LengthConverter::convert(decametres, LengthConverter::Units::decametre, LengthConverter::Units::furlong);
+    double _furlongs = LengthConverter::convert(decametres, LengthUnit::decametre, LengthUnit::furlong);
     BOOST_CHECK_CLOSE(furlongs, _furlongs, 0.001);
 
-    double _miles = LengthConverter::convert(decametres, LengthConverter::Units::decametre, LengthConverter::Units::mile);
+    double _miles = LengthConverter::convert(decametres, LengthUnit::decametre, LengthUnit::mile);
     BOOST_CHECK_CLOSE(miles, _miles, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_inches, LengthConverterTest)
 {
-    double _metres = LengthConverter::convert(inches, LengthConverter::Units::inch, LengthConverter::Units::metre);
+    double _metres = LengthConverter::convert(inches, LengthUnit::inch, LengthUnit::metre);
     BOOST_CHECK_CLOSE(metres, _metres, 0.001);
 
-    double _centimetres = LengthConverter::convert(inches, LengthConverter::Units::inch, LengthConverter::Units::centimetre);
+    double _centimetres = LengthConverter::convert(inches, LengthUnit::inch, LengthUnit::centimetre);
     BOOST_CHECK_CLOSE(centimetres, _centimetres, 0.001);
 
-    double _decimetres = LengthConverter::convert(inches, LengthConverter::Units::inch, LengthConverter::Units::decimetre);
+    double _decimetres = LengthConverter::convert(inches, LengthUnit::inch, LengthUnit::decimetre);
     BOOST_CHECK_CLOSE(decimetres, _decimetres, 0.001);
 
-    double _millimetres = LengthConverter::convert(inches, LengthConverter::Units::inch, LengthConverter::Units::millimetre);
+    double _millimetres = LengthConverter::convert(inches, LengthUnit::inch, LengthUnit::millimetre);
     BOOST_CHECK_CLOSE(millimetres, _millimetres, 0.001);
 
-    double _micrometres = LengthConverter::convert(inches, LengthConverter::Units::inch, LengthConverter::Units::micrometre);
+    double _micrometres = LengthConverter::convert(inches, LengthUnit::inch, LengthUnit::micrometre);
     BOOST_CHECK_CLOSE(micrometres, _micrometres, 0.001);
 
-    double _nanometres = LengthConverter::convert(inches, LengthConverter::Units::inch, LengthConverter::Units::nanometre);
+    double _nanometres = LengthConverter::convert(inches, LengthUnit::inch, LengthUnit::nanometre);
     BOOST_CHECK_CLOSE(nanometres, _nanometres, 0.001);
 
-    double _kilometres = LengthConverter::convert(inches, LengthConverter::Units::inch, LengthConverter::Units::kilometre);
+    double _kilometres = LengthConverter::convert(inches, LengthUnit::inch, LengthUnit::kilometre);
     BOOST_CHECK_CLOSE(kilometres, _kilometres, 0.001);
 
-    double _hectometres = LengthConverter::convert(inches, LengthConverter::Units::inch, LengthConverter::Units::hectometre);
+    double _hectometres = LengthConverter::convert(inches, LengthUnit::inch, LengthUnit::hectometre);
     BOOST_CHECK_CLOSE(hectometres, _hectometres, 0.001);
 
-    double _decametres = LengthConverter::convert(inches, LengthConverter::Units::inch, LengthConverter::Units::decametre);
+    double _decametres = LengthConverter::convert(inches, LengthUnit::inch, LengthUnit::decametre);
     BOOST_CHECK_CLOSE(decametres, _decametres, 0.001);
 
-    double _feet = LengthConverter::convert(inches, LengthConverter::Units::inch, LengthConverter::Units::foot);
+    double _feet = LengthConverter::convert(inches, LengthUnit::inch, LengthUnit::foot);
     BOOST_CHECK_CLOSE(feet, _feet, 0.001);
 
-    double _yards = LengthConverter::convert(inches, LengthConverter::Units::inch, LengthConverter::Units::yard);
+    double _yards = LengthConverter::convert(inches, LengthUnit::inch, LengthUnit::yard);
     BOOST_CHECK_CLOSE(yards, _yards, 0.001);
 
-    double _chains = LengthConverter::convert(inches, LengthConverter::Units::inch, LengthConverter::Units::chain);
+    double _chains = LengthConverter::convert(inches, LengthUnit::inch, LengthUnit::chain);
     BOOST_CHECK_CLOSE(chains, _chains, 0.001);
 
-    double _furlongs = LengthConverter::convert(inches, LengthConverter::Units::inch, LengthConverter::Units::furlong);
+    double _furlongs = LengthConverter::convert(inches, LengthUnit::inch, LengthUnit::furlong);
     BOOST_CHECK_CLOSE(furlongs, _furlongs, 0.001);
 
-    double _miles = LengthConverter::convert(inches, LengthConverter::Units::inch, LengthConverter::Units::mile);
+    double _miles = LengthConverter::convert(inches, LengthUnit::inch, LengthUnit::mile);
     BOOST_CHECK_CLOSE(miles, _miles, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_feet, LengthConverterTest)
 {
-    double _metres = LengthConverter::convert(feet, LengthConverter::Units::foot, LengthConverter::Units::metre);
+    double _metres = LengthConverter::convert(feet, LengthUnit::foot, LengthUnit::metre);
     BOOST_CHECK_CLOSE(metres, _metres, 0.001);
 
-    double _centimetres = LengthConverter::convert(feet, LengthConverter::Units::foot, LengthConverter::Units::centimetre);
+    double _centimetres = LengthConverter::convert(feet, LengthUnit::foot, LengthUnit::centimetre);
     BOOST_CHECK_CLOSE(centimetres, _centimetres, 0.001);
 
-    double _decimetres = LengthConverter::convert(feet, LengthConverter::Units::foot, LengthConverter::Units::decimetre);
+    double _decimetres = LengthConverter::convert(feet, LengthUnit::foot, LengthUnit::decimetre);
     BOOST_CHECK_CLOSE(decimetres, _decimetres, 0.001);
 
-    double _millimetres = LengthConverter::convert(feet, LengthConverter::Units::foot, LengthConverter::Units::millimetre);
+    double _millimetres = LengthConverter::convert(feet, LengthUnit::foot, LengthUnit::millimetre);
     BOOST_CHECK_CLOSE(millimetres, _millimetres, 0.001);
 
-    double _micrometres = LengthConverter::convert(feet, LengthConverter::Units::foot, LengthConverter::Units::micrometre);
+    double _micrometres = LengthConverter::convert(feet, LengthUnit::foot, LengthUnit::micrometre);
     BOOST_CHECK_CLOSE(micrometres, _micrometres, 0.001);
 
-    double _nanometres = LengthConverter::convert(feet, LengthConverter::Units::foot, LengthConverter::Units::nanometre);
+    double _nanometres = LengthConverter::convert(feet, LengthUnit::foot, LengthUnit::nanometre);
     BOOST_CHECK_CLOSE(nanometres, _nanometres, 0.001);
 
-    double _kilometres = LengthConverter::convert(feet, LengthConverter::Units::foot, LengthConverter::Units::kilometre);
+    double _kilometres = LengthConverter::convert(feet, LengthUnit::foot, LengthUnit::kilometre);
     BOOST_CHECK_CLOSE(kilometres, _kilometres, 0.001);
 
-    double _hectometres = LengthConverter::convert(feet, LengthConverter::Units::foot, LengthConverter::Units::hectometre);
+    double _hectometres = LengthConverter::convert(feet, LengthUnit::foot, LengthUnit::hectometre);
     BOOST_CHECK_CLOSE(hectometres, _hectometres, 0.001);
 
-    double _decametres = LengthConverter::convert(feet, LengthConverter::Units::foot, LengthConverter::Units::decametre);
+    double _decametres = LengthConverter::convert(feet, LengthUnit::foot, LengthUnit::decametre);
     BOOST_CHECK_CLOSE(decametres, _decametres, 0.001);
 
-    double _inches = LengthConverter::convert(feet, LengthConverter::Units::foot, LengthConverter::Units::inch);
+    double _inches = LengthConverter::convert(feet, LengthUnit::foot, LengthUnit::inch);
     BOOST_CHECK_CLOSE(inches, _inches, 0.001);
 
-    double _yards = LengthConverter::convert(feet, LengthConverter::Units::foot, LengthConverter::Units::yard);
+    double _yards = LengthConverter::convert(feet, LengthUnit::foot, LengthUnit::yard);
     BOOST_CHECK_CLOSE(yards, _yards, 0.001);
 
-    double _chains = LengthConverter::convert(feet, LengthConverter::Units::foot, LengthConverter::Units::chain);
+    double _chains = LengthConverter::convert(feet, LengthUnit::foot, LengthUnit::chain);
     BOOST_CHECK_CLOSE(chains, _chains, 0.001);
 
-    double _furlongs = LengthConverter::convert(feet, LengthConverter::Units::foot, LengthConverter::Units::furlong);
+    double _furlongs = LengthConverter::convert(feet, LengthUnit::foot, LengthUnit::furlong);
     BOOST_CHECK_CLOSE(furlongs, _furlongs, 0.001);
 
-    double _miles = LengthConverter::convert(feet, LengthConverter::Units::foot, LengthConverter::Units::mile);
+    double _miles = LengthConverter::convert(feet, LengthUnit::foot, LengthUnit::mile);
     BOOST_CHECK_CLOSE(miles, _miles, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_yards, LengthConverterTest)
 {
-    double _metres = LengthConverter::convert(yards, LengthConverter::Units::yard, LengthConverter::Units::metre);
+    double _metres = LengthConverter::convert(yards, LengthUnit::yard, LengthUnit::metre);
     BOOST_CHECK_CLOSE(metres, _metres, 0.001);
 
-    double _centimetres = LengthConverter::convert(yards, LengthConverter::Units::yard, LengthConverter::Units::centimetre);
+    double _centimetres = LengthConverter::convert(yards, LengthUnit::yard, LengthUnit::centimetre);
     BOOST_CHECK_CLOSE(centimetres, _centimetres, 0.001);
 
-    double _decimetres = LengthConverter::convert(yards, LengthConverter::Units::yard, LengthConverter::Units::decimetre);
+    double _decimetres = LengthConverter::convert(yards, LengthUnit::yard, LengthUnit::decimetre);
     BOOST_CHECK_CLOSE(decimetres, _decimetres, 0.001);
 
-    double _millimetres = LengthConverter::convert(yards, LengthConverter::Units::yard, LengthConverter::Units::millimetre);
+    double _millimetres = LengthConverter::convert(yards, LengthUnit::yard, LengthUnit::millimetre);
     BOOST_CHECK_CLOSE(millimetres, _millimetres, 0.001);
 
-    double _micrometres = LengthConverter::convert(yards, LengthConverter::Units::yard, LengthConverter::Units::micrometre);
+    double _micrometres = LengthConverter::convert(yards, LengthUnit::yard, LengthUnit::micrometre);
     BOOST_CHECK_CLOSE(micrometres, _micrometres, 0.001);
 
-    double _nanometres = LengthConverter::convert(yards, LengthConverter::Units::yard, LengthConverter::Units::nanometre);
+    double _nanometres = LengthConverter::convert(yards, LengthUnit::yard, LengthUnit::nanometre);
     BOOST_CHECK_CLOSE(nanometres, _nanometres, 0.001);
 
-    double _kilometres = LengthConverter::convert(yards, LengthConverter::Units::yard, LengthConverter::Units::kilometre);
+    double _kilometres = LengthConverter::convert(yards, LengthUnit::yard, LengthUnit::kilometre);
     BOOST_CHECK_CLOSE(kilometres, _kilometres, 0.001);
 
-    double _hectometres = LengthConverter::convert(yards, LengthConverter::Units::yard, LengthConverter::Units::hectometre);
+    double _hectometres = LengthConverter::convert(yards, LengthUnit::yard, LengthUnit::hectometre);
     BOOST_CHECK_CLOSE(hectometres, _hectometres, 0.001);
 
-    double _decametres = LengthConverter::convert(yards, LengthConverter::Units::yard, LengthConverter::Units::decametre);
+    double _decametres = LengthConverter::convert(yards, LengthUnit::yard, LengthUnit::decametre);
     BOOST_CHECK_CLOSE(decametres, _decametres, 0.001);
 
-    double _inches = LengthConverter::convert(yards, LengthConverter::Units::yard, LengthConverter::Units::inch);
+    double _inches = LengthConverter::convert(yards, LengthUnit::yard, LengthUnit::inch);
     BOOST_CHECK_CLOSE(inches, _inches, 0.001);
 
-    double _feet = LengthConverter::convert(yards, LengthConverter::Units::yard, LengthConverter::Units::foot);
+    double _feet = LengthConverter::convert(yards, LengthUnit::yard, LengthUnit::foot);
     BOOST_CHECK_CLOSE(feet, _feet, 0.001);
 
-    double _chains = LengthConverter::convert(yards, LengthConverter::Units::yard, LengthConverter::Units::chain);
+    double _chains = LengthConverter::convert(yards, LengthUnit::yard, LengthUnit::chain);
     BOOST_CHECK_CLOSE(chains, _chains, 0.001);
 
-    double _furlongs = LengthConverter::convert(yards, LengthConverter::Units::yard, LengthConverter::Units::furlong);
+    double _furlongs = LengthConverter::convert(yards, LengthUnit::yard, LengthUnit::furlong);
     BOOST_CHECK_CLOSE(furlongs, _furlongs, 0.001);
 
-    double _miles = LengthConverter::convert(yards, LengthConverter::Units::yard, LengthConverter::Units::mile);
+    double _miles = LengthConverter::convert(yards, LengthUnit::yard, LengthUnit::mile);
     BOOST_CHECK_CLOSE(miles, _miles, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_chains, LengthConverterTest)
 {
-    double _metres = LengthConverter::convert(chains, LengthConverter::Units::chain, LengthConverter::Units::metre);
+    double _metres = LengthConverter::convert(chains, LengthUnit::chain, LengthUnit::metre);
     BOOST_CHECK_CLOSE(metres, _metres, 0.001);
 
-    double _centimetres = LengthConverter::convert(chains, LengthConverter::Units::chain, LengthConverter::Units::centimetre);
+    double _centimetres = LengthConverter::convert(chains, LengthUnit::chain, LengthUnit::centimetre);
     BOOST_CHECK_CLOSE(centimetres, _centimetres, 0.001);
 
-    double _decimetres = LengthConverter::convert(chains, LengthConverter::Units::chain, LengthConverter::Units::decimetre);
+    double _decimetres = LengthConverter::convert(chains, LengthUnit::chain, LengthUnit::decimetre);
     BOOST_CHECK_CLOSE(decimetres, _decimetres, 0.001);
 
-    double _millimetres = LengthConverter::convert(chains, LengthConverter::Units::chain, LengthConverter::Units::millimetre);
+    double _millimetres = LengthConverter::convert(chains, LengthUnit::chain, LengthUnit::millimetre);
     BOOST_CHECK_CLOSE(millimetres, _millimetres, 0.001);
 
-    double _micrometres = LengthConverter::convert(chains, LengthConverter::Units::chain, LengthConverter::Units::micrometre);
+    double _micrometres = LengthConverter::convert(chains, LengthUnit::chain, LengthUnit::micrometre);
     BOOST_CHECK_CLOSE(micrometres, _micrometres, 0.001);
 
-    double _nanometres = LengthConverter::convert(chains, LengthConverter::Units::chain, LengthConverter::Units::nanometre);
+    double _nanometres = LengthConverter::convert(chains, LengthUnit::chain, LengthUnit::nanometre);
     BOOST_CHECK_CLOSE(nanometres, _nanometres, 0.001);
 
-    double _kilometres = LengthConverter::convert(chains, LengthConverter::Units::chain, LengthConverter::Units::kilometre);
+    double _kilometres = LengthConverter::convert(chains, LengthUnit::chain, LengthUnit::kilometre);
     BOOST_CHECK_CLOSE(kilometres, _kilometres, 0.001);
 
-    double _hectometres = LengthConverter::convert(chains, LengthConverter::Units::chain, LengthConverter::Units::hectometre);
+    double _hectometres = LengthConverter::convert(chains, LengthUnit::chain, LengthUnit::hectometre);
     BOOST_CHECK_CLOSE(hectometres, _hectometres, 0.001);
 
-    double _decametres = LengthConverter::convert(chains, LengthConverter::Units::chain, LengthConverter::Units::decametre);
+    double _decametres = LengthConverter::convert(chains, LengthUnit::chain, LengthUnit::decametre);
     BOOST_CHECK_CLOSE(decametres, _decametres, 0.001);
 
-    double _inches = LengthConverter::convert(chains, LengthConverter::Units::chain, LengthConverter::Units::inch);
+    double _inches = LengthConverter::convert(chains, LengthUnit::chain, LengthUnit::inch);
     BOOST_CHECK_CLOSE(inches, _inches, 0.001);
 
-    double _feet = LengthConverter::convert(chains, LengthConverter::Units::chain, LengthConverter::Units::foot);
+    double _feet = LengthConverter::convert(chains, LengthUnit::chain, LengthUnit::foot);
     BOOST_CHECK_CLOSE(feet, _feet, 0.001);
 
-    double _yards = LengthConverter::convert(chains, LengthConverter::Units::chain, LengthConverter::Units::yard);
+    double _yards = LengthConverter::convert(chains, LengthUnit::chain, LengthUnit::yard);
     BOOST_CHECK_CLOSE(yards, _yards, 0.001);
 
-    double _furlongs = LengthConverter::convert(chains, LengthConverter::Units::chain, LengthConverter::Units::furlong);
+    double _furlongs = LengthConverter::convert(chains, LengthUnit::chain, LengthUnit::furlong);
     BOOST_CHECK_CLOSE(furlongs, _furlongs, 0.001);
 
-    double _miles = LengthConverter::convert(chains, LengthConverter::Units::chain, LengthConverter::Units::mile);
+    double _miles = LengthConverter::convert(chains, LengthUnit::chain, LengthUnit::mile);
     BOOST_CHECK_CLOSE(miles, _miles, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_furlongs, LengthConverterTest)
 {
-    double _metres = LengthConverter::convert(furlongs, LengthConverter::Units::furlong, LengthConverter::Units::metre);
+    double _metres = LengthConverter::convert(furlongs, LengthUnit::furlong, LengthUnit::metre);
     BOOST_CHECK_CLOSE(metres, _metres, 0.001);
 
-    double _centimetres = LengthConverter::convert(furlongs, LengthConverter::Units::furlong, LengthConverter::Units::centimetre);
+    double _centimetres = LengthConverter::convert(furlongs, LengthUnit::furlong, LengthUnit::centimetre);
     BOOST_CHECK_CLOSE(centimetres, _centimetres, 0.001);
 
-    double _decimetres = LengthConverter::convert(furlongs, LengthConverter::Units::furlong, LengthConverter::Units::decimetre);
+    double _decimetres = LengthConverter::convert(furlongs, LengthUnit::furlong, LengthUnit::decimetre);
     BOOST_CHECK_CLOSE(decimetres, _decimetres, 0.001);
 
-    double _millimetres = LengthConverter::convert(furlongs, LengthConverter::Units::furlong, LengthConverter::Units::millimetre);
+    double _millimetres = LengthConverter::convert(furlongs, LengthUnit::furlong, LengthUnit::millimetre);
     BOOST_CHECK_CLOSE(millimetres, _millimetres, 0.001);
 
-    double _micrometres = LengthConverter::convert(furlongs, LengthConverter::Units::furlong, LengthConverter::Units::micrometre);
+    double _micrometres = LengthConverter::convert(furlongs, LengthUnit::furlong, LengthUnit::micrometre);
     BOOST_CHECK_CLOSE(micrometres, _micrometres, 0.001);
 
-    double _nanometres = LengthConverter::convert(furlongs, LengthConverter::Units::furlong, LengthConverter::Units::nanometre);
+    double _nanometres = LengthConverter::convert(furlongs, LengthUnit::furlong, LengthUnit::nanometre);
     BOOST_CHECK_CLOSE(nanometres, _nanometres, 0.001);
 
-    double _kilometres = LengthConverter::convert(furlongs, LengthConverter::Units::furlong, LengthConverter::Units::kilometre);
+    double _kilometres = LengthConverter::convert(furlongs, LengthUnit::furlong, LengthUnit::kilometre);
     BOOST_CHECK_CLOSE(kilometres, _kilometres, 0.001);
 
-    double _hectometres = LengthConverter::convert(furlongs, LengthConverter::Units::furlong, LengthConverter::Units::hectometre);
+    double _hectometres = LengthConverter::convert(furlongs, LengthUnit::furlong, LengthUnit::hectometre);
     BOOST_CHECK_CLOSE(hectometres, _hectometres, 0.001);
 
-    double _decametres = LengthConverter::convert(furlongs, LengthConverter::Units::furlong, LengthConverter::Units::decametre);
+    double _decametres = LengthConverter::convert(furlongs, LengthUnit::furlong, LengthUnit::decametre);
     BOOST_CHECK_CLOSE(decametres, _decametres, 0.001);
 
-    double _inches = LengthConverter::convert(furlongs, LengthConverter::Units::furlong, LengthConverter::Units::inch);
+    double _inches = LengthConverter::convert(furlongs, LengthUnit::furlong, LengthUnit::inch);
     BOOST_CHECK_CLOSE(inches, _inches, 0.001);
 
-    double _feet = LengthConverter::convert(furlongs, LengthConverter::Units::furlong, LengthConverter::Units::foot);
+    double _feet = LengthConverter::convert(furlongs, LengthUnit::furlong, LengthUnit::foot);
     BOOST_CHECK_CLOSE(feet, _feet, 0.001);
 
-    double _yards = LengthConverter::convert(furlongs, LengthConverter::Units::furlong, LengthConverter::Units::yard);
+    double _yards = LengthConverter::convert(furlongs, LengthUnit::furlong, LengthUnit::yard);
     BOOST_CHECK_CLOSE(yards, _yards, 0.001);
 
-    double _chains = LengthConverter::convert(furlongs, LengthConverter::Units::furlong, LengthConverter::Units::chain);
+    double _chains = LengthConverter::convert(furlongs, LengthUnit::furlong, LengthUnit::chain);
     BOOST_CHECK_CLOSE(chains, _chains, 0.001);
 
-    double _miles = LengthConverter::convert(furlongs, LengthConverter::Units::furlong, LengthConverter::Units::mile);
+    double _miles = LengthConverter::convert(furlongs, LengthUnit::furlong, LengthUnit::mile);
     BOOST_CHECK_CLOSE(miles, _miles, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_miles, LengthConverterTest)
 {
-    double _metres = LengthConverter::convert(miles, LengthConverter::Units::mile, LengthConverter::Units::metre);
+    double _metres = LengthConverter::convert(miles, LengthUnit::mile, LengthUnit::metre);
     BOOST_CHECK_CLOSE(metres, _metres, 0.001);
 
-    double _centimetres = LengthConverter::convert(miles, LengthConverter::Units::mile, LengthConverter::Units::centimetre);
+    double _centimetres = LengthConverter::convert(miles, LengthUnit::mile, LengthUnit::centimetre);
     BOOST_CHECK_CLOSE(centimetres, _centimetres, 0.001);
 
-    double _decimetres = LengthConverter::convert(miles, LengthConverter::Units::mile, LengthConverter::Units::decimetre);
+    double _decimetres = LengthConverter::convert(miles, LengthUnit::mile, LengthUnit::decimetre);
     BOOST_CHECK_CLOSE(decimetres, _decimetres, 0.001);
 
-    double _millimetres = LengthConverter::convert(miles, LengthConverter::Units::mile, LengthConverter::Units::millimetre);
+    double _millimetres = LengthConverter::convert(miles, LengthUnit::mile, LengthUnit::millimetre);
     BOOST_CHECK_CLOSE(millimetres, _millimetres, 0.001);
 
-    double _micrometres = LengthConverter::convert(miles, LengthConverter::Units::mile, LengthConverter::Units::micrometre);
+    double _micrometres = LengthConverter::convert(miles, LengthUnit::mile, LengthUnit::micrometre);
     BOOST_CHECK_CLOSE(micrometres, _micrometres, 0.001);
 
-    double _nanometres = LengthConverter::convert(miles, LengthConverter::Units::mile, LengthConverter::Units::nanometre);
+    double _nanometres = LengthConverter::convert(miles, LengthUnit::mile, LengthUnit::nanometre);
     BOOST_CHECK_CLOSE(nanometres, _nanometres, 0.001);
 
-    double _kilometres = LengthConverter::convert(miles, LengthConverter::Units::mile, LengthConverter::Units::kilometre);
+    double _kilometres = LengthConverter::convert(miles, LengthUnit::mile, LengthUnit::kilometre);
     BOOST_CHECK_CLOSE(kilometres, _kilometres, 0.001);
 
-    double _hectometres = LengthConverter::convert(miles, LengthConverter::Units::mile, LengthConverter::Units::hectometre);
+    double _hectometres = LengthConverter::convert(miles, LengthUnit::mile, LengthUnit::hectometre);
     BOOST_CHECK_CLOSE(hectometres, _hectometres, 0.001);
 
-    double _decametres = LengthConverter::convert(miles, LengthConverter::Units::mile, LengthConverter::Units::decametre);
+    double _decametres = LengthConverter::convert(miles, LengthUnit::mile, LengthUnit::decametre);
     BOOST_CHECK_CLOSE(decametres, _decametres, 0.001);
 
-    double _inches = LengthConverter::convert(miles, LengthConverter::Units::mile, LengthConverter::Units::inch);
+    double _inches = LengthConverter::convert(miles, LengthUnit::mile, LengthUnit::inch);
     BOOST_CHECK_CLOSE(inches, _inches, 0.001);
 
-    double _feet = LengthConverter::convert(miles, LengthConverter::Units::mile, LengthConverter::Units::foot);
+    double _feet = LengthConverter::convert(miles, LengthUnit::mile, LengthUnit::foot);
     BOOST_CHECK_CLOSE(feet, _feet, 0.001);
 
-    double _yards = LengthConverter::convert(miles, LengthConverter::Units::mile, LengthConverter::Units::yard);
+    double _yards = LengthConverter::convert(miles, LengthUnit::mile, LengthUnit::yard);
     BOOST_CHECK_CLOSE(yards, _yards, 0.001);
 
-    double _chains = LengthConverter::convert(miles, LengthConverter::Units::mile, LengthConverter::Units::chain);
+    double _chains = LengthConverter::convert(miles, LengthUnit::mile, LengthUnit::chain);
     BOOST_CHECK_CLOSE(chains, _chains, 0.001);
 
-    double _furlongs = LengthConverter::convert(miles, LengthConverter::Units::mile, LengthConverter::Units::furlong);
+    double _furlongs = LengthConverter::convert(miles, LengthUnit::mile, LengthUnit::furlong);
     BOOST_CHECK_CLOSE(furlongs, _furlongs, 0.001);
 }
 
@@ -800,770 +801,959 @@ struct MassConverterTest
 
 BOOST_FIXTURE_TEST_CASE(from_grams, MassConverterTest)
 {
-    double _decigrams = MassConverter::convert(grams, MassConverter::Units::gram, MassConverter::Units::decigram);
+    double _decigrams = MassConverter::convert(grams, MassUnit::gram, MassUnit::decigram);
     BOOST_CHECK_EQUAL(decigrams, _decigrams);
 
-    double _centigrams = MassConverter::convert(grams, MassConverter::Units::gram, MassConverter::Units::centigram);
+    double _centigrams = MassConverter::convert(grams, MassUnit::gram, MassUnit::centigram);
     BOOST_CHECK_EQUAL(centigrams, _centigrams);
 
-    double _milligrams = MassConverter::convert(grams, MassConverter::Units::gram, MassConverter::Units::milligram);
+    double _milligrams = MassConverter::convert(grams, MassUnit::gram, MassUnit::milligram);
     BOOST_CHECK_EQUAL(milligrams, _milligrams);
 
-    double _micrograms = MassConverter::convert(grams, MassConverter::Units::gram, MassConverter::Units::microgram);
+    double _micrograms = MassConverter::convert(grams, MassUnit::gram, MassUnit::microgram);
     BOOST_CHECK_EQUAL(micrograms, _micrograms);
 
-    double _nanograms = MassConverter::convert(grams, MassConverter::Units::gram, MassConverter::Units::nanogram);
+    double _nanograms = MassConverter::convert(grams, MassUnit::gram, MassUnit::nanogram);
     BOOST_CHECK_EQUAL(nanograms, _nanograms);
 
-    double _kilograms = MassConverter::convert(grams, MassConverter::Units::gram, MassConverter::Units::kilogram);
+    double _kilograms = MassConverter::convert(grams, MassUnit::gram, MassUnit::kilogram);
     BOOST_CHECK_CLOSE(kilograms, _kilograms, 0.001);
 
-    double _hectograms = MassConverter::convert(grams, MassConverter::Units::gram, MassConverter::Units::hectogram);
+    double _hectograms = MassConverter::convert(grams, MassUnit::gram, MassUnit::hectogram);
     BOOST_CHECK_EQUAL(hectograms, _hectograms);
 
-    double _decagrams = MassConverter::convert(grams, MassConverter::Units::gram, MassConverter::Units::decagram);
+    double _decagrams = MassConverter::convert(grams, MassUnit::gram, MassUnit::decagram);
     BOOST_CHECK_EQUAL(decagrams, _decagrams);
 
-    double _grains = MassConverter::convert(grams, MassConverter::Units::gram, MassConverter::Units::grain);
+    double _grains = MassConverter::convert(grams, MassUnit::gram, MassUnit::grain);
     BOOST_CHECK_CLOSE(grains, _grains, 0.001);
 
-    double _ounces = MassConverter::convert(grams, MassConverter::Units::gram, MassConverter::Units::ounce);
+    double _ounces = MassConverter::convert(grams, MassUnit::gram, MassUnit::ounce);
     BOOST_CHECK_CLOSE(ounces, _ounces, 0.001);
 
-    double _pounds = MassConverter::convert(grams, MassConverter::Units::gram, MassConverter::Units::pound);
+    double _pounds = MassConverter::convert(grams, MassUnit::gram, MassUnit::pound);
     BOOST_CHECK_CLOSE(pounds, _pounds, 0.001);
 
-    double _stones = MassConverter::convert(grams, MassConverter::Units::gram, MassConverter::Units::stone);
+    double _stones = MassConverter::convert(grams, MassUnit::gram, MassUnit::stone);
     BOOST_CHECK_CLOSE(stones, _stones, 0.001);
 
-    double _quarters = MassConverter::convert(grams, MassConverter::Units::gram, MassConverter::Units::quarter);
+    double _quarters = MassConverter::convert(grams, MassUnit::gram, MassUnit::quarter);
     BOOST_CHECK_CLOSE(quarters, _quarters, 0.001);
 
-    double _hundredweights = MassConverter::convert(grams, MassConverter::Units::gram, MassConverter::Units::hundredweight);
+    double _hundredweights = MassConverter::convert(grams, MassUnit::gram, MassUnit::hundredweight);
     BOOST_CHECK_CLOSE(hundredweights, _hundredweights, 0.001);
 
-    double _tons = MassConverter::convert(grams, MassConverter::Units::gram, MassConverter::Units::ton);
+    double _tons = MassConverter::convert(grams, MassUnit::gram, MassUnit::ton);
     BOOST_CHECK_CLOSE(tons, _tons, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_decigrams, MassConverterTest)
 {
-    double _grams = MassConverter::convert(decigrams, MassConverter::Units::decigram, MassConverter::Units::gram);
+    double _grams = MassConverter::convert(decigrams, MassUnit::decigram, MassUnit::gram);
     BOOST_CHECK_EQUAL(grams, _grams);
 
-    double _centigrams = MassConverter::convert(decigrams, MassConverter::Units::decigram, MassConverter::Units::centigram);
+    double _centigrams = MassConverter::convert(decigrams, MassUnit::decigram, MassUnit::centigram);
     BOOST_CHECK_EQUAL(centigrams, _centigrams);
 
-    double _milligrams = MassConverter::convert(decigrams, MassConverter::Units::decigram, MassConverter::Units::milligram);
+    double _milligrams = MassConverter::convert(decigrams, MassUnit::decigram, MassUnit::milligram);
     BOOST_CHECK_EQUAL(milligrams, _milligrams);
 
-    double _micrograms = MassConverter::convert(decigrams, MassConverter::Units::decigram, MassConverter::Units::microgram);
+    double _micrograms = MassConverter::convert(decigrams, MassUnit::decigram, MassUnit::microgram);
     BOOST_CHECK_EQUAL(micrograms, _micrograms);
 
-    double _nanograms = MassConverter::convert(decigrams, MassConverter::Units::decigram, MassConverter::Units::nanogram);
+    double _nanograms = MassConverter::convert(decigrams, MassUnit::decigram, MassUnit::nanogram);
     BOOST_CHECK_EQUAL(nanograms, _nanograms);
 
-    double _kilograms = MassConverter::convert(decigrams, MassConverter::Units::decigram, MassConverter::Units::kilogram);
+    double _kilograms = MassConverter::convert(decigrams, MassUnit::decigram, MassUnit::kilogram);
     BOOST_CHECK_CLOSE(kilograms, _kilograms, 0.001);
 
-    double _hectograms = MassConverter::convert(decigrams, MassConverter::Units::decigram, MassConverter::Units::hectogram);
+    double _hectograms = MassConverter::convert(decigrams, MassUnit::decigram, MassUnit::hectogram);
     BOOST_CHECK_EQUAL(hectograms, _hectograms);
 
-    double _decagrams = MassConverter::convert(decigrams, MassConverter::Units::decigram, MassConverter::Units::decagram);
+    double _decagrams = MassConverter::convert(decigrams, MassUnit::decigram, MassUnit::decagram);
     BOOST_CHECK_CLOSE(decagrams, _decagrams, 0.001);
 
-    double _grains = MassConverter::convert(decigrams, MassConverter::Units::decigram, MassConverter::Units::grain);
+    double _grains = MassConverter::convert(decigrams, MassUnit::decigram, MassUnit::grain);
     BOOST_CHECK_CLOSE(grains, _grains, 0.001);
 
-    double _ounces = MassConverter::convert(decigrams, MassConverter::Units::decigram, MassConverter::Units::ounce);
+    double _ounces = MassConverter::convert(decigrams, MassUnit::decigram, MassUnit::ounce);
     BOOST_CHECK_CLOSE(ounces, _ounces, 0.001);
 
-    double _pounds = MassConverter::convert(decigrams, MassConverter::Units::decigram, MassConverter::Units::pound);
+    double _pounds = MassConverter::convert(decigrams, MassUnit::decigram, MassUnit::pound);
     BOOST_CHECK_CLOSE(pounds, _pounds, 0.001);
 
-    double _stones = MassConverter::convert(decigrams, MassConverter::Units::decigram, MassConverter::Units::stone);
+    double _stones = MassConverter::convert(decigrams, MassUnit::decigram, MassUnit::stone);
     BOOST_CHECK_CLOSE(stones, _stones, 0.001);
 
-    double _quarters = MassConverter::convert(decigrams, MassConverter::Units::decigram, MassConverter::Units::quarter);
+    double _quarters = MassConverter::convert(decigrams, MassUnit::decigram, MassUnit::quarter);
     BOOST_CHECK_CLOSE(quarters, _quarters, 0.001);
 
-    double _hundredweights = MassConverter::convert(decigrams, MassConverter::Units::decigram, MassConverter::Units::hundredweight);
+    double _hundredweights = MassConverter::convert(decigrams, MassUnit::decigram, MassUnit::hundredweight);
     BOOST_CHECK_CLOSE(hundredweights, _hundredweights, 0.001);
 
-    double _tons = MassConverter::convert(decigrams, MassConverter::Units::decigram, MassConverter::Units::ton);
+    double _tons = MassConverter::convert(decigrams, MassUnit::decigram, MassUnit::ton);
     BOOST_CHECK_CLOSE(tons, _tons, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_centigrams, MassConverterTest)
 {
-    double _grams = MassConverter::convert(centigrams, MassConverter::Units::centigram, MassConverter::Units::gram);
+    double _grams = MassConverter::convert(centigrams, MassUnit::centigram, MassUnit::gram);
     BOOST_CHECK_EQUAL(grams, _grams);
 
-    double _decigrams = MassConverter::convert(centigrams, MassConverter::Units::centigram, MassConverter::Units::decigram);
+    double _decigrams = MassConverter::convert(centigrams, MassUnit::centigram, MassUnit::decigram);
     BOOST_CHECK_EQUAL(decigrams, _decigrams);
 
-    double _milligrams = MassConverter::convert(centigrams, MassConverter::Units::centigram, MassConverter::Units::milligram);
+    double _milligrams = MassConverter::convert(centigrams, MassUnit::centigram, MassUnit::milligram);
     BOOST_CHECK_EQUAL(milligrams, _milligrams);
 
-    double _micrograms = MassConverter::convert(centigrams, MassConverter::Units::centigram, MassConverter::Units::microgram);
+    double _micrograms = MassConverter::convert(centigrams, MassUnit::centigram, MassUnit::microgram);
     BOOST_CHECK_EQUAL(micrograms, _micrograms);
 
-    double _nanograms = MassConverter::convert(centigrams, MassConverter::Units::centigram, MassConverter::Units::nanogram);
+    double _nanograms = MassConverter::convert(centigrams, MassUnit::centigram, MassUnit::nanogram);
     BOOST_CHECK_EQUAL(nanograms, _nanograms);
 
-    double _kilograms = MassConverter::convert(centigrams, MassConverter::Units::centigram, MassConverter::Units::kilogram);
+    double _kilograms = MassConverter::convert(centigrams, MassUnit::centigram, MassUnit::kilogram);
     BOOST_CHECK_CLOSE(kilograms, _kilograms, 0.001);
 
-    double _hectograms = MassConverter::convert(centigrams, MassConverter::Units::centigram, MassConverter::Units::hectogram);
+    double _hectograms = MassConverter::convert(centigrams, MassUnit::centigram, MassUnit::hectogram);
     BOOST_CHECK_CLOSE(hectograms, _hectograms, 0.001);
 
-    double _decagrams = MassConverter::convert(centigrams, MassConverter::Units::centigram, MassConverter::Units::decagram);
+    double _decagrams = MassConverter::convert(centigrams, MassUnit::centigram, MassUnit::decagram);
     BOOST_CHECK_CLOSE(decagrams, _decagrams, 0.001);
 
-    double _grains = MassConverter::convert(centigrams, MassConverter::Units::centigram, MassConverter::Units::grain);
+    double _grains = MassConverter::convert(centigrams, MassUnit::centigram, MassUnit::grain);
     BOOST_CHECK_CLOSE(grains, _grains, 0.001);
 
-    double _ounces = MassConverter::convert(centigrams, MassConverter::Units::centigram, MassConverter::Units::ounce);
+    double _ounces = MassConverter::convert(centigrams, MassUnit::centigram, MassUnit::ounce);
     BOOST_CHECK_CLOSE(ounces, _ounces, 0.001);
 
-    double _pounds = MassConverter::convert(centigrams, MassConverter::Units::centigram, MassConverter::Units::pound);
+    double _pounds = MassConverter::convert(centigrams, MassUnit::centigram, MassUnit::pound);
     BOOST_CHECK_CLOSE(pounds, _pounds, 0.001);
 
-    double _stones = MassConverter::convert(centigrams, MassConverter::Units::centigram, MassConverter::Units::stone);
+    double _stones = MassConverter::convert(centigrams, MassUnit::centigram, MassUnit::stone);
     BOOST_CHECK_CLOSE(stones, _stones, 0.001);
 
-    double _quarters = MassConverter::convert(centigrams, MassConverter::Units::centigram, MassConverter::Units::quarter);
+    double _quarters = MassConverter::convert(centigrams, MassUnit::centigram, MassUnit::quarter);
     BOOST_CHECK_CLOSE(quarters, _quarters, 0.001);
 
-    double _hundredweights = MassConverter::convert(centigrams, MassConverter::Units::centigram, MassConverter::Units::hundredweight);
+    double _hundredweights = MassConverter::convert(centigrams, MassUnit::centigram, MassUnit::hundredweight);
     BOOST_CHECK_CLOSE(hundredweights, _hundredweights, 0.001);
 
-    double _tons = MassConverter::convert(centigrams, MassConverter::Units::centigram, MassConverter::Units::ton);
+    double _tons = MassConverter::convert(centigrams, MassUnit::centigram, MassUnit::ton);
     BOOST_CHECK_CLOSE(tons, _tons, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_milligrams, MassConverterTest)
 {
-    double _grams = MassConverter::convert(milligrams, MassConverter::Units::milligram, MassConverter::Units::gram);
+    double _grams = MassConverter::convert(milligrams, MassUnit::milligram, MassUnit::gram);
     BOOST_CHECK_EQUAL(grams, _grams);
 
-    double _centigrams = MassConverter::convert(milligrams, MassConverter::Units::milligram, MassConverter::Units::centigram);
+    double _centigrams = MassConverter::convert(milligrams, MassUnit::milligram, MassUnit::centigram);
     BOOST_CHECK_EQUAL(centigrams, _centigrams);
 
-    double _decigrams = MassConverter::convert(milligrams, MassConverter::Units::milligram, MassConverter::Units::decigram);
+    double _decigrams = MassConverter::convert(milligrams, MassUnit::milligram, MassUnit::decigram);
     BOOST_CHECK_EQUAL(decigrams, _decigrams);
 
-    double _micrograms = MassConverter::convert(milligrams, MassConverter::Units::milligram, MassConverter::Units::microgram);
+    double _micrograms = MassConverter::convert(milligrams, MassUnit::milligram, MassUnit::microgram);
     BOOST_CHECK_EQUAL(micrograms, _micrograms);
 
-    double _nanograms = MassConverter::convert(milligrams, MassConverter::Units::milligram, MassConverter::Units::nanogram);
+    double _nanograms = MassConverter::convert(milligrams, MassUnit::milligram, MassUnit::nanogram);
     BOOST_CHECK_EQUAL(nanograms, _nanograms);
 
-    double _kilograms = MassConverter::convert(milligrams, MassConverter::Units::milligram, MassConverter::Units::kilogram);
+    double _kilograms = MassConverter::convert(milligrams, MassUnit::milligram, MassUnit::kilogram);
     BOOST_CHECK_CLOSE(kilograms, _kilograms, 0.001);
 
-    double _hectograms = MassConverter::convert(milligrams, MassConverter::Units::milligram, MassConverter::Units::hectogram);
+    double _hectograms = MassConverter::convert(milligrams, MassUnit::milligram, MassUnit::hectogram);
     BOOST_CHECK_CLOSE(hectograms, _hectograms, 0.001);
 
-    double _decagrams = MassConverter::convert(milligrams, MassConverter::Units::milligram, MassConverter::Units::decagram);
+    double _decagrams = MassConverter::convert(milligrams, MassUnit::milligram, MassUnit::decagram);
     BOOST_CHECK_CLOSE(decagrams, _decagrams, 0.001);
 
-    double _grains = MassConverter::convert(milligrams, MassConverter::Units::milligram, MassConverter::Units::grain);
+    double _grains = MassConverter::convert(milligrams, MassUnit::milligram, MassUnit::grain);
     BOOST_CHECK_CLOSE(grains, _grains, 0.001);
 
-    double _ounces = MassConverter::convert(milligrams, MassConverter::Units::milligram, MassConverter::Units::ounce);
+    double _ounces = MassConverter::convert(milligrams, MassUnit::milligram, MassUnit::ounce);
     BOOST_CHECK_CLOSE(ounces, _ounces, 0.001);
 
-    double _pounds = MassConverter::convert(milligrams, MassConverter::Units::milligram, MassConverter::Units::pound);
+    double _pounds = MassConverter::convert(milligrams, MassUnit::milligram, MassUnit::pound);
     BOOST_CHECK_CLOSE(pounds, _pounds, 0.001);
 
-    double _stones = MassConverter::convert(milligrams, MassConverter::Units::milligram, MassConverter::Units::stone);
+    double _stones = MassConverter::convert(milligrams, MassUnit::milligram, MassUnit::stone);
     BOOST_CHECK_CLOSE(stones, _stones, 0.001);
 
-    double _quarters = MassConverter::convert(milligrams, MassConverter::Units::milligram, MassConverter::Units::quarter);
+    double _quarters = MassConverter::convert(milligrams, MassUnit::milligram, MassUnit::quarter);
     BOOST_CHECK_CLOSE(quarters, _quarters, 0.001);
 
-    double _hundredweights = MassConverter::convert(milligrams, MassConverter::Units::milligram, MassConverter::Units::hundredweight);
+    double _hundredweights = MassConverter::convert(milligrams, MassUnit::milligram, MassUnit::hundredweight);
     BOOST_CHECK_CLOSE(hundredweights, _hundredweights, 0.001);
 
-    double _tons = MassConverter::convert(milligrams, MassConverter::Units::milligram, MassConverter::Units::ton);
+    double _tons = MassConverter::convert(milligrams, MassUnit::milligram, MassUnit::ton);
     BOOST_CHECK_CLOSE(tons, _tons, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_micrograms, MassConverterTest)
 {
-    double _grams = MassConverter::convert(micrograms, MassConverter::Units::microgram, MassConverter::Units::gram);
+    double _grams = MassConverter::convert(micrograms, MassUnit::microgram, MassUnit::gram);
     BOOST_CHECK_CLOSE(grams, _grams, 0.001);
 
-    double _centigrams = MassConverter::convert(micrograms, MassConverter::Units::microgram, MassConverter::Units::centigram);
+    double _centigrams = MassConverter::convert(micrograms, MassUnit::microgram, MassUnit::centigram);
     BOOST_CHECK_CLOSE(centigrams, _centigrams, 0.001);
 
-    double _decigrams = MassConverter::convert(micrograms, MassConverter::Units::microgram, MassConverter::Units::decigram);
+    double _decigrams = MassConverter::convert(micrograms, MassUnit::microgram, MassUnit::decigram);
     BOOST_CHECK_CLOSE(decigrams, _decigrams, 0.001);
 
-    double _milligrams = MassConverter::convert(micrograms, MassConverter::Units::microgram, MassConverter::Units::milligram);
+    double _milligrams = MassConverter::convert(micrograms, MassUnit::microgram, MassUnit::milligram);
     BOOST_CHECK_EQUAL(milligrams, _milligrams);
 
-    double _nanograms = MassConverter::convert(micrograms, MassConverter::Units::microgram, MassConverter::Units::nanogram);
+    double _nanograms = MassConverter::convert(micrograms, MassUnit::microgram, MassUnit::nanogram);
     BOOST_CHECK_EQUAL(nanograms, _nanograms);
 
-    double _kilograms = MassConverter::convert(micrograms, MassConverter::Units::microgram, MassConverter::Units::kilogram);
+    double _kilograms = MassConverter::convert(micrograms, MassUnit::microgram, MassUnit::kilogram);
     BOOST_CHECK_CLOSE(kilograms, _kilograms, 0.001);
 
-    double _hectograms = MassConverter::convert(micrograms, MassConverter::Units::microgram, MassConverter::Units::hectogram);
+    double _hectograms = MassConverter::convert(micrograms, MassUnit::microgram, MassUnit::hectogram);
     BOOST_CHECK_EQUAL(hectograms, _hectograms);
 
-    double _decagrams = MassConverter::convert(micrograms, MassConverter::Units::microgram, MassConverter::Units::decagram);
+    double _decagrams = MassConverter::convert(micrograms, MassUnit::microgram, MassUnit::decagram);
     BOOST_CHECK_CLOSE(decagrams, _decagrams, 0.001);
 
-    double _grains = MassConverter::convert(micrograms, MassConverter::Units::microgram, MassConverter::Units::grain);
+    double _grains = MassConverter::convert(micrograms, MassUnit::microgram, MassUnit::grain);
     BOOST_CHECK_CLOSE(grains, _grains, 0.001);
 
-    double _ounces = MassConverter::convert(micrograms, MassConverter::Units::microgram, MassConverter::Units::ounce);
+    double _ounces = MassConverter::convert(micrograms, MassUnit::microgram, MassUnit::ounce);
     BOOST_CHECK_CLOSE(ounces, _ounces, 0.001);
 
-    double _pounds = MassConverter::convert(micrograms, MassConverter::Units::microgram, MassConverter::Units::pound);
+    double _pounds = MassConverter::convert(micrograms, MassUnit::microgram, MassUnit::pound);
     BOOST_CHECK_CLOSE(pounds, _pounds, 0.001);
 
-    double _stones = MassConverter::convert(micrograms, MassConverter::Units::microgram, MassConverter::Units::stone);
+    double _stones = MassConverter::convert(micrograms, MassUnit::microgram, MassUnit::stone);
     BOOST_CHECK_CLOSE(stones, _stones, 0.001);
 
-    double _quarters = MassConverter::convert(micrograms, MassConverter::Units::microgram, MassConverter::Units::quarter);
+    double _quarters = MassConverter::convert(micrograms, MassUnit::microgram, MassUnit::quarter);
     BOOST_CHECK_CLOSE(quarters, _quarters, 0.001);
 
-    double _hundredweights = MassConverter::convert(micrograms, MassConverter::Units::microgram, MassConverter::Units::hundredweight);
+    double _hundredweights = MassConverter::convert(micrograms, MassUnit::microgram, MassUnit::hundredweight);
     BOOST_CHECK_CLOSE(hundredweights, _hundredweights, 0.001);
 
-    double _tons = MassConverter::convert(micrograms, MassConverter::Units::microgram, MassConverter::Units::ton);
+    double _tons = MassConverter::convert(micrograms, MassUnit::microgram, MassUnit::ton);
     BOOST_CHECK_CLOSE(tons, _tons, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_nanograms, MassConverterTest)
 {
-    double _grams = MassConverter::convert(nanograms, MassConverter::Units::nanogram, MassConverter::Units::gram);
+    double _grams = MassConverter::convert(nanograms, MassUnit::nanogram, MassUnit::gram);
     BOOST_CHECK_CLOSE(grams, _grams, 0.001);
 
-    double _centigrams = MassConverter::convert(nanograms, MassConverter::Units::nanogram, MassConverter::Units::centigram);
+    double _centigrams = MassConverter::convert(nanograms, MassUnit::nanogram, MassUnit::centigram);
     BOOST_CHECK_CLOSE(centigrams, _centigrams, 0.001);
 
-    double _decigrams = MassConverter::convert(nanograms, MassConverter::Units::nanogram, MassConverter::Units::decigram);
+    double _decigrams = MassConverter::convert(nanograms, MassUnit::nanogram, MassUnit::decigram);
     BOOST_CHECK_CLOSE(decigrams, _decigrams, 0.001);
 
-    double _milligrams = MassConverter::convert(nanograms, MassConverter::Units::nanogram, MassConverter::Units::milligram);
+    double _milligrams = MassConverter::convert(nanograms, MassUnit::nanogram, MassUnit::milligram);
     BOOST_CHECK_CLOSE(milligrams, _milligrams, 0.001);
 
-    double _micrograms = MassConverter::convert(nanograms, MassConverter::Units::nanogram, MassConverter::Units::microgram);
+    double _micrograms = MassConverter::convert(nanograms, MassUnit::nanogram, MassUnit::microgram);
     BOOST_CHECK_EQUAL(micrograms, _micrograms);
 
-    double _kilograms = MassConverter::convert(nanograms, MassConverter::Units::nanogram, MassConverter::Units::kilogram);
+    double _kilograms = MassConverter::convert(nanograms, MassUnit::nanogram, MassUnit::kilogram);
     BOOST_CHECK_CLOSE(kilograms, _kilograms, 0.001);
 
-    double _hectograms = MassConverter::convert(nanograms, MassConverter::Units::nanogram, MassConverter::Units::hectogram);
+    double _hectograms = MassConverter::convert(nanograms, MassUnit::nanogram, MassUnit::hectogram);
     BOOST_CHECK_CLOSE(hectograms, _hectograms, 0.001);
 
-    double _decagrams = MassConverter::convert(nanograms, MassConverter::Units::nanogram, MassConverter::Units::decagram);
+    double _decagrams = MassConverter::convert(nanograms, MassUnit::nanogram, MassUnit::decagram);
     BOOST_CHECK_CLOSE(decagrams, _decagrams, 0.001);
 
-    double _grains = MassConverter::convert(nanograms, MassConverter::Units::nanogram, MassConverter::Units::grain);
+    double _grains = MassConverter::convert(nanograms, MassUnit::nanogram, MassUnit::grain);
     BOOST_CHECK_CLOSE(grains, _grains, 0.001);
 
-    double _ounces = MassConverter::convert(nanograms, MassConverter::Units::nanogram, MassConverter::Units::ounce);
+    double _ounces = MassConverter::convert(nanograms, MassUnit::nanogram, MassUnit::ounce);
     BOOST_CHECK_CLOSE(ounces, _ounces, 0.001);
 
-    double _pounds = MassConverter::convert(nanograms, MassConverter::Units::nanogram, MassConverter::Units::pound);
+    double _pounds = MassConverter::convert(nanograms, MassUnit::nanogram, MassUnit::pound);
     BOOST_CHECK_CLOSE(pounds, _pounds, 0.001);
 
-    double _stones = MassConverter::convert(nanograms, MassConverter::Units::nanogram, MassConverter::Units::stone);
+    double _stones = MassConverter::convert(nanograms, MassUnit::nanogram, MassUnit::stone);
     BOOST_CHECK_CLOSE(stones, _stones, 0.001);
 
-    double _quarters = MassConverter::convert(nanograms, MassConverter::Units::nanogram, MassConverter::Units::quarter);
+    double _quarters = MassConverter::convert(nanograms, MassUnit::nanogram, MassUnit::quarter);
     BOOST_CHECK_CLOSE(quarters, _quarters, 0.001);
 
-    double _hundredweights = MassConverter::convert(nanograms, MassConverter::Units::nanogram, MassConverter::Units::hundredweight);
+    double _hundredweights = MassConverter::convert(nanograms, MassUnit::nanogram, MassUnit::hundredweight);
     BOOST_CHECK_CLOSE(hundredweights, _hundredweights, 0.001);
 
-    double _tons = MassConverter::convert(nanograms, MassConverter::Units::nanogram, MassConverter::Units::ton);
+    double _tons = MassConverter::convert(nanograms, MassUnit::nanogram, MassUnit::ton);
     BOOST_CHECK_CLOSE(tons, _tons, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_kilograms, MassConverterTest)
 {
-    double _grams = MassConverter::convert(kilograms, MassConverter::Units::kilogram, MassConverter::Units::gram);
+    double _grams = MassConverter::convert(kilograms, MassUnit::kilogram, MassUnit::gram);
     BOOST_CHECK_CLOSE(grams, _grams, 0.001);
 
-    double _centigrams = MassConverter::convert(kilograms, MassConverter::Units::kilogram, MassConverter::Units::centigram);
+    double _centigrams = MassConverter::convert(kilograms, MassUnit::kilogram, MassUnit::centigram);
     BOOST_CHECK_CLOSE(centigrams, _centigrams, 0.001);
 
-    double _decigrams = MassConverter::convert(kilograms, MassConverter::Units::kilogram, MassConverter::Units::decigram);
+    double _decigrams = MassConverter::convert(kilograms, MassUnit::kilogram, MassUnit::decigram);
     BOOST_CHECK_CLOSE(decigrams, _decigrams, 0.001);
 
-    double _milligrams = MassConverter::convert(kilograms, MassConverter::Units::kilogram, MassConverter::Units::milligram);
+    double _milligrams = MassConverter::convert(kilograms, MassUnit::kilogram, MassUnit::milligram);
     BOOST_CHECK_CLOSE(milligrams, _milligrams, 0.001);
 
-    double _micrograms = MassConverter::convert(kilograms, MassConverter::Units::kilogram, MassConverter::Units::microgram);
+    double _micrograms = MassConverter::convert(kilograms, MassUnit::kilogram, MassUnit::microgram);
     BOOST_CHECK_EQUAL(micrograms, _micrograms);
 
-    double _nanograms = MassConverter::convert(kilograms, MassConverter::Units::kilogram, MassConverter::Units::nanogram);
+    double _nanograms = MassConverter::convert(kilograms, MassUnit::kilogram, MassUnit::nanogram);
     BOOST_CHECK_CLOSE(nanograms, _nanograms, 0.001);
 
-    double _hectograms = MassConverter::convert(kilograms, MassConverter::Units::kilogram, MassConverter::Units::hectogram);
+    double _hectograms = MassConverter::convert(kilograms, MassUnit::kilogram, MassUnit::hectogram);
     BOOST_CHECK_EQUAL(hectograms, _hectograms);
 
-    double _decagrams = MassConverter::convert(kilograms, MassConverter::Units::kilogram, MassConverter::Units::decagram);
+    double _decagrams = MassConverter::convert(kilograms, MassUnit::kilogram, MassUnit::decagram);
     BOOST_CHECK_CLOSE(decagrams, _decagrams, 0.001);
 
-    double _grains = MassConverter::convert(kilograms, MassConverter::Units::kilogram, MassConverter::Units::grain);
+    double _grains = MassConverter::convert(kilograms, MassUnit::kilogram, MassUnit::grain);
     BOOST_CHECK_CLOSE(grains, _grains, 0.001);
 
-    double _ounces = MassConverter::convert(kilograms, MassConverter::Units::kilogram, MassConverter::Units::ounce);
+    double _ounces = MassConverter::convert(kilograms, MassUnit::kilogram, MassUnit::ounce);
     BOOST_CHECK_CLOSE(ounces, _ounces, 0.001);
 
-    double _pounds = MassConverter::convert(kilograms, MassConverter::Units::kilogram, MassConverter::Units::pound);
+    double _pounds = MassConverter::convert(kilograms, MassUnit::kilogram, MassUnit::pound);
     BOOST_CHECK_CLOSE(pounds, _pounds, 0.001);
 
-    double _stones = MassConverter::convert(kilograms, MassConverter::Units::kilogram, MassConverter::Units::stone);
+    double _stones = MassConverter::convert(kilograms, MassUnit::kilogram, MassUnit::stone);
     BOOST_CHECK_CLOSE(stones, _stones, 0.001);
 
-    double _quarters = MassConverter::convert(kilograms, MassConverter::Units::kilogram, MassConverter::Units::quarter);
+    double _quarters = MassConverter::convert(kilograms, MassUnit::kilogram, MassUnit::quarter);
     BOOST_CHECK_CLOSE(quarters, _quarters, 0.001);
 
-    double _hundredweights = MassConverter::convert(kilograms, MassConverter::Units::kilogram, MassConverter::Units::hundredweight);
+    double _hundredweights = MassConverter::convert(kilograms, MassUnit::kilogram, MassUnit::hundredweight);
     BOOST_CHECK_CLOSE(hundredweights, _hundredweights, 0.001);
 
-    double _tons = MassConverter::convert(kilograms, MassConverter::Units::kilogram, MassConverter::Units::ton);
+    double _tons = MassConverter::convert(kilograms, MassUnit::kilogram, MassUnit::ton);
     BOOST_CHECK_CLOSE(tons, _tons, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_hectograms, MassConverterTest)
 {
-    double _grams = MassConverter::convert(hectograms, MassConverter::Units::hectogram, MassConverter::Units::gram);
+    double _grams = MassConverter::convert(hectograms, MassUnit::hectogram, MassUnit::gram);
     BOOST_CHECK_CLOSE(grams, _grams, 0.001);
 
-    double _centigrams = MassConverter::convert(hectograms, MassConverter::Units::hectogram, MassConverter::Units::centigram);
+    double _centigrams = MassConverter::convert(hectograms, MassUnit::hectogram, MassUnit::centigram);
     BOOST_CHECK_CLOSE(centigrams, _centigrams, 0.001);
 
-    double _decigrams = MassConverter::convert(hectograms, MassConverter::Units::hectogram, MassConverter::Units::decigram);
+    double _decigrams = MassConverter::convert(hectograms, MassUnit::hectogram, MassUnit::decigram);
     BOOST_CHECK_CLOSE(decigrams, _decigrams, 0.001);
 
-    double _milligrams = MassConverter::convert(hectograms, MassConverter::Units::hectogram, MassConverter::Units::milligram);
+    double _milligrams = MassConverter::convert(hectograms, MassUnit::hectogram, MassUnit::milligram);
     BOOST_CHECK_CLOSE(milligrams, _milligrams, 0.001);
 
-    double _micrograms = MassConverter::convert(hectograms, MassConverter::Units::hectogram, MassConverter::Units::microgram);
+    double _micrograms = MassConverter::convert(hectograms, MassUnit::hectogram, MassUnit::microgram);
     BOOST_CHECK_CLOSE(micrograms, _micrograms, 0.001);
 
-    double _nanograms = MassConverter::convert(hectograms, MassConverter::Units::hectogram, MassConverter::Units::nanogram);
+    double _nanograms = MassConverter::convert(hectograms, MassUnit::hectogram, MassUnit::nanogram);
     BOOST_CHECK_CLOSE(nanograms, _nanograms, 0.001);
 
-    double _kilograms = MassConverter::convert(hectograms, MassConverter::Units::hectogram, MassConverter::Units::kilogram);
+    double _kilograms = MassConverter::convert(hectograms, MassUnit::hectogram, MassUnit::kilogram);
     BOOST_CHECK_CLOSE(kilograms, _kilograms, 0.001);
 
-    double _decagrams = MassConverter::convert(hectograms, MassConverter::Units::hectogram, MassConverter::Units::decagram);
+    double _decagrams = MassConverter::convert(hectograms, MassUnit::hectogram, MassUnit::decagram);
     BOOST_CHECK_CLOSE(decagrams, _decagrams, 0.001);
 
-    double _grains = MassConverter::convert(hectograms, MassConverter::Units::hectogram, MassConverter::Units::grain);
+    double _grains = MassConverter::convert(hectograms, MassUnit::hectogram, MassUnit::grain);
     BOOST_CHECK_CLOSE(grains, _grains, 0.001);
 
-    double _ounces = MassConverter::convert(hectograms, MassConverter::Units::hectogram, MassConverter::Units::ounce);
+    double _ounces = MassConverter::convert(hectograms, MassUnit::hectogram, MassUnit::ounce);
     BOOST_CHECK_CLOSE(ounces, _ounces, 0.001);
 
-    double _pounds = MassConverter::convert(hectograms, MassConverter::Units::hectogram, MassConverter::Units::pound);
+    double _pounds = MassConverter::convert(hectograms, MassUnit::hectogram, MassUnit::pound);
     BOOST_CHECK_CLOSE(pounds, _pounds, 0.001);
 
-    double _stones = MassConverter::convert(hectograms, MassConverter::Units::hectogram, MassConverter::Units::stone);
+    double _stones = MassConverter::convert(hectograms, MassUnit::hectogram, MassUnit::stone);
     BOOST_CHECK_CLOSE(stones, _stones, 0.001);
 
-    double _quarters = MassConverter::convert(hectograms, MassConverter::Units::hectogram, MassConverter::Units::quarter);
+    double _quarters = MassConverter::convert(hectograms, MassUnit::hectogram, MassUnit::quarter);
     BOOST_CHECK_CLOSE(quarters, _quarters, 0.001);
 
-    double _hundredweights = MassConverter::convert(hectograms, MassConverter::Units::hectogram, MassConverter::Units::hundredweight);
+    double _hundredweights = MassConverter::convert(hectograms, MassUnit::hectogram, MassUnit::hundredweight);
     BOOST_CHECK_CLOSE(hundredweights, _hundredweights, 0.001);
 
-    double _tons = MassConverter::convert(hectograms, MassConverter::Units::hectogram, MassConverter::Units::ton);
+    double _tons = MassConverter::convert(hectograms, MassUnit::hectogram, MassUnit::ton);
     BOOST_CHECK_CLOSE(tons, _tons, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_decagrams, MassConverterTest)
 {
-    double _grams = MassConverter::convert(decagrams, MassConverter::Units::decagram, MassConverter::Units::gram);
+    double _grams = MassConverter::convert(decagrams, MassUnit::decagram, MassUnit::gram);
     BOOST_CHECK_CLOSE(grams, _grams, 0.001);
 
-    double _centigrams = MassConverter::convert(decagrams, MassConverter::Units::decagram, MassConverter::Units::centigram);
+    double _centigrams = MassConverter::convert(decagrams, MassUnit::decagram, MassUnit::centigram);
     BOOST_CHECK_CLOSE(centigrams, _centigrams, 0.001);
 
-    double _decigrams = MassConverter::convert(decagrams, MassConverter::Units::decagram, MassConverter::Units::decigram);
+    double _decigrams = MassConverter::convert(decagrams, MassUnit::decagram, MassUnit::decigram);
     BOOST_CHECK_CLOSE(decigrams, _decigrams, 0.001);
 
-    double _milligrams = MassConverter::convert(decagrams, MassConverter::Units::decagram, MassConverter::Units::milligram);
+    double _milligrams = MassConverter::convert(decagrams, MassUnit::decagram, MassUnit::milligram);
     BOOST_CHECK_CLOSE(milligrams, _milligrams, 0.001);
 
-    double _micrograms = MassConverter::convert(decagrams, MassConverter::Units::decagram, MassConverter::Units::microgram);
+    double _micrograms = MassConverter::convert(decagrams, MassUnit::decagram, MassUnit::microgram);
     BOOST_CHECK_CLOSE(micrograms, _micrograms, 0.001);
 
-    double _nanograms = MassConverter::convert(decagrams, MassConverter::Units::decagram, MassConverter::Units::nanogram);
+    double _nanograms = MassConverter::convert(decagrams, MassUnit::decagram, MassUnit::nanogram);
     BOOST_CHECK_CLOSE(nanograms, _nanograms, 0.001);
 
-    double _kilograms = MassConverter::convert(decagrams, MassConverter::Units::decagram, MassConverter::Units::kilogram);
+    double _kilograms = MassConverter::convert(decagrams, MassUnit::decagram, MassUnit::kilogram);
     BOOST_CHECK_CLOSE(kilograms, _kilograms, 0.001);
 
-    double _hectograms = MassConverter::convert(decagrams, MassConverter::Units::decagram, MassConverter::Units::hectogram);
+    double _hectograms = MassConverter::convert(decagrams, MassUnit::decagram, MassUnit::hectogram);
     BOOST_CHECK_CLOSE(hectograms, _hectograms, 0.001);
 
-    double _grains = MassConverter::convert(decagrams, MassConverter::Units::decagram, MassConverter::Units::grain);
+    double _grains = MassConverter::convert(decagrams, MassUnit::decagram, MassUnit::grain);
     BOOST_CHECK_CLOSE(grains, _grains, 0.001);
 
-    double _ounces = MassConverter::convert(decagrams, MassConverter::Units::decagram, MassConverter::Units::ounce);
+    double _ounces = MassConverter::convert(decagrams, MassUnit::decagram, MassUnit::ounce);
     BOOST_CHECK_CLOSE(ounces, _ounces, 0.001);
 
-    double _pounds = MassConverter::convert(decagrams, MassConverter::Units::decagram, MassConverter::Units::pound);
+    double _pounds = MassConverter::convert(decagrams, MassUnit::decagram, MassUnit::pound);
     BOOST_CHECK_CLOSE(pounds, _pounds, 0.001);
 
-    double _stones = MassConverter::convert(decagrams, MassConverter::Units::decagram, MassConverter::Units::stone);
+    double _stones = MassConverter::convert(decagrams, MassUnit::decagram, MassUnit::stone);
     BOOST_CHECK_CLOSE(stones, _stones, 0.001);
 
-    double _quarters = MassConverter::convert(decagrams, MassConverter::Units::decagram, MassConverter::Units::quarter);
+    double _quarters = MassConverter::convert(decagrams, MassUnit::decagram, MassUnit::quarter);
     BOOST_CHECK_CLOSE(quarters, _quarters, 0.001);
 
-    double _hundredweights = MassConverter::convert(decagrams, MassConverter::Units::decagram, MassConverter::Units::hundredweight);
+    double _hundredweights = MassConverter::convert(decagrams, MassUnit::decagram, MassUnit::hundredweight);
     BOOST_CHECK_CLOSE(hundredweights, _hundredweights, 0.001);
 
-    double _tons = MassConverter::convert(decagrams, MassConverter::Units::decagram, MassConverter::Units::ton);
+    double _tons = MassConverter::convert(decagrams, MassUnit::decagram, MassUnit::ton);
     BOOST_CHECK_CLOSE(tons, _tons, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_grains, MassConverterTest)
 {
-    double _grams = MassConverter::convert(grains, MassConverter::Units::grain, MassConverter::Units::gram);
+    double _grams = MassConverter::convert(grains, MassUnit::grain, MassUnit::gram);
     BOOST_CHECK_CLOSE(grams, _grams, 0.001);
 
-    double _centigrams = MassConverter::convert(grains, MassConverter::Units::grain, MassConverter::Units::centigram);
+    double _centigrams = MassConverter::convert(grains, MassUnit::grain, MassUnit::centigram);
     BOOST_CHECK_CLOSE(centigrams, _centigrams, 0.001);
 
-    double _decigrams = MassConverter::convert(grains, MassConverter::Units::grain, MassConverter::Units::decigram);
+    double _decigrams = MassConverter::convert(grains, MassUnit::grain, MassUnit::decigram);
     BOOST_CHECK_CLOSE(decigrams, _decigrams, 0.001);
 
-    double _milligrams = MassConverter::convert(grains, MassConverter::Units::grain, MassConverter::Units::milligram);
+    double _milligrams = MassConverter::convert(grains, MassUnit::grain, MassUnit::milligram);
     BOOST_CHECK_CLOSE(milligrams, _milligrams, 0.001);
 
-    double _micrograms = MassConverter::convert(grains, MassConverter::Units::grain, MassConverter::Units::microgram);
+    double _micrograms = MassConverter::convert(grains, MassUnit::grain, MassUnit::microgram);
     BOOST_CHECK_CLOSE(micrograms, _micrograms, 0.001);
 
-    double _nanograms = MassConverter::convert(grains, MassConverter::Units::grain, MassConverter::Units::nanogram);
+    double _nanograms = MassConverter::convert(grains, MassUnit::grain, MassUnit::nanogram);
     BOOST_CHECK_CLOSE(nanograms, _nanograms, 0.001);
 
-    double _kilograms = MassConverter::convert(grains, MassConverter::Units::grain, MassConverter::Units::kilogram);
+    double _kilograms = MassConverter::convert(grains, MassUnit::grain, MassUnit::kilogram);
     BOOST_CHECK_CLOSE(kilograms, _kilograms, 0.001);
 
-    double _hectograms = MassConverter::convert(grains, MassConverter::Units::grain, MassConverter::Units::hectogram);
+    double _hectograms = MassConverter::convert(grains, MassUnit::grain, MassUnit::hectogram);
     BOOST_CHECK_CLOSE(hectograms, _hectograms, 0.001);
 
-    double _decagrams = MassConverter::convert(grains, MassConverter::Units::grain, MassConverter::Units::decagram);
+    double _decagrams = MassConverter::convert(grains, MassUnit::grain, MassUnit::decagram);
     BOOST_CHECK_CLOSE(decagrams, _decagrams, 0.001);
 
-    double _ounces = MassConverter::convert(grains, MassConverter::Units::grain, MassConverter::Units::ounce);
+    double _ounces = MassConverter::convert(grains, MassUnit::grain, MassUnit::ounce);
     BOOST_CHECK_CLOSE(ounces, _ounces, 0.001);
 
-    double _pounds = MassConverter::convert(grains, MassConverter::Units::grain, MassConverter::Units::pound);
+    double _pounds = MassConverter::convert(grains, MassUnit::grain, MassUnit::pound);
     BOOST_CHECK_CLOSE(pounds, _pounds, 0.001);
 
-    double _stones = MassConverter::convert(grains, MassConverter::Units::grain, MassConverter::Units::stone);
+    double _stones = MassConverter::convert(grains, MassUnit::grain, MassUnit::stone);
     BOOST_CHECK_CLOSE(stones, _stones, 0.001);
 
-    double _quarters = MassConverter::convert(grains, MassConverter::Units::grain, MassConverter::Units::quarter);
+    double _quarters = MassConverter::convert(grains, MassUnit::grain, MassUnit::quarter);
     BOOST_CHECK_CLOSE(quarters, _quarters, 0.001);
 
-    double _hundredweights = MassConverter::convert(grains, MassConverter::Units::grain, MassConverter::Units::hundredweight);
+    double _hundredweights = MassConverter::convert(grains, MassUnit::grain, MassUnit::hundredweight);
     BOOST_CHECK_CLOSE(hundredweights, _hundredweights, 0.001);
 
-    double _tons = MassConverter::convert(grains, MassConverter::Units::grain, MassConverter::Units::ton);
+    double _tons = MassConverter::convert(grains, MassUnit::grain, MassUnit::ton);
     BOOST_CHECK_CLOSE(tons, _tons, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_ounces, MassConverterTest)
 {
-    double _grams = MassConverter::convert(ounces, MassConverter::Units::ounce, MassConverter::Units::gram);
+    double _grams = MassConverter::convert(ounces, MassUnit::ounce, MassUnit::gram);
     BOOST_CHECK_CLOSE(grams, _grams, 0.001);
 
-    double _centigrams = MassConverter::convert(ounces, MassConverter::Units::ounce, MassConverter::Units::centigram);
+    double _centigrams = MassConverter::convert(ounces, MassUnit::ounce, MassUnit::centigram);
     BOOST_CHECK_CLOSE(centigrams, _centigrams, 0.001);
 
-    double _decigrams = MassConverter::convert(ounces, MassConverter::Units::ounce, MassConverter::Units::decigram);
+    double _decigrams = MassConverter::convert(ounces, MassUnit::ounce, MassUnit::decigram);
     BOOST_CHECK_CLOSE(decigrams, _decigrams, 0.001);
 
-    double _milligrams = MassConverter::convert(ounces, MassConverter::Units::ounce, MassConverter::Units::milligram);
+    double _milligrams = MassConverter::convert(ounces, MassUnit::ounce, MassUnit::milligram);
     BOOST_CHECK_CLOSE(milligrams, _milligrams, 0.001);
 
-    double _micrograms = MassConverter::convert(ounces, MassConverter::Units::ounce, MassConverter::Units::microgram);
+    double _micrograms = MassConverter::convert(ounces, MassUnit::ounce, MassUnit::microgram);
     BOOST_CHECK_CLOSE(micrograms, _micrograms, 0.001);
 
-    double _nanograms = MassConverter::convert(ounces, MassConverter::Units::ounce, MassConverter::Units::nanogram);
+    double _nanograms = MassConverter::convert(ounces, MassUnit::ounce, MassUnit::nanogram);
     BOOST_CHECK_CLOSE(nanograms, _nanograms, 0.001);
 
-    double _kilograms = MassConverter::convert(ounces, MassConverter::Units::ounce, MassConverter::Units::kilogram);
+    double _kilograms = MassConverter::convert(ounces, MassUnit::ounce, MassUnit::kilogram);
     BOOST_CHECK_CLOSE(kilograms, _kilograms, 0.001);
 
-    double _hectograms = MassConverter::convert(ounces, MassConverter::Units::ounce, MassConverter::Units::hectogram);
+    double _hectograms = MassConverter::convert(ounces, MassUnit::ounce, MassUnit::hectogram);
     BOOST_CHECK_CLOSE(hectograms, _hectograms, 0.001);
 
-    double _decagrams = MassConverter::convert(ounces, MassConverter::Units::ounce, MassConverter::Units::decagram);
+    double _decagrams = MassConverter::convert(ounces, MassUnit::ounce, MassUnit::decagram);
     BOOST_CHECK_CLOSE(decagrams, _decagrams, 0.001);
 
-    double _grains = MassConverter::convert(ounces, MassConverter::Units::ounce, MassConverter::Units::grain);
+    double _grains = MassConverter::convert(ounces, MassUnit::ounce, MassUnit::grain);
     BOOST_CHECK_CLOSE(grains, _grains, 0.001);
 
-    double _pounds = MassConverter::convert(ounces, MassConverter::Units::ounce, MassConverter::Units::pound);
+    double _pounds = MassConverter::convert(ounces, MassUnit::ounce, MassUnit::pound);
     BOOST_CHECK_CLOSE(pounds, _pounds, 0.001);
 
-    double _stones = MassConverter::convert(ounces, MassConverter::Units::ounce, MassConverter::Units::stone);
+    double _stones = MassConverter::convert(ounces, MassUnit::ounce, MassUnit::stone);
     BOOST_CHECK_CLOSE(stones, _stones, 0.001);
 
-    double _quarters = MassConverter::convert(ounces, MassConverter::Units::ounce, MassConverter::Units::quarter);
+    double _quarters = MassConverter::convert(ounces, MassUnit::ounce, MassUnit::quarter);
     BOOST_CHECK_CLOSE(quarters, _quarters, 0.001);
 
-    double _hundredweights = MassConverter::convert(ounces, MassConverter::Units::ounce, MassConverter::Units::hundredweight);
+    double _hundredweights = MassConverter::convert(ounces, MassUnit::ounce, MassUnit::hundredweight);
     BOOST_CHECK_CLOSE(hundredweights, _hundredweights, 0.001);
 
-    double _tons = MassConverter::convert(ounces, MassConverter::Units::ounce, MassConverter::Units::ton);
+    double _tons = MassConverter::convert(ounces, MassUnit::ounce, MassUnit::ton);
     BOOST_CHECK_CLOSE(tons, _tons, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_pounds, MassConverterTest)
 {
-    double _grams = MassConverter::convert(pounds, MassConverter::Units::pound, MassConverter::Units::gram);
+    double _grams = MassConverter::convert(pounds, MassUnit::pound, MassUnit::gram);
     BOOST_CHECK_CLOSE(grams, _grams, 0.001);
 
-    double _centigrams = MassConverter::convert(pounds, MassConverter::Units::pound, MassConverter::Units::centigram);
+    double _centigrams = MassConverter::convert(pounds, MassUnit::pound, MassUnit::centigram);
     BOOST_CHECK_CLOSE(centigrams, _centigrams, 0.001);
 
-    double _decigrams = MassConverter::convert(pounds, MassConverter::Units::pound, MassConverter::Units::decigram);
+    double _decigrams = MassConverter::convert(pounds, MassUnit::pound, MassUnit::decigram);
     BOOST_CHECK_CLOSE(decigrams, _decigrams, 0.001);
 
-    double _milligrams = MassConverter::convert(pounds, MassConverter::Units::pound, MassConverter::Units::milligram);
+    double _milligrams = MassConverter::convert(pounds, MassUnit::pound, MassUnit::milligram);
     BOOST_CHECK_CLOSE(milligrams, _milligrams, 0.001);
 
-    double _micrograms = MassConverter::convert(pounds, MassConverter::Units::pound, MassConverter::Units::microgram);
+    double _micrograms = MassConverter::convert(pounds, MassUnit::pound, MassUnit::microgram);
     BOOST_CHECK_CLOSE(micrograms, _micrograms, 0.001);
 
-    double _nanograms = MassConverter::convert(pounds, MassConverter::Units::pound, MassConverter::Units::nanogram);
+    double _nanograms = MassConverter::convert(pounds, MassUnit::pound, MassUnit::nanogram);
     BOOST_CHECK_CLOSE(nanograms, _nanograms, 0.001);
 
-    double _kilograms = MassConverter::convert(pounds, MassConverter::Units::pound, MassConverter::Units::kilogram);
+    double _kilograms = MassConverter::convert(pounds, MassUnit::pound, MassUnit::kilogram);
     BOOST_CHECK_CLOSE(kilograms, _kilograms, 0.001);
 
-    double _hectograms = MassConverter::convert(pounds, MassConverter::Units::pound, MassConverter::Units::hectogram);
+    double _hectograms = MassConverter::convert(pounds, MassUnit::pound, MassUnit::hectogram);
     BOOST_CHECK_CLOSE(hectograms, _hectograms, 0.001);
 
-    double _decagrams = MassConverter::convert(pounds, MassConverter::Units::pound, MassConverter::Units::decagram);
+    double _decagrams = MassConverter::convert(pounds, MassUnit::pound, MassUnit::decagram);
     BOOST_CHECK_CLOSE(decagrams, _decagrams, 0.001);
 
-    double _grains = MassConverter::convert(pounds, MassConverter::Units::pound, MassConverter::Units::grain);
+    double _grains = MassConverter::convert(pounds, MassUnit::pound, MassUnit::grain);
     BOOST_CHECK_CLOSE(grains, _grains, 0.001);
 
-    double _ounces = MassConverter::convert(pounds, MassConverter::Units::pound, MassConverter::Units::ounce);
+    double _ounces = MassConverter::convert(pounds, MassUnit::pound, MassUnit::ounce);
     BOOST_CHECK_CLOSE(ounces, _ounces, 0.001);
 
-    double _stones = MassConverter::convert(pounds, MassConverter::Units::pound, MassConverter::Units::stone);
+    double _stones = MassConverter::convert(pounds, MassUnit::pound, MassUnit::stone);
     BOOST_CHECK_CLOSE(stones, _stones, 0.001);
 
-    double _quarters = MassConverter::convert(pounds, MassConverter::Units::pound, MassConverter::Units::quarter);
+    double _quarters = MassConverter::convert(pounds, MassUnit::pound, MassUnit::quarter);
     BOOST_CHECK_CLOSE(quarters, _quarters, 0.001);
 
-    double _hundredweights = MassConverter::convert(pounds, MassConverter::Units::pound, MassConverter::Units::hundredweight);
+    double _hundredweights = MassConverter::convert(pounds, MassUnit::pound, MassUnit::hundredweight);
     BOOST_CHECK_CLOSE(hundredweights, _hundredweights, 0.001);
 
-    double _tons = MassConverter::convert(pounds, MassConverter::Units::pound, MassConverter::Units::ton);
+    double _tons = MassConverter::convert(pounds, MassUnit::pound, MassUnit::ton);
     BOOST_CHECK_CLOSE(tons, _tons, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_stones, MassConverterTest)
 {
-    double _grams = MassConverter::convert(stones, MassConverter::Units::stone, MassConverter::Units::gram);
+    double _grams = MassConverter::convert(stones, MassUnit::stone, MassUnit::gram);
     BOOST_CHECK_CLOSE(grams, _grams, 0.001);
 
-    double _centigrams = MassConverter::convert(stones, MassConverter::Units::stone, MassConverter::Units::centigram);
+    double _centigrams = MassConverter::convert(stones, MassUnit::stone, MassUnit::centigram);
     BOOST_CHECK_CLOSE(centigrams, _centigrams, 0.001);
 
-    double _decigrams = MassConverter::convert(stones, MassConverter::Units::stone, MassConverter::Units::decigram);
+    double _decigrams = MassConverter::convert(stones, MassUnit::stone, MassUnit::decigram);
     BOOST_CHECK_CLOSE(decigrams, _decigrams, 0.001);
 
-    double _milligrams = MassConverter::convert(stones, MassConverter::Units::stone, MassConverter::Units::milligram);
+    double _milligrams = MassConverter::convert(stones, MassUnit::stone, MassUnit::milligram);
     BOOST_CHECK_CLOSE(milligrams, _milligrams, 0.001);
 
-    double _micrograms = MassConverter::convert(stones, MassConverter::Units::stone, MassConverter::Units::microgram);
+    double _micrograms = MassConverter::convert(stones, MassUnit::stone, MassUnit::microgram);
     BOOST_CHECK_CLOSE(micrograms, _micrograms, 0.001);
 
-    double _nanograms = MassConverter::convert(stones, MassConverter::Units::stone, MassConverter::Units::nanogram);
+    double _nanograms = MassConverter::convert(stones, MassUnit::stone, MassUnit::nanogram);
     BOOST_CHECK_CLOSE(nanograms, _nanograms, 0.001);
 
-    double _kilograms = MassConverter::convert(stones, MassConverter::Units::stone, MassConverter::Units::kilogram);
+    double _kilograms = MassConverter::convert(stones, MassUnit::stone, MassUnit::kilogram);
     BOOST_CHECK_CLOSE(kilograms, _kilograms, 0.001);
 
-    double _hectograms = MassConverter::convert(stones, MassConverter::Units::stone, MassConverter::Units::hectogram);
+    double _hectograms = MassConverter::convert(stones, MassUnit::stone, MassUnit::hectogram);
     BOOST_CHECK_CLOSE(hectograms, _hectograms, 0.001);
 
-    double _decagrams = MassConverter::convert(stones, MassConverter::Units::stone, MassConverter::Units::decagram);
+    double _decagrams = MassConverter::convert(stones, MassUnit::stone, MassUnit::decagram);
     BOOST_CHECK_CLOSE(decagrams, _decagrams, 0.001);
 
-    double _grains = MassConverter::convert(stones, MassConverter::Units::stone, MassConverter::Units::grain);
+    double _grains = MassConverter::convert(stones, MassUnit::stone, MassUnit::grain);
     BOOST_CHECK_CLOSE(grains, _grains, 0.001);
 
-    double _ounces = MassConverter::convert(stones, MassConverter::Units::stone, MassConverter::Units::ounce);
+    double _ounces = MassConverter::convert(stones, MassUnit::stone, MassUnit::ounce);
     BOOST_CHECK_CLOSE(ounces, _ounces, 0.001);
 
-    double _pounds = MassConverter::convert(stones, MassConverter::Units::stone, MassConverter::Units::pound);
+    double _pounds = MassConverter::convert(stones, MassUnit::stone, MassUnit::pound);
     BOOST_CHECK_CLOSE(pounds, _pounds, 0.001);
 
-    double _quarters = MassConverter::convert(stones, MassConverter::Units::stone, MassConverter::Units::quarter);
+    double _quarters = MassConverter::convert(stones, MassUnit::stone, MassUnit::quarter);
     BOOST_CHECK_CLOSE(quarters, _quarters, 0.001);
 
-    double _hundredweights = MassConverter::convert(stones, MassConverter::Units::stone, MassConverter::Units::hundredweight);
+    double _hundredweights = MassConverter::convert(stones, MassUnit::stone, MassUnit::hundredweight);
     BOOST_CHECK_CLOSE(hundredweights, _hundredweights, 0.001);
 
-    double _tons = MassConverter::convert(stones, MassConverter::Units::stone, MassConverter::Units::ton);
+    double _tons = MassConverter::convert(stones, MassUnit::stone, MassUnit::ton);
     BOOST_CHECK_CLOSE(tons, _tons, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_quarters, MassConverterTest)
 {
-    double _grams = MassConverter::convert(quarters, MassConverter::Units::quarter, MassConverter::Units::gram);
+    double _grams = MassConverter::convert(quarters, MassUnit::quarter, MassUnit::gram);
     BOOST_CHECK_CLOSE(grams, _grams, 0.001);
 
-    double _centigrams = MassConverter::convert(quarters, MassConverter::Units::quarter, MassConverter::Units::centigram);
+    double _centigrams = MassConverter::convert(quarters, MassUnit::quarter, MassUnit::centigram);
     BOOST_CHECK_CLOSE(centigrams, _centigrams, 0.001);
 
-    double _decigrams = MassConverter::convert(quarters, MassConverter::Units::quarter, MassConverter::Units::decigram);
+    double _decigrams = MassConverter::convert(quarters, MassUnit::quarter, MassUnit::decigram);
     BOOST_CHECK_CLOSE(decigrams, _decigrams, 0.001);
 
-    double _milligrams = MassConverter::convert(quarters, MassConverter::Units::quarter, MassConverter::Units::milligram);
+    double _milligrams = MassConverter::convert(quarters, MassUnit::quarter, MassUnit::milligram);
     BOOST_CHECK_CLOSE(milligrams, _milligrams, 0.001);
 
-    double _micrograms = MassConverter::convert(quarters, MassConverter::Units::quarter, MassConverter::Units::microgram);
+    double _micrograms = MassConverter::convert(quarters, MassUnit::quarter, MassUnit::microgram);
     BOOST_CHECK_CLOSE(micrograms, _micrograms, 0.001);
 
-    double _nanograms = MassConverter::convert(quarters, MassConverter::Units::quarter, MassConverter::Units::nanogram);
+    double _nanograms = MassConverter::convert(quarters, MassUnit::quarter, MassUnit::nanogram);
     BOOST_CHECK_CLOSE(nanograms, _nanograms, 0.001);
 
-    double _kilograms = MassConverter::convert(quarters, MassConverter::Units::quarter, MassConverter::Units::kilogram);
+    double _kilograms = MassConverter::convert(quarters, MassUnit::quarter, MassUnit::kilogram);
     BOOST_CHECK_CLOSE(kilograms, _kilograms, 0.001);
 
-    double _hectograms = MassConverter::convert(quarters, MassConverter::Units::quarter, MassConverter::Units::hectogram);
+    double _hectograms = MassConverter::convert(quarters, MassUnit::quarter, MassUnit::hectogram);
     BOOST_CHECK_CLOSE(hectograms, _hectograms, 0.001);
 
-    double _decagrams = MassConverter::convert(quarters, MassConverter::Units::quarter, MassConverter::Units::decagram);
+    double _decagrams = MassConverter::convert(quarters, MassUnit::quarter, MassUnit::decagram);
     BOOST_CHECK_CLOSE(decagrams, _decagrams, 0.001);
 
-    double _grains = MassConverter::convert(quarters, MassConverter::Units::quarter, MassConverter::Units::grain);
+    double _grains = MassConverter::convert(quarters, MassUnit::quarter, MassUnit::grain);
     BOOST_CHECK_CLOSE(grains, _grains, 0.001);
 
-    double _ounces = MassConverter::convert(quarters, MassConverter::Units::quarter, MassConverter::Units::ounce);
+    double _ounces = MassConverter::convert(quarters, MassUnit::quarter, MassUnit::ounce);
     BOOST_CHECK_CLOSE(ounces, _ounces, 0.001);
 
-    double _pounds = MassConverter::convert(quarters, MassConverter::Units::quarter, MassConverter::Units::pound);
+    double _pounds = MassConverter::convert(quarters, MassUnit::quarter, MassUnit::pound);
     BOOST_CHECK_CLOSE(pounds, _pounds, 0.001);
 
-    double _stones = MassConverter::convert(quarters, MassConverter::Units::quarter, MassConverter::Units::stone);
+    double _stones = MassConverter::convert(quarters, MassUnit::quarter, MassUnit::stone);
     BOOST_CHECK_CLOSE(stones, _stones, 0.001);
 
-    double _hundredweights = MassConverter::convert(quarters, MassConverter::Units::quarter, MassConverter::Units::hundredweight);
+    double _hundredweights = MassConverter::convert(quarters, MassUnit::quarter, MassUnit::hundredweight);
     BOOST_CHECK_CLOSE(hundredweights, _hundredweights, 0.001);
 
-    double _tons = MassConverter::convert(quarters, MassConverter::Units::quarter, MassConverter::Units::ton);
+    double _tons = MassConverter::convert(quarters, MassUnit::quarter, MassUnit::ton);
     BOOST_CHECK_CLOSE(tons, _tons, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_hundredweights, MassConverterTest)
 {
-    double _grams = MassConverter::convert(hundredweights, MassConverter::Units::hundredweight, MassConverter::Units::gram);
+    double _grams = MassConverter::convert(hundredweights, MassUnit::hundredweight, MassUnit::gram);
     BOOST_CHECK_CLOSE(grams, _grams, 0.001);
 
-    double _centigrams = MassConverter::convert(hundredweights, MassConverter::Units::hundredweight, MassConverter::Units::centigram);
+    double _centigrams = MassConverter::convert(hundredweights, MassUnit::hundredweight, MassUnit::centigram);
     BOOST_CHECK_CLOSE(centigrams, _centigrams, 0.001);
 
-    double _decigrams = MassConverter::convert(hundredweights, MassConverter::Units::hundredweight, MassConverter::Units::decigram);
+    double _decigrams = MassConverter::convert(hundredweights, MassUnit::hundredweight, MassUnit::decigram);
     BOOST_CHECK_CLOSE(decigrams, _decigrams, 0.001);
 
-    double _milligrams = MassConverter::convert(hundredweights, MassConverter::Units::hundredweight, MassConverter::Units::milligram);
+    double _milligrams = MassConverter::convert(hundredweights, MassUnit::hundredweight, MassUnit::milligram);
     BOOST_CHECK_CLOSE(milligrams, _milligrams, 0.001);
 
-    double _micrograms = MassConverter::convert(hundredweights, MassConverter::Units::hundredweight, MassConverter::Units::microgram);
+    double _micrograms = MassConverter::convert(hundredweights, MassUnit::hundredweight, MassUnit::microgram);
     BOOST_CHECK_CLOSE(micrograms, _micrograms, 0.001);
 
-    double _nanograms = MassConverter::convert(hundredweights, MassConverter::Units::hundredweight, MassConverter::Units::nanogram);
+    double _nanograms = MassConverter::convert(hundredweights, MassUnit::hundredweight, MassUnit::nanogram);
     BOOST_CHECK_CLOSE(nanograms, _nanograms, 0.001);
 
-    double _kilograms = MassConverter::convert(hundredweights, MassConverter::Units::hundredweight, MassConverter::Units::kilogram);
+    double _kilograms = MassConverter::convert(hundredweights, MassUnit::hundredweight, MassUnit::kilogram);
     BOOST_CHECK_CLOSE(kilograms, _kilograms, 0.001);
 
-    double _hectograms = MassConverter::convert(hundredweights, MassConverter::Units::hundredweight, MassConverter::Units::hectogram);
+    double _hectograms = MassConverter::convert(hundredweights, MassUnit::hundredweight, MassUnit::hectogram);
     BOOST_CHECK_CLOSE(hectograms, _hectograms, 0.001);
 
-    double _decagrams = MassConverter::convert(hundredweights, MassConverter::Units::hundredweight, MassConverter::Units::decagram);
+    double _decagrams = MassConverter::convert(hundredweights, MassUnit::hundredweight, MassUnit::decagram);
     BOOST_CHECK_CLOSE(decagrams, _decagrams, 0.001);
 
-    double _grains = MassConverter::convert(hundredweights, MassConverter::Units::hundredweight, MassConverter::Units::grain);
+    double _grains = MassConverter::convert(hundredweights, MassUnit::hundredweight, MassUnit::grain);
     BOOST_CHECK_CLOSE(grains, _grains, 0.001);
 
-    double _ounces = MassConverter::convert(hundredweights, MassConverter::Units::hundredweight, MassConverter::Units::ounce);
+    double _ounces = MassConverter::convert(hundredweights, MassUnit::hundredweight, MassUnit::ounce);
     BOOST_CHECK_CLOSE(ounces, _ounces, 0.001);
 
-    double _pounds = MassConverter::convert(hundredweights, MassConverter::Units::hundredweight, MassConverter::Units::pound);
+    double _pounds = MassConverter::convert(hundredweights, MassUnit::hundredweight, MassUnit::pound);
     BOOST_CHECK_CLOSE(pounds, _pounds, 0.001);
 
-    double _stones = MassConverter::convert(hundredweights, MassConverter::Units::hundredweight, MassConverter::Units::stone);
+    double _stones = MassConverter::convert(hundredweights, MassUnit::hundredweight, MassUnit::stone);
     BOOST_CHECK_CLOSE(stones, _stones, 0.001);
 
-    double _quarters = MassConverter::convert(hundredweights, MassConverter::Units::hundredweight, MassConverter::Units::quarter);
+    double _quarters = MassConverter::convert(hundredweights, MassUnit::hundredweight, MassUnit::quarter);
     BOOST_CHECK_CLOSE(quarters, _quarters, 0.001);
 
-    double _tons = MassConverter::convert(hundredweights, MassConverter::Units::hundredweight, MassConverter::Units::ton);
+    double _tons = MassConverter::convert(hundredweights, MassUnit::hundredweight, MassUnit::ton);
     BOOST_CHECK_CLOSE(tons, _tons, 0.001);
 }
 
 BOOST_FIXTURE_TEST_CASE(from_tons, MassConverterTest)
 {
-    double _grams = MassConverter::convert(tons, MassConverter::Units::ton, MassConverter::Units::gram);
+    double _grams = MassConverter::convert(tons, MassUnit::ton, MassUnit::gram);
     BOOST_CHECK_CLOSE(grams, _grams, 0.001);
 
-    double _centigrams = MassConverter::convert(tons, MassConverter::Units::ton, MassConverter::Units::centigram);
+    double _centigrams = MassConverter::convert(tons, MassUnit::ton, MassUnit::centigram);
     BOOST_CHECK_CLOSE(centigrams, _centigrams, 0.001);
 
-    double _decigrams = MassConverter::convert(tons, MassConverter::Units::ton, MassConverter::Units::decigram);
+    double _decigrams = MassConverter::convert(tons, MassUnit::ton, MassUnit::decigram);
     BOOST_CHECK_CLOSE(decigrams, _decigrams, 0.001);
 
-    double _milligrams = MassConverter::convert(tons, MassConverter::Units::ton, MassConverter::Units::milligram);
+    double _milligrams = MassConverter::convert(tons, MassUnit::ton, MassUnit::milligram);
     BOOST_CHECK_CLOSE(milligrams, _milligrams, 0.001);
 
-    double _micrograms = MassConverter::convert(tons, MassConverter::Units::ton, MassConverter::Units::microgram);
+    double _micrograms = MassConverter::convert(tons, MassUnit::ton, MassUnit::microgram);
     BOOST_CHECK_CLOSE(micrograms, _micrograms, 0.001);
 
-    double _nanograms = MassConverter::convert(tons, MassConverter::Units::ton, MassConverter::Units::nanogram);
+    double _nanograms = MassConverter::convert(tons, MassUnit::ton, MassUnit::nanogram);
     BOOST_CHECK_CLOSE(nanograms, _nanograms, 0.001);
 
-    double _kilograms = MassConverter::convert(tons, MassConverter::Units::ton, MassConverter::Units::kilogram);
+    double _kilograms = MassConverter::convert(tons, MassUnit::ton, MassUnit::kilogram);
     BOOST_CHECK_CLOSE(kilograms, _kilograms, 0.001);
 
-    double _hectograms = MassConverter::convert(tons, MassConverter::Units::ton, MassConverter::Units::hectogram);
+    double _hectograms = MassConverter::convert(tons, MassUnit::ton, MassUnit::hectogram);
     BOOST_CHECK_CLOSE(hectograms, _hectograms, 0.001);
 
-    double _decagrams = MassConverter::convert(tons, MassConverter::Units::ton, MassConverter::Units::decagram);
+    double _decagrams = MassConverter::convert(tons, MassUnit::ton, MassUnit::decagram);
     BOOST_CHECK_CLOSE(decagrams, _decagrams, 0.001);
 
-    double _grains = MassConverter::convert(tons, MassConverter::Units::ton, MassConverter::Units::grain);
+    double _grains = MassConverter::convert(tons, MassUnit::ton, MassUnit::grain);
     BOOST_CHECK_CLOSE(grains, _grains, 0.001);
 
-    double _ounces = MassConverter::convert(tons, MassConverter::Units::ton, MassConverter::Units::ounce);
+    double _ounces = MassConverter::convert(tons, MassUnit::ton, MassUnit::ounce);
     BOOST_CHECK_CLOSE(ounces, _ounces, 0.001);
 
-    double _pounds = MassConverter::convert(tons, MassConverter::Units::ton, MassConverter::Units::pound);
+    double _pounds = MassConverter::convert(tons, MassUnit::ton, MassUnit::pound);
     BOOST_CHECK_CLOSE(pounds, _pounds, 0.001);
 
-    double _stones = MassConverter::convert(tons, MassConverter::Units::ton, MassConverter::Units::stone);
+    double _stones = MassConverter::convert(tons, MassUnit::ton, MassUnit::stone);
     BOOST_CHECK_CLOSE(stones, _stones, 0.001);
 
-    double _quarters = MassConverter::convert(tons, MassConverter::Units::ton, MassConverter::Units::quarter);
+    double _quarters = MassConverter::convert(tons, MassUnit::ton, MassUnit::quarter);
     BOOST_CHECK_CLOSE(quarters, _quarters, 0.001);
 
-    double _hundredweights = MassConverter::convert(tons, MassConverter::Units::ton, MassConverter::Units::hundredweight);
+    double _hundredweights = MassConverter::convert(tons, MassUnit::ton, MassUnit::hundredweight);
     BOOST_CHECK_CLOSE(hundredweights, _hundredweights, 0.001);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+
+/* AreaConverterTestSuite */
+
+BOOST_AUTO_TEST_SUITE(AreaConverterTestSuite)
+
+struct AreaConverterTest
+{
+    AreaConverterTest() = default;
+    ~AreaConverterTest() = default;
+
+    void setup() {}
+    void teardown() {}
+
+    // Valores base en metros cuadrados (634.5 m²)
+    double square_metres = 634.5;
+
+    // Múltiplos SI (sistema métrico)
+    double square_decametres = 6.345;          // 1 dam² = 100 m²
+    double square_hectometres = 0.06345;       // 1 hm² = 10000 m²
+    double square_kilometres = 0.0006345;      // 1 km² = 1000000 m²
+    double hectares = 0.06345;                 // 1 ha = 10000 m² (alias de hectómetro cuadrado)
+
+    // Unidades imperiales
+    double acres = 0.1567883645;               // 1 acre = 4046.8564224 m²
+    double square_yards = 758.8556843;         // 1 yd² = 0.83612736 m²
+    double square_feet = 6829.701159;          // 1 ft² = 0.09290304 m²
+};
+
+BOOST_FIXTURE_TEST_CASE(from_square_metre, AreaConverterTest)
+{
+
+    // Conversiones a unidades SI
+    double _square_decametres = AreaConverter::convert(square_metres,
+                                                       AreaUnit::square_metre,
+                                                       AreaUnit::square_decametre);
+    BOOST_CHECK_CLOSE(square_decametres, _square_decametres, 0.001);
+
+    double _square_hectometres = AreaConverter::convert(square_metres,
+                                                        AreaUnit::square_metre,
+                                                        AreaUnit::square_hectometre);
+    BOOST_CHECK_CLOSE(square_hectometres, _square_hectometres, 0.001);
+
+    double _square_kilometres = AreaConverter::convert(square_metres,
+                                                       AreaUnit::square_metre,
+                                                       AreaUnit::square_kilometre);
+    BOOST_CHECK_CLOSE(square_kilometres, _square_kilometres, 0.001);
+
+    double _hectares = AreaConverter::convert(square_metres,
+                                              AreaUnit::square_metre,
+                                              AreaUnit::hectare);
+    BOOST_CHECK_CLOSE(hectares, _hectares, 0.001);
+
+    // Conversiones a unidades imperiales
+    double _acres = AreaConverter::convert(square_metres,
+                                           AreaUnit::square_metre,
+                                           AreaUnit::acre);
+    BOOST_CHECK_CLOSE(acres, _acres, 0.001);
+
+    double _square_yards = AreaConverter::convert(square_metres,
+                                                  AreaUnit::square_metre,
+                                                  AreaUnit::square_yard);
+    BOOST_CHECK_CLOSE(square_yards, _square_yards, 0.001);
+
+    double _square_feet = AreaConverter::convert(square_metres,
+                                                 AreaUnit::square_metre,
+                                                 AreaUnit::square_foot);
+    BOOST_CHECK_CLOSE(square_feet, _square_feet, 0.001);
+
+    // Prueba constexpr para verificar la conversión en tiempo de compilación
+    constexpr double _square_decametres_constexpr = AreaConverter::convert(634.5,
+                                                                           AreaUnit::square_metre,
+                                                                           AreaUnit::square_decametre);
+    BOOST_CHECK_CLOSE(square_decametres, _square_decametres, 0.001);
+}
+
+BOOST_FIXTURE_TEST_CASE(from_square_decametre, AreaConverterTest)
+{
+    double base_value = square_decametres; // 6.345 dam²
+
+    // De decámetro cuadrado a metro cuadrado
+    double _square_metres = AreaConverter::convert(base_value, 
+                                                   AreaUnit::square_decametre, 
+                                                   AreaUnit::square_metre);
+    BOOST_CHECK_CLOSE(square_metres, _square_metres, 0.001);
+}
+
+BOOST_FIXTURE_TEST_CASE(from_square_hectometre, AreaConverterTest)
+{
+    double base_value = square_hectometres; // 0.06345 hm²
+
+    // De hectómetro cuadrado a metro cuadrado
+    double _square_metres = AreaConverter::convert(base_value,
+                                                   AreaUnit::square_hectometre,
+                                                   AreaUnit::square_metre);
+    BOOST_CHECK_CLOSE(square_metres, _square_metres, 0.001);
+}
+
+BOOST_FIXTURE_TEST_CASE(from_square_kilometre, AreaConverterTest)
+{
+    double base_value = square_kilometres; // 0.0006345 km²
+
+    // De kilómetro cuadrado a metro cuadrado
+    double _square_metres = AreaConverter::convert(base_value,
+                                                   AreaUnit::square_kilometre,
+                                                   AreaUnit::square_metre);
+    BOOST_CHECK_CLOSE(square_metres, _square_metres, 0.001);
+}
+
+BOOST_FIXTURE_TEST_CASE(from_hectare, AreaConverterTest)
+{
+    double base_value = hectares; // 0.06345 ha
+
+    // De hectárea a metro cuadrado
+    double _square_metres = AreaConverter::convert(base_value,
+                                                   AreaUnit::hectare,
+                                                   AreaUnit::square_metre);
+    BOOST_CHECK_CLOSE(square_metres, _square_metres, 0.001);
+}
+
+BOOST_FIXTURE_TEST_CASE(from_acre, AreaConverterTest)
+{
+    double base_value = acres; // 0.1567904974 acres
+
+    // De acre a metro cuadrado
+    double _square_metres = AreaConverter::convert(base_value,
+                                                   AreaUnit::acre,
+                                                   AreaUnit::square_metre);
+    BOOST_CHECK_CLOSE(square_metres, _square_metres, 0.001);
+}
+
+BOOST_FIXTURE_TEST_CASE(from_square_yard, AreaConverterTest)
+{
+    double base_value = square_yards; // 758.9254007 yd²
+
+    // De yarda cuadrada a metro cuadrado
+    double _square_metres = AreaConverter::convert(base_value,
+                                                   AreaUnit::square_yard,
+                                                   AreaUnit::square_metre);
+    BOOST_CHECK_CLOSE(square_metres, _square_metres, 0.001);
+}
+
+BOOST_FIXTURE_TEST_CASE(from_square_foot, AreaConverterTest)
+{
+    double base_value = square_feet; // 6829.766591 ft²
+
+    // De pie cuadrado a metro cuadrado
+    double _square_metres = AreaConverter::convert(base_value,
+                                                   AreaUnit::square_foot,
+                                                   AreaUnit::square_metre);
+    BOOST_CHECK_CLOSE(square_metres, _square_metres, 0.001);
+}
+
+BOOST_FIXTURE_TEST_CASE(cross_conversion, AreaConverterTest)
+{
+    // Conversión cruzada: unidades SI → Imperial
+    double _acres_from_hectares = AreaConverter::convert(hectares,
+                                                         AreaUnit::hectare,
+                                                         AreaUnit::acre);
+    BOOST_CHECK_CLOSE(acres, _acres_from_hectares, 0.001);
+
+    // Conversión cruzada: unidades Imperial → SI
+    double _hectares_from_acres = AreaConverter::convert(acres,
+                                                         AreaUnit::acre,
+                                                         AreaUnit::hectare);
+    BOOST_CHECK_CLOSE(hectares, _hectares_from_acres, 0.001);
+
+    // Conversión entre imperiales
+    double _square_yards_from_feet = AreaConverter::convert(square_feet,
+                                                            AreaUnit::square_foot,
+                                                            AreaUnit::square_yard);
+    BOOST_CHECK_CLOSE(square_yards, _square_yards_from_feet, 0.001);
+}
+
+BOOST_FIXTURE_TEST_CASE(identity_conversion, AreaConverterTest)
+{
+    // La conversión de una unidad a sí misma debe devolver el mismo valor
+    double _same_metre = AreaConverter::convert(square_metres,
+        AreaUnit::square_metre,
+        AreaUnit::square_metre);
+    BOOST_CHECK_EQUAL(square_metres, _same_metre);
+
+    double _same_acre = AreaConverter::convert(acres,
+                                               AreaUnit::acre,
+                                               AreaUnit::acre);
+    BOOST_CHECK_EQUAL(acres, _same_acre);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

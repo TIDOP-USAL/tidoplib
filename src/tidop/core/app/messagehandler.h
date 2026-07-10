@@ -59,7 +59,7 @@
 
 
 #include "tidop/config.h"
-#include "tidop/core/base/flags.h"
+#include "tidop/core/base/Flags.h"
 
 #include <string_view>
 

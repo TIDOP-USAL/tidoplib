@@ -36,13 +36,7 @@
 #include <mutex>
 #include <fstream>
 
-//#ifdef TL_HAVE_FMT
-//#include <fmt/format.h>
-//#else
-//#include <format>
-//#endif
-
-#include "tidop/core/base/flags.h"
+#include "tidop/core/base/Flags.h"
 #include "tidop/core/base/Path.h"
 #include "tidop/core/app/MessageHandler.h"
 #include "tidop/core/base/Format.h"

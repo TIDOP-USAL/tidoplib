@@ -79,6 +79,7 @@
 #include <numeric>
 #include <sstream>
 
+#include "tidop/core/base/Concepts.h"
 #include "tidop/core/base/TypeConversions.h"
 
 namespace tl
@@ -90,64 +91,44 @@ namespace tl
  * \{
  */
 
-/*!
- * \brief Splits a string into a vector of substrings based on a specified delimiter.
- *
- * This function can split a string into substrings, either returning a vector of `std::string`
- * or a vector of a numeric type (e.g., `int`, `float`, etc.), depending on the template type `T`.
- * It uses a specified separator character to split the string. The default separator is a comma (`,`) if not specified.
- *
- * \tparam T The type of elements in the resulting vector. It can either be `std::string` or any arithmetic type (excluding `bool`).
- *
- * \param[in] string The input string to split.
- * \param[in] separator The character used to split the string (default is `','`).
- *
- * \return A vector containing the substrings, either as `std::string` or as the specified numeric type `T`.
- *
- * ### Example Usage
- * \code{.cpp}
- * std::string str = "10,20,30,40";
- * auto result = split<int>(str, ',');
- * // result = {10, 20, 30, 40}
- * \endcode
- */
-template <typename T>
-auto split(const std::string& string,
-           char separator = ',') -> std::enable_if_t<std::is_same<T, std::string>::value, std::vector<T>>
+
+enum class EmptyTokenPolicy
+{
+    keep,
+    skip,
+    error
+};
+
+
+template <typename T, EmptyTokenPolicy Policy = EmptyTokenPolicy::keep>
+    requires std::same_as<T, std::string> || 
+             ArithmeticNoBool<T>
+auto split(std::string_view str, char separator = ',') -> std::vector<T>
 {
     std::vector<T> out;
-    out.reserve(10); // Pre-allocate for typical use cases
-	
-    std::stringstream ss(string);
-    std::string  item{};
-    while (std::getline(ss, item, separator)) {
-        out.push_back(item);
+    out.reserve(10);
+
+    for (const auto &&subrange : str | std::ranges::views::split(separator)) {
+
+        std::string_view item{subrange.data(), subrange.size()};
+
+        if (item.empty()) {
+            if constexpr (Policy == EmptyTokenPolicy::skip) {
+                continue;
+            } else if constexpr (Policy == EmptyTokenPolicy::error) {
+                TL_THROW_EXCEPTION("Empty token detected in split with strict policy");
+            }
+        }
+
+        if constexpr (std::same_as<T, std::string>) {
+            out.emplace_back(item);
+        } else {
+            out.push_back(convertStringTo<T>(item));
+        }
     }
 
     return out;
 }
-
-/// \cond
-
-template <typename T>
-auto split(const std::string& string,
-           char separator = ',') -> std::enable_if_t<std::is_arithmetic<T>::value && 
-                                                     !std::is_same<T, bool>::value,
-	                                                 std::vector<T>>
-{
-    std::vector<T> out;
-    out.reserve(10);  // Pre-allocate for typical use cases
-	
-    std::stringstream ss(string);
-    std::string item{};
-    while (std::getline(ss, item, separator)) {
-        out.push_back(convertStringTo<T>(item));
-    }
-
-    return out;
-}
-
-/// \endcond
 
 /*! \} */
 

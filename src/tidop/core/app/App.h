@@ -119,6 +119,7 @@ public:
      * \return The executable path as a Path object.
      * \see Path
      */
+    [[nodiscard]]
     auto path() const -> Path;
 
     /*!

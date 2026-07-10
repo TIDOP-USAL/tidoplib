@@ -138,11 +138,11 @@ public:
      */
     Path(const std::wstring &path);
     Path(const Path &path);
-    Path(Path &&path) TL_NOEXCEPT;
+    Path(Path &&path) noexcept;
     ~Path();
 
     auto operator = (const Path &path) -> Path&;
-    auto operator = (Path &&path) TL_NOEXCEPT -> Path&;
+    auto operator = (Path &&path) noexcept -> Path&;
 
     /*!
      * \brief Sets the path from a std::string.
