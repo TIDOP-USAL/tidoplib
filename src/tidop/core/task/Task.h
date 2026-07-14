@@ -346,7 +346,7 @@ public:
      * \brief Move constructor.
      * \param[in] task The TaskBase object to move.
      */
-    TaskBase(TaskBase &&task) TL_NOEXCEPT;
+    TaskBase(TaskBase &&task) noexcept;
 
     ~TaskBase() override;
    
@@ -362,7 +362,7 @@ public:
      * \param[in] task The TaskBase object to move.
      * \return A reference to the assigned object.
      */
-    auto operator=(TaskBase &&task) TL_NOEXCEPT->TaskBase &;
+    auto operator=(TaskBase &&task) noexcept->TaskBase &;
 
 protected:
 
@@ -468,7 +468,7 @@ protected:
 
 private:
 
-    void executeTask(Progress *progressBar) TL_NOEXCEPT;
+    void executeTask(Progress *progressBar) noexcept;
 
 protected:
 

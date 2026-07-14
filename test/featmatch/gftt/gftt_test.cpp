@@ -182,24 +182,4 @@ BOOST_FIXTURE_TEST_CASE(reset, GfttDetectorTest)
   BOOST_CHECK_EQUAL(0.04, gftt.k());
 }
 
-BOOST_FIXTURE_TEST_CASE(gftt_detector_properties, GfttDetectorTest)
-{
-    auto &properties = gfttDetector->properties();
-
-    BOOST_CHECK_EQUAL(2000, properties.getProperty<int>("MaxFeatures"));
-    BOOST_CHECK_EQUAL(0.05, properties.getProperty<double>("QualityLevel"));
-    BOOST_CHECK_EQUAL(2., properties.getProperty<double>("MinDistance"));
-    BOOST_CHECK_EQUAL(5, properties.getProperty<int>("BlockSize"));
-    BOOST_CHECK_EQUAL(true, properties.getProperty<bool>("HarrisDetector"));
-    BOOST_CHECK_EQUAL(0.05, properties.getProperty<double>("K"));
-
-    BOOST_CHECK_EQUAL("2000", properties.getPropertyAsString("MaxFeatures"));
-    BOOST_CHECK_EQUAL("0.050000", properties.getPropertyAsString("QualityLevel"));
-    BOOST_CHECK_EQUAL("2.000000", properties.getPropertyAsString("MinDistance"));
-    BOOST_CHECK_EQUAL("5", properties.getPropertyAsString("BlockSize"));
-    BOOST_CHECK_EQUAL("true", properties.getPropertyAsString("HarrisDetector"));
-    BOOST_CHECK_EQUAL("0.050000", properties.getPropertyAsString("K"));
-}
-
-
 BOOST_AUTO_TEST_SUITE_END() 

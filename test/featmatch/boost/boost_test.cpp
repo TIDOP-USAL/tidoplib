@@ -157,17 +157,4 @@ BOOST_FIXTURE_TEST_CASE(reset, BoostDescriptorTest)
     BOOST_CHECK_EQUAL(6.25, boost.scaleFactor());
 }
 
-BOOST_FIXTURE_TEST_CASE(boost_detector_properties, BoostDescriptorTest)
-{
-    auto properties = boostDescriptor->properties();
-
-    BOOST_CHECK_EQUAL("BGM_BILINEAR", properties.getProperty<std::string>("DescriptorType"));
-    BOOST_CHECK_EQUAL(false, properties.getProperty<bool>("UseOrientation"));
-    BOOST_CHECK_EQUAL(0.75f, properties.getProperty<float>("ScaleFactor"));
-
-    BOOST_CHECK_EQUAL("BGM_BILINEAR", properties.getPropertyAsString("DescriptorType"));
-    BOOST_CHECK_EQUAL("false", properties.getPropertyAsString("UseOrientation"));
-    BOOST_CHECK_EQUAL("0.750000", properties.getPropertyAsString("ScaleFactor"));
-}
-
 BOOST_AUTO_TEST_SUITE_END() 

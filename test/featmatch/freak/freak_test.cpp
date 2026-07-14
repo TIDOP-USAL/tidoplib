@@ -153,19 +153,4 @@ BOOST_FIXTURE_TEST_CASE(reset, FreakDescriptorTest)
   BOOST_CHECK_EQUAL(4, freak.octaves());
 }
 
-BOOST_FIXTURE_TEST_CASE(freak_descriptor_properties, FreakDescriptorTest)
-{
-    auto &properties = freakDescriptor->properties();
-
-    BOOST_CHECK_EQUAL(false, properties.getProperty<bool>("OrientationNormalized"));
-    BOOST_CHECK_EQUAL(false, properties.getProperty<bool>("ScaleNormalized"));
-    BOOST_CHECK_EQUAL(11., properties.getProperty<float>("PatternScale"));
-    BOOST_CHECK_EQUAL(3, properties.getProperty<int>("Octaves"));
-
-    BOOST_CHECK_EQUAL("false", properties.getPropertyAsString("OrientationNormalized"));
-    BOOST_CHECK_EQUAL("false", properties.getPropertyAsString("ScaleNormalized"));
-    BOOST_CHECK_EQUAL("11.000000", properties.getPropertyAsString("PatternScale"));
-    BOOST_CHECK_EQUAL("3", properties.getPropertyAsString("Octaves"));
-}
-
 BOOST_AUTO_TEST_SUITE_END() 

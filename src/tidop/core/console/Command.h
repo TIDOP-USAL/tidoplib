@@ -103,9 +103,9 @@ namespace tl
  */
 struct UsageSignature
 {
-    std::list<Argument::Ptr> required;   /*!< Required arguments for this signature */
-    std::list<Argument::Ptr> optional;   /*!< Optional arguments for this signature */
-    std::string description;                   /*!< Description shown in help output */
+    std::vector<Argument::Ptr> required;   /*!< Required arguments for this signature */
+    std::vector<Argument::Ptr> optional;   /*!< Optional arguments for this signature */
+    std::string description;               /*!< Description shown in help output */
 
 
     UsageSignature() = default;
@@ -117,8 +117,8 @@ struct UsageSignature
      * \param[in] opt Optional arguments (default: empty)
      * \param[in] desc Description (default: empty)
      */   
-    UsageSignature(const std::list<Argument::Ptr> &req,
-                   const std::list<Argument::Ptr> &opt = {},
+    UsageSignature(const std::vector<Argument::Ptr> &req,
+                   const std::vector<Argument::Ptr> &opt = {},
                    const std::string &desc = "")
       : required(req),
         optional(opt), 
@@ -202,25 +202,25 @@ public:
         show_license     /*!< License was requested (--license) */
     };
 
-    using value_type = std::list<Argument::Ptr>::value_type;
-    using size_type = std::list<Argument::Ptr>::size_type;
-    using pointer = std::list<Argument::Ptr>::pointer;
-    using const_pointer = std::list<Argument::Ptr>::const_pointer;
-    using reference = std::list<Argument::Ptr>::reference;
-    using const_reference = std::list<Argument::Ptr>::const_reference;
-    using iterator = std::list<Argument::Ptr>::iterator;
-    using const_iterator = std::list<Argument::Ptr>::const_iterator;
+    using value_type = std::vector<Argument::Ptr>::value_type;
+    //using size_type = std::list<Argument::Ptr>::size_type;
+    //using pointer = std::list<Argument::Ptr>::pointer;
+    //using const_pointer = std::list<Argument::Ptr>::const_pointer;
+    using reference = std::vector<Argument::Ptr>::reference;
+    using const_reference = std::vector<Argument::Ptr>::const_reference;
+    using iterator = std::vector<Argument::Ptr>::iterator;
+    using const_iterator = std::vector<Argument::Ptr>::const_iterator;
     using SharedPtr = std::shared_ptr<Command>;
 
 private:
 
     std::string mName;
     std::string mDescription;
-    std::list<Argument::Ptr> mArguments;
-    std::list<Argument::Ptr> mDefaultArguments;
+    std::vector<Argument::Ptr> mArguments;
+    std::vector<Argument::Ptr> mDefaultArguments;
     std::vector<UsageSignature> mUsages;
     std::string mVersion;
-    std::list<std::string> mExamples;
+    std::vector<std::string> mExamples;
     License mLicense;
     bool mEnableLog;
 
@@ -253,7 +253,7 @@ public:
      *
      * \param[in] command The `Command` object to move.
      */
-    Command(Command &&command) TL_NOEXCEPT;
+    Command(Command &&command) noexcept;
 
     /*!
      * \brief Constructor with name and description.
@@ -355,10 +355,10 @@ public:
     // Argument Management
     // ========================================================================
 
-    auto begin() TL_NOEXCEPT -> iterator;
-    auto begin() const TL_NOEXCEPT -> const_iterator;
-    auto end() TL_NOEXCEPT -> iterator;
-    auto end() const TL_NOEXCEPT -> const_iterator;
+    auto begin() noexcept -> iterator;
+    auto begin() const noexcept -> const_iterator;
+    auto end() noexcept -> iterator;
+    auto end() const noexcept -> const_iterator;
 
     /*!
      * \brief Adds an argument to the command
@@ -390,7 +390,7 @@ public:
      *
      * \param[in] argument A shared pointer to the `Argument` object to be added (moved).
      */
-    auto push_back(Argument::Ptr &&argument) TL_NOEXCEPT -> void;
+    auto push_back(Argument::Ptr &&argument) noexcept -> void;
 
     /*!
      * \brief Adds an argument to the command (move version)
@@ -402,7 +402,7 @@ public:
      * \param[in] argument A shared pointer to the `Argument` object to be added (moved).
      * \return The current `Command` object, allowing for method chaining.
      */
-    auto addArgument(Argument::Ptr &&argument) TL_NOEXCEPT -> Command &;
+    auto addArgument(Argument::Ptr &&argument) noexcept -> Command &;
 
     /*!
      * \brief Adds a typed argument to the command
@@ -422,7 +422,7 @@ public:
      * \endcode
      */
     template<typename type, typename... Arg>
-    auto addArgument(Arg&&... arg) TL_NOEXCEPT -> Command&
+    auto addArgument(Arg&&... arg) noexcept -> Command&
     {
         mArguments.push_back(Argument::make<type>(std::forward<Arg>(arg)...));
         return *this;
@@ -444,7 +444,7 @@ public:
      * \endcode
      */
     template<typename... Arg>
-    auto addOption(Arg&&... arg) TL_NOEXCEPT -> Command &
+    auto addOption(Arg&&... arg) noexcept -> Command &
     {
         mArguments.push_back(Argument::make<bool>(std::forward<Arg>(arg)...));
         return *this;
@@ -488,7 +488,7 @@ public:
      *
      * \note This operation is irreversible, and the arguments will be lost once cleared.
      */
-    auto clear() TL_NOEXCEPT -> void;
+    auto clear() noexcept -> void;
 
     /*!
      * \brief Check if there are no arguments
@@ -498,7 +498,7 @@ public:
      *
      * \return `true` if there are no arguments, `false` if there are one or more arguments.
      */
-    auto empty() const TL_NOEXCEPT -> bool;
+    auto empty() const noexcept -> bool;
 
     /*!
      * \brief Returns the number of arguments
@@ -508,7 +508,7 @@ public:
      *
      * \return The number of arguments added to the command.
      */
-    auto size() const TL_NOEXCEPT -> size_t;
+    auto size() const noexcept -> size_t;
 
     /*!
      * \brief Removes the interval
@@ -578,17 +578,18 @@ public:
     template<typename T>
     auto value(const std::string &name) const -> T
     {
-        T _value{};
-
         try {
+
             auto arg = argument(name);
-            internal::ArgValue<T> arg_value;
-            _value = arg_value.value(arg);
+            auto arg_typed = std::dynamic_pointer_cast<Argument_<T>>(arg);
+            TL_ASSERT(arg_typed, "Type mismatch fetching '{}'. Expected '{}', stored '{}'",
+                name, PropertySerializer<T>::typeName(), arg->typeName());
+                
+            return arg_typed->value();
+
         } catch (...) {
             TL_THROW_EXCEPTION_WITH_NESTED("Error retrieving argument value for '{}'", name);
         }
-
-        return _value;
     }
 
     /*!
@@ -609,17 +610,18 @@ public:
     template<typename T>
     auto value(const char &shortName) const -> T
     {
-        T _value{};
-
         try {
+
             auto arg = argument(shortName);
-            internal::ArgValue<T> arg_value;
-            _value = arg_value.value(arg);
+            auto arg_typed = std::dynamic_pointer_cast<Argument_<T>>(arg);
+            TL_ASSERT(arg_typed, "Type mismatch fetching '{}'. Expected '{}', stored '{}'",
+                shortName, PropertySerializer<T>::typeName(), arg->typeName());
+
+            return arg_typed->value();
+
         } catch (...) {
             TL_THROW_EXCEPTION_WITH_NESTED("Error retrieving argument value for '{}'", shortName);
         }
-
-        return _value;
     }
 
     // ========================================================================
@@ -723,7 +725,7 @@ public:
     /*!
      * \brief Move assignment operator
      */
-    auto operator=(Command &&command) TL_NOEXCEPT -> Command &;
+    auto operator=(Command &&command) noexcept -> Command &;
 
     /*!
      * \brief Creates a new command via factory method
@@ -733,7 +735,7 @@ public:
      * \return Shared pointer to new Command
      */
     static auto create(const std::string &name,
-                       const std::string &description) TL_NOEXCEPT -> std::shared_ptr<Command>
+                       const std::string &description) noexcept -> std::shared_ptr<Command>
     {
         return std::make_shared<Command>(name, description);
     }
@@ -748,7 +750,7 @@ public:
      */
     static auto create(const std::string &name,
                        const std::string &description,
-                       std::initializer_list<Argument::Ptr> arguments) TL_NOEXCEPT -> std::shared_ptr<Command>
+                       std::initializer_list<Argument::Ptr> arguments) noexcept -> std::shared_ptr<Command>
     {
         return std::make_shared<Command>(name, description, arguments);
     }
@@ -864,7 +866,7 @@ public:
     /*!
      * \brief Move constructor
      */
-    CommandList(CommandList &&commandList) TL_NOEXCEPT;
+    CommandList(CommandList &&commandList) noexcept;
 
     /*!
      * \brief Constructor with an initializer list of commands.
@@ -926,10 +928,10 @@ public:
      */
     auto parse(int argc, char **argv) -> Command::Status;
 
-    auto begin() TL_NOEXCEPT -> iterator;
-    auto begin() const TL_NOEXCEPT -> const_iterator;
-    auto end() TL_NOEXCEPT -> iterator;
-    auto end() const TL_NOEXCEPT -> const_iterator;
+    auto begin() noexcept -> iterator;
+    auto begin() const noexcept -> const_iterator;
+    auto end() noexcept -> iterator;
+    auto end() const noexcept -> const_iterator;
 
     /*!
      * \brief Adds a command to the list.
@@ -947,33 +949,33 @@ public:
      * \brief Adds a command to the list (move semantics).
      * \param[in] command A shared pointer to the command to move into the list.
      */
-    auto push_back(Command::SharedPtr &&command) TL_NOEXCEPT -> void;
+    auto push_back(Command::SharedPtr &&command) noexcept -> void;
 
     /*!
      * \brief Adds a command to the list (move semantics).
      * \param[in] command A shared pointer to the command to move into the list.
      */
-    auto addCommand(Command::SharedPtr &&command) TL_NOEXCEPT -> CommandList &;
+    auto addCommand(Command::SharedPtr &&command) noexcept -> CommandList &;
 
     /*!
      * \brief Removes commands
      */
-    auto clear() TL_NOEXCEPT -> void;
+    auto clear() noexcept -> void;
 
     /*!
      * \brief Checks if the command list is empty.
      * \return True if the command list is empty, false otherwise.
      */
-    auto empty() const TL_NOEXCEPT -> bool;
+    auto empty() const noexcept -> bool;
 
     /*!
      * \brief Returns the number of commands in the list.
      * \return The size of the command list.
      */
-    auto size() const TL_NOEXCEPT -> size_type;
+    auto size() const noexcept -> size_type;
 
     auto operator=(const CommandList &cmdList) -> CommandList &;
-    auto operator=(CommandList &&cmdList) TL_NOEXCEPT -> CommandList &;
+    auto operator=(CommandList &&cmdList) noexcept -> CommandList &;
 
     /*!
      * \brief Removes the interval

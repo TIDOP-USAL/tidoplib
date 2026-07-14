@@ -222,27 +222,4 @@ BOOST_FIXTURE_TEST_CASE(reset, OrbDetectorDescriptorTest)
     BOOST_CHECK_EQUAL(20, orb.fastThreshold());
 }
 
-BOOST_FIXTURE_TEST_CASE(orb_detector_descriptor_properties, OrbDetectorDescriptorTest)
-{
-    auto &properties = orbDetectorDescriptor->properties();
-
-    BOOST_CHECK_EQUAL(4000, properties.getProperty<int>("FeaturesNumber"));
-    BOOST_CHECK_EQUAL(1.5f, properties.getProperty<float>("ScaleFactor"));
-    BOOST_CHECK_EQUAL(6, properties.getProperty<int>("LevelsNumber"));
-    BOOST_CHECK_EQUAL(11, properties.getProperty<int>("EdgeThreshold"));
-    BOOST_CHECK_EQUAL(2, properties.getProperty<int>("WTA_K"));
-    BOOST_CHECK_EQUAL("FAST", properties.getProperty<std::string>("ScoreType"));
-    BOOST_CHECK_EQUAL(11, properties.getProperty<int>("PatchSize"));
-    BOOST_CHECK_EQUAL(10, properties.getProperty<int>("FastThreshold"));
-
-    BOOST_CHECK_EQUAL("4000", properties.getPropertyAsString("FeaturesNumber"));
-    BOOST_CHECK_EQUAL("1.500000", properties.getPropertyAsString("ScaleFactor"));
-    BOOST_CHECK_EQUAL("6", properties.getPropertyAsString("LevelsNumber"));
-    BOOST_CHECK_EQUAL("11", properties.getPropertyAsString("EdgeThreshold"));
-    BOOST_CHECK_EQUAL("2", properties.getPropertyAsString("WTA_K"));
-    BOOST_CHECK_EQUAL("FAST", properties.getPropertyAsString("ScoreType"));
-    BOOST_CHECK_EQUAL("11", properties.getPropertyAsString("PatchSize"));
-    BOOST_CHECK_EQUAL("10", properties.getPropertyAsString("FastThreshold"));
-}
-
 BOOST_AUTO_TEST_SUITE_END()

@@ -177,23 +177,4 @@ BOOST_FIXTURE_TEST_CASE(reset, SurfDetectorDescriptorTest)
     BOOST_CHECK_EQUAL(false, surf.upright());
 }
 
-#ifdef OPENCV_ENABLE_NONFREE
-BOOST_FIXTURE_TEST_CASE(surf_detector_descriptor_properties, SurfDetectorDescriptorTest)
-{
-    auto &properties = surfDetectorDescriptor->properties();
-
-    BOOST_CHECK_EQUAL(50., properties.getProperty<double>("HessianThreshold"));
-    BOOST_CHECK_EQUAL(2, properties.getProperty<int>("Octaves"));
-    BOOST_CHECK_EQUAL(5, properties.getProperty<int>("OctaveLayers"));
-    BOOST_CHECK_EQUAL(true, properties.getProperty<bool>("ExtendedDescriptor"));
-    BOOST_CHECK_EQUAL(true, properties.getProperty<bool>("Upright"));
-
-    BOOST_CHECK_EQUAL("50.000000", properties.getPropertyAsString("HessianThreshold"));
-    BOOST_CHECK_EQUAL("2", properties.getPropertyAsString("Octaves"));
-    BOOST_CHECK_EQUAL("5", properties.getPropertyAsString("OctaveLayers"));
-    BOOST_CHECK_EQUAL("true", properties.getPropertyAsString("ExtendedDescriptor"));
-    BOOST_CHECK_EQUAL("true", properties.getPropertyAsString("Upright"));
-}
-#endif
-
 BOOST_AUTO_TEST_SUITE_END()

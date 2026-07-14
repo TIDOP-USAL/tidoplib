@@ -184,24 +184,5 @@ BOOST_FIXTURE_TEST_CASE(reset, HogDescriptorTest)
   BOOST_CHECK_EQUAL(1, hog.derivAperture());
 }
 
-BOOST_FIXTURE_TEST_CASE(hog_descriptor_properties, HogDescriptorTest)
-{
-    auto &properties = hogDescriptor->properties();
-
-    BOOST_CHECK(Size<int>(32, 32) == properties.getProperty<Size<int>>("WinSize"));
-    BOOST_CHECK(Size<int>(8, 8) == properties.getProperty<Size<int>>("BlockSize"));
-    BOOST_CHECK(Size<int>(4, 4) == properties.getProperty<Size<int>>("BlockStride"));
-    BOOST_CHECK(Size<int>(4, 4) == properties.getProperty<Size<int>>("CellSize"));
-    BOOST_CHECK_EQUAL(5, properties.getProperty<int>("Nbins"));
-    BOOST_CHECK_EQUAL(2, properties.getProperty<int>("DerivAperture"));
-
-    BOOST_CHECK_EQUAL("32x32", properties.getPropertyAsString("WinSize"));
-    BOOST_CHECK_EQUAL("8x8", properties.getPropertyAsString("BlockSize"));
-    BOOST_CHECK_EQUAL("4x4", properties.getPropertyAsString("BlockStride"));
-    BOOST_CHECK_EQUAL("4x4", properties.getPropertyAsString("CellSize"));
-    BOOST_CHECK_EQUAL("5", properties.getPropertyAsString("Nbins"));
-    BOOST_CHECK_EQUAL("2", properties.getPropertyAsString("DerivAperture"));
-}
-
 BOOST_AUTO_TEST_SUITE_END() 
 

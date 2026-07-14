@@ -78,7 +78,7 @@ public:
      *
      * This method pops the task at the front of the queue. If the queue is empty, it does nothing.
      */
-    void pop() TL_NOEXCEPT;
+    void pop() noexcept;
 
     /*!
      * \brief Gets the number of tasks in the queue.
@@ -86,7 +86,7 @@ public:
      *
      * This method returns the size of the queue.
      */
-    auto size() const TL_NOEXCEPT -> size_t;
+    auto size() const noexcept -> size_t;
 
     /*!
      * \brief Checks if the queue is empty.
@@ -94,7 +94,7 @@ public:
      *
      * This method checks if there are any tasks left in the queue.
      */
-    auto empty() const TL_NOEXCEPT -> bool;
+    auto empty() const noexcept -> bool;
 
 // Task interface
 

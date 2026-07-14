@@ -287,7 +287,7 @@ enum class Type
     type_float64,                /*!< Represents a 64-bit floating-point number (double precision). */
     type_string,                 /*!< Represents a string. */
     type_wstring,                /*!< Represents a wide string. */
-    type_path,                   /*!< Represents a file path or directory path. */
+    //type_path,                   /*!< Represents a file path or directory path. */
     //type_size,
     //type_map,                    /*!< Represents a map (associative container). */
     type_schar = type_int8,      /*!< Alias for `type_int8` (character as an 8-bit signed integer). */
@@ -432,13 +432,13 @@ struct TypeTraits<std::wstring>
     static constexpr auto name_type = "std::wstring";
 };
 
-template<>
-struct TypeTraits<tl::Path>
-{
-    using value_type = tl::Path;
-    static constexpr auto id_type = Type::type_path;
-    static constexpr auto name_type = "tl::Path";
-};
+//template<>
+//struct TypeTraits<tl::Path>
+//{
+//    using value_type = tl::Path;
+//    static constexpr auto id_type = Type::type_path;
+//    static constexpr auto name_type = "tl::Path";
+//};
 
 //template<typename T>
 //struct TypeTraits<Size<T>>
@@ -524,7 +524,7 @@ struct TypeInfo
     std::string_view name;
 };
 
-constexpr std::array<TypeInfo, 14> gTypeInfo = {{
+constexpr std::array<TypeInfo, 13> gTypeInfo = {{
     {Type::type_bool, TypeTraits<bool>::name_type},
     {Type::type_float, TypeTraits<float>::name_type},
     {Type::type_double, TypeTraits<double>::name_type},
@@ -538,7 +538,7 @@ constexpr std::array<TypeInfo, 14> gTypeInfo = {{
     {Type::type_uint64, TypeTraits<unsigned long long>::name_type},
     {Type::type_string, TypeTraits<std::string>::name_type},
     {Type::type_wstring, TypeTraits<std::wstring>::name_type},
-    {Type::type_path, TypeTraits<tl::Path>::name_type},
+    //{Type::type_path, TypeTraits<tl::Path>::name_type},
     //{Type::type_size, "tl::Size"},
     //{Type::type_map, "std::map"},
 }};

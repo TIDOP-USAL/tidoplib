@@ -202,27 +202,4 @@ BOOST_FIXTURE_TEST_CASE(reset, DaisyDescriptorTest)
     BOOST_CHECK_EQUAL(false, daisy.useOrientation());
 }
 
-BOOST_FIXTURE_TEST_CASE(properties, DaisyDescriptorTest)
-{
-    DaisyProperties properties = daisyDescriptor->properties();
-    
-    BOOST_CHECK_EQUAL(10.f, properties.getProperty<float>("Radius"));
-    BOOST_CHECK_EQUAL(4, properties.getProperty<int>("QRadius"));
-    BOOST_CHECK_EQUAL(4, properties.getProperty<int>("QTheta"));
-    BOOST_CHECK_EQUAL(4, properties.getProperty<int>("QHist"));
-    BOOST_CHECK_EQUAL("NRM_PARTIAL", properties.getProperty<std::string>("Norm"));
-    BOOST_CHECK_EQUAL(false, properties.getProperty<bool>("Interpolation"));
-    BOOST_CHECK_EQUAL(true, properties.getProperty<bool>("UseOrientation"));
-
-    BOOST_CHECK_EQUAL("10.000000", properties.getPropertyAsString("Radius"));
-    BOOST_CHECK_EQUAL("4", properties.getPropertyAsString("QRadius"));
-    BOOST_CHECK_EQUAL("4", properties.getPropertyAsString("QTheta"));
-    BOOST_CHECK_EQUAL("4", properties.getPropertyAsString("QHist"));
-    BOOST_CHECK_EQUAL("NRM_PARTIAL", properties.getPropertyAsString("Norm"));
-    BOOST_CHECK_EQUAL("false", properties.getPropertyAsString("Interpolation"));
-    BOOST_CHECK_EQUAL("true", properties.getPropertyAsString("UseOrientation"));
-
-}
-
-
 BOOST_AUTO_TEST_SUITE_END() 

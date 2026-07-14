@@ -137,17 +137,4 @@ BOOST_FIXTURE_TEST_CASE(reset, BriskDetectorDescriptorTest)
     BOOST_CHECK_EQUAL(1.0f, brisk.patternScale());
 }
 
-BOOST_FIXTURE_TEST_CASE(agast_detector_properties, BriskDetectorDescriptorTest)
-{
-    auto properties = briskDescriptor->properties();
-
-    BOOST_CHECK_EQUAL(15, properties.getProperty<int>("Threshold"));
-    BOOST_CHECK_EQUAL(4, properties.getProperty<int>("Octaves"));
-    BOOST_CHECK_EQUAL(2.0f, properties.getProperty<float>("PatternScale"));
-
-    BOOST_CHECK_EQUAL("15", properties.getPropertyAsString("Threshold"));
-    BOOST_CHECK_EQUAL("4", properties.getPropertyAsString("Octaves"));
-    BOOST_CHECK_EQUAL("2.000000", properties.getPropertyAsString("PatternScale"));
-}
-
 BOOST_AUTO_TEST_SUITE_END() 

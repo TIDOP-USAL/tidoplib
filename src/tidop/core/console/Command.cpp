@@ -60,7 +60,7 @@ Command::Command(const Command &command)
     init();
 }
 
-Command::Command(Command &&command) TL_NOEXCEPT
+Command::Command(Command &&command) noexcept
   : mName(std::move(command.mName)),
     mDescription(std::move(command.mDescription)),
     mArguments(std::move(command.mArguments)),
@@ -364,22 +364,22 @@ auto Command::parse(int argc, char **argv) -> Status
     return Command::Status::parse_success;
 }
 
-auto Command::begin() TL_NOEXCEPT -> iterator
+auto Command::begin() noexcept -> iterator
 {
     return mArguments.begin();
 }
 
-auto Command::begin() const TL_NOEXCEPT -> const_iterator
+auto Command::begin() const noexcept -> const_iterator
 {
     return mArguments.cbegin();
 }
 
-auto Command::end() TL_NOEXCEPT -> iterator
+auto Command::end() noexcept -> iterator
 {
     return mArguments.end();
 }
 
-auto Command::end() const TL_NOEXCEPT -> const_iterator
+auto Command::end() const noexcept -> const_iterator
 {
     return mArguments.cend();
 }
@@ -395,12 +395,12 @@ auto Command::addArgument(const Argument::Ptr &argument) -> Command &
     return (*this);
 }
 
-auto Command::push_back(Argument::Ptr &&argument) TL_NOEXCEPT -> void
+auto Command::push_back(Argument::Ptr &&argument) noexcept -> void
 {
     mArguments.push_back(std::forward<Argument::Ptr>(argument));
 }
 
-auto Command::addArgument(Argument::Ptr &&argument) TL_NOEXCEPT -> Command &
+auto Command::addArgument(Argument::Ptr &&argument) noexcept -> Command &
 {
     mArguments.push_back(std::forward<Argument::Ptr>(argument));
     return (*this);
@@ -412,18 +412,18 @@ auto Command::addUsage(const UsageSignature &usage) -> Command &
     return (*this);
 }
 
-auto Command::clear() TL_NOEXCEPT -> void
+auto Command::clear() noexcept -> void
 {
     mArguments.clear();
     mExamples.clear();
 }
 
-auto Command::empty() const TL_NOEXCEPT -> bool
+auto Command::empty() const noexcept -> bool
 {
     return mArguments.empty();
 }
 
-auto Command::size() const TL_NOEXCEPT -> size_t
+auto Command::size() const noexcept -> size_t
 {
     return mArguments.size();
 }
@@ -440,7 +440,7 @@ auto Command::operator=(const Command &command) -> Command &
     return (*this);
 }
 
-auto Command::operator=(Command &&command) TL_NOEXCEPT -> Command &
+auto Command::operator=(Command &&command) noexcept -> Command &
 {
     if(this != &command) {
         this->mName = std::move(command.mName);
@@ -710,7 +710,7 @@ CommandList::CommandList(const CommandList &commandList)
 {
 }
 
-CommandList::CommandList(CommandList &&commandList) TL_NOEXCEPT
+CommandList::CommandList(CommandList &&commandList) noexcept
   : mName(std::move(commandList.mName)),
     mDescription(std::move(commandList.mDescription)),
     mCommands(std::move(commandList.mCommands)),
@@ -815,22 +815,22 @@ auto CommandList::parse(int argc, char **argv) -> Command::Status
     return Command::Status::parse_error;
 }
 
-auto CommandList::begin() TL_NOEXCEPT -> iterator
+auto CommandList::begin() noexcept -> iterator
 {
     return mCommands.begin();
 }
 
-auto CommandList::begin() const TL_NOEXCEPT -> const_iterator
+auto CommandList::begin() const noexcept -> const_iterator
 {
     return mCommands.cbegin();
 }
 
-auto CommandList::end() TL_NOEXCEPT -> iterator
+auto CommandList::end() noexcept -> iterator
 {
     return mCommands.end();
 }
 
-auto CommandList::end() const TL_NOEXCEPT -> const_iterator
+auto CommandList::end() const noexcept -> const_iterator
 {
     return mCommands.cend();
 }
@@ -846,28 +846,28 @@ auto CommandList::addCommand(const Command::SharedPtr &command) -> CommandList &
     return *this;
 }
 
-auto CommandList::push_back(Command::SharedPtr &&command) TL_NOEXCEPT -> void
+auto CommandList::push_back(Command::SharedPtr &&command) noexcept -> void
 {
     mCommands.push_back(std::forward<Command::SharedPtr>(command));
 }
 
-auto CommandList::addCommand(Command::SharedPtr &&command) TL_NOEXCEPT -> CommandList &
+auto CommandList::addCommand(Command::SharedPtr &&command) noexcept -> CommandList &
 {
     mCommands.push_back(std::forward<Command::SharedPtr>(command));
     return *this;
 }
 
-auto CommandList::clear() TL_NOEXCEPT -> void
+auto CommandList::clear() noexcept -> void
 {
     mCommands.clear();
 }
 
-auto CommandList::empty() const TL_NOEXCEPT -> bool
+auto CommandList::empty() const noexcept -> bool
 {
     return mCommands.empty();
 }
 
-auto CommandList::size() const TL_NOEXCEPT -> size_type
+auto CommandList::size() const noexcept -> size_type
 {
     return mCommands.size();
 }
@@ -889,7 +889,7 @@ auto CommandList::operator=(const CommandList &cmdList) -> CommandList &
     return (*this);
 }
 
-auto CommandList::operator=(CommandList &&cmdList) TL_NOEXCEPT -> CommandList &
+auto CommandList::operator=(CommandList &&cmdList) noexcept -> CommandList &
 {
     if(this != &cmdList) {
         this->mName = std::move(cmdList.mName);

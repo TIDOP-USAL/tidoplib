@@ -158,17 +158,4 @@ BOOST_FIXTURE_TEST_CASE(reset, LatchDescriptorTest)
     BOOST_CHECK_EQUAL(3, latch.halfSsdSize());
 }
 
-BOOST_FIXTURE_TEST_CASE(latch_descriptor_properties, LatchDescriptorTest)
-{
-    auto &properties = latchDescriptor->properties();
-
-    BOOST_CHECK_EQUAL("16", properties.getProperty<std::string>("Bytes"));
-    BOOST_CHECK_EQUAL(false, properties.getProperty<bool>("RotationInvariance"));
-    BOOST_CHECK_EQUAL(2, properties.getProperty<int>("HalfSsdSize"));
-
-    BOOST_CHECK_EQUAL("16", properties.getPropertyAsString("Bytes"));
-    BOOST_CHECK_EQUAL("false", properties.getPropertyAsString("RotationInvariance"));
-    BOOST_CHECK_EQUAL("2", properties.getPropertyAsString("HalfSsdSize"));
-}
-
 BOOST_AUTO_TEST_SUITE_END()

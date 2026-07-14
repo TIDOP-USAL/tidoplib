@@ -43,7 +43,9 @@
 #include <type_traits>
 
 #include "tidop/core/base/Type.h"
+#include "tidop/core/base/TextEncoding.h"
 #include "tidop/core/base/TypeConversions.h"
+#include "tidop/core/base/Path.h"
 
 namespace tl
 {
@@ -61,7 +63,6 @@ namespace tl
  * - `std::string`: direct copy.
  * - `bool`: `"true"`/`"false"` or `"1"`/`"0"`.
  * - Arithmetic types: uses `std::to_string` and `convertStringTo<T>`.
- * - Types with `toString()` and `fromString()` methods: delegates to those.
  *
  * \tparam T The type to serialize.
  * \tparam Enable SFINAE parameter (default: `void`).
@@ -88,12 +89,12 @@ struct PropertySerializer
     {
         if constexpr (std::is_same_v<T, std::string>) {
             return val;
-        //} else if constexpr (std::is_same_v<T, bool>) {
-        //    return val ? "true" : "false";
+        } else if constexpr (std::is_same_v<T, bool>) {
+            return val ? "true" : "false";
         } else if constexpr (std::is_arithmetic_v<T>) {
             return std::to_string(val);
         } else {
-            return val.toString();
+            static_assert(sizeof(T) == 0, "toString is not implemented for this type. Please specialize PropertySerializer.");
         }
     }
 
@@ -106,17 +107,16 @@ struct PropertySerializer
      */
     static void fromString(const std::string &str, T &output)
     {
+        if (str.empty()) {
+            throw std::invalid_argument("Cannot parse value: input string is empty/null");
+        }
+
         if constexpr (std::is_same_v<T, std::string>) {
             output = str;
-        //} else if constexpr (std::is_same_v<T, bool>) {
-        //    //TODO: esto se puede hacer con convertStringTo
-        //    if (str == "true" || str == "1") output = true;
-        //    else if (str == "false" || str == "0") output = false;
-        //    else throw std::invalid_argument("Invalid bool");
         } else if constexpr (std::is_arithmetic_v<T>) {
             output = convertStringTo<T>(str); 
         } else {
-            output.fromString(str);
+            static_assert(sizeof(T) == 0, "fromString is not implemented for this type. Please specialize PropertySerializer.");
         }
     }
 
@@ -174,6 +174,58 @@ struct PropertySerializer<Size<T>>
         return "tl::Size"; 
     }
 };
+
+
+template <>
+struct PropertySerializer<Path>
+{
+    /*!
+     * \brief Converts a `Size<T>` to a string.
+     * \param[in] val The size value.
+     * \return String in the format `"widthxheight"`.
+     */
+    static auto toString(const Path &val) -> std::string
+    {
+        return val.toString();
+    }
+
+    /*!
+     * \brief Parses a string in the format `"widthxheight"` and sets the output.
+     * \param[in] str The string to parse.
+     * \param[out] output The parsed size.
+     * \throws `std::invalid_argument` if the format is invalid.
+     * \throws `tl::Exception` if numeric conversion fails.
+     */
+    static void fromString(const std::string &str, Path &output)
+    {
+        if (str.empty()) {
+            throw std::invalid_argument("Cannot parse Path: input string is empty/null");
+        }
+
+#ifdef TL_OS_WINDOWS
+        // Convert from local encoding (CP_ACP) to UTF-16
+        std::wstring wide = fromLocalEncoding(str);
+
+        // Convert from UTF-16 to UTF-8
+        std::string utf8 = toUtf8(wide);
+
+        output = Path(utf8);
+#else
+        // On Unix, std::string should already be in UTF-8
+        output = Path(str);
+#endif
+    }
+
+    /*!
+     * \brief Returns the type name.
+     * \return `"tl::Size"`.
+     */
+    static auto typeName() -> std::string
+    {
+        return "tl::Path";
+    }
+};
+
 
 /*! \} */
 

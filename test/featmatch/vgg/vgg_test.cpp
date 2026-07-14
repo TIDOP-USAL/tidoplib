@@ -187,23 +187,4 @@ BOOST_FIXTURE_TEST_CASE(reset, VggDescriptorTest)
     BOOST_CHECK_EQUAL(true, vgg.useScaleOrientation());
 }
 
-BOOST_FIXTURE_TEST_CASE(vgg_descriptor_properties, VggDescriptorTest)
-{
-    auto &properties = vggDescriptor->properties();
-
-    BOOST_CHECK_EQUAL("VGG_80", properties.getProperty<std::string>("DescriptorType"));
-    BOOST_CHECK_EQUAL(6.75f, properties.getProperty<float>("ScaleFactor"));
-    BOOST_CHECK_EQUAL(1.6f, properties.getProperty<float>("Sigma"));
-    BOOST_CHECK_EQUAL(true, properties.getProperty<bool>("UseNormalizeDescriptor"));
-    BOOST_CHECK_EQUAL(false, properties.getProperty<bool>("UseNormalizeImage"));
-    BOOST_CHECK_EQUAL(false, properties.getProperty<bool>("UseScaleOrientation"));
-
-    BOOST_CHECK_EQUAL("VGG_80", properties.getPropertyAsString("DescriptorType"));
-    BOOST_CHECK_EQUAL("6.750000", properties.getPropertyAsString("ScaleFactor"));
-    BOOST_CHECK_EQUAL("1.600000", properties.getPropertyAsString("Sigma"));
-    BOOST_CHECK_EQUAL("true", properties.getPropertyAsString("UseNormalizeDescriptor"));
-    BOOST_CHECK_EQUAL("false", properties.getPropertyAsString("UseNormalizeImage"));
-    BOOST_CHECK_EQUAL("false", properties.getPropertyAsString("UseScaleOrientation"));
-}
-
 BOOST_AUTO_TEST_SUITE_END()

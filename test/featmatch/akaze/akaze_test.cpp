@@ -231,26 +231,4 @@ BOOST_FIXTURE_TEST_CASE(reset, AkazeDetectorDescriptorTest)
     BOOST_CHECK_EQUAL("DIFF_PM_G2", akaze.diffusivity());
 }
 
-
-BOOST_FIXTURE_TEST_CASE(akaze_detector_properties, AkazeDetectorDescriptorTest)
-{
-    auto properties = akazeDetectorDescriptor->properties();
-
-    BOOST_CHECK_EQUAL("KAZE_UPRIGHT", properties.getProperty<std::string>("DescriptorType"));
-    BOOST_CHECK_EQUAL(32, properties.getProperty<int>("DescriptorSize"));
-    BOOST_CHECK_EQUAL(4, properties.getProperty<int>("DescriptorChannels"));
-    BOOST_CHECK_EQUAL(0.1, properties.getProperty<double>("Threshold"));
-    BOOST_CHECK_EQUAL(3, properties.getProperty<int>("Octaves"));
-    BOOST_CHECK_EQUAL(6, properties.getProperty<int>("OctaveLayers"));
-    BOOST_CHECK_EQUAL("DIFF_WEICKERT", properties.getProperty<std::string>("Diffusivity"));
-
-    BOOST_CHECK_EQUAL("KAZE_UPRIGHT", properties.getPropertyAsString("DescriptorType"));
-    BOOST_CHECK_EQUAL("32", properties.getPropertyAsString("DescriptorSize"));
-    BOOST_CHECK_EQUAL("4", properties.getPropertyAsString("DescriptorChannels"));
-    BOOST_CHECK_EQUAL("0.100000", properties.getPropertyAsString("Threshold"));
-    BOOST_CHECK_EQUAL("3", properties.getPropertyAsString("Octaves"));
-    BOOST_CHECK_EQUAL("6", properties.getPropertyAsString("OctaveLayers"));
-    BOOST_CHECK_EQUAL("DIFF_WEICKERT", properties.getPropertyAsString("Diffusivity"));
-}
-
 BOOST_AUTO_TEST_SUITE_END()

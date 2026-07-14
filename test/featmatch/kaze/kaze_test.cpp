@@ -196,23 +196,4 @@ BOOST_FIXTURE_TEST_CASE(reset, KazeDetectorDescriptorTest)
     BOOST_CHECK_EQUAL("DIFF_PM_G2", kaze.diffusivity());
 }
 
-BOOST_FIXTURE_TEST_CASE(kaze_detector_properties, KazeDetectorDescriptorTest)
-{
-    auto properties = kazeDetectorDescriptor->properties();
-
-    BOOST_CHECK_EQUAL(true, properties.getProperty<bool>("ExtendedDescriptor"));
-    BOOST_CHECK_EQUAL(true, properties.getProperty<bool>("UprightDescriptor"));
-    BOOST_CHECK_EQUAL(0.05f, properties.getProperty<float>("Threshold"));
-    BOOST_CHECK_EQUAL(8, properties.getProperty<int>("Octaves"));
-    BOOST_CHECK_EQUAL(3, properties.getProperty<int>("OctaveLayers"));
-    BOOST_CHECK_EQUAL("DIFF_PM_G1", properties.getProperty<std::string>("Diffusivity"));
-
-    BOOST_CHECK_EQUAL("true", properties.getPropertyAsString("ExtendedDescriptor"));
-    BOOST_CHECK_EQUAL("true", properties.getPropertyAsString("UprightDescriptor"));
-    BOOST_CHECK_EQUAL("0.050000", properties.getPropertyAsString("Threshold"));
-    BOOST_CHECK_EQUAL("8", properties.getPropertyAsString("Octaves"));
-    BOOST_CHECK_EQUAL("3", properties.getPropertyAsString("OctaveLayers"));
-    BOOST_CHECK_EQUAL("DIFF_PM_G1", properties.getPropertyAsString("Diffusivity"));
-}
-
 BOOST_AUTO_TEST_SUITE_END()

@@ -35,72 +35,73 @@ Argument::Argument(std::string name,
     mShortName(),
     mType(type)
 {
-
+    TL_ASSERT(!mName.empty(), "Argument name cannot be empty");
 }
 
-Argument::Argument(const char &shortName,
+Argument::Argument(char shortName,
                    std::string description, 
                    Type type)
   : mName(""),
     mDescription(std::move(description)),
-    mShortName(shortName),
+    mShortName(std::move(shortName)),
     mType(type)
 {
+    TL_ASSERT(mShortName != '\0', "Argument short name cannot be null character");
 }
 
 Argument::Argument(std::string name,
-                   const char &shortName,
+                   char shortName,
                    std::string description, 
                    Type type)
   : mName(std::move(name)),
     mDescription(std::move(description)),
-    mShortName(shortName),
+    mShortName(std::move(shortName)),
     mType(type)
 {
 }
 
-Argument::Argument(const Argument &argument)
-  : mName(argument.mName),
-    mDescription(argument.mDescription),
-    mShortName(argument.mShortName),
-    mType(argument.mType)
-{
-}
-
-Argument::Argument(Argument &&argument) TL_NOEXCEPT
-  : mName(std::move(argument.mName)),
-    mDescription(std::move(argument.mDescription)),
-    mShortName(argument.mShortName),
-    mType(argument.mType)
-{
-}
-
-auto Argument::operator=(const Argument &argument) -> Argument &
-{
-    if(this != &argument) {
-
-        this->mName = argument.mName;
-        this->mDescription = argument.mDescription;
-        this->mShortName = argument.mShortName;
-        this->mType = argument.mType;
-    }
-
-    return *this;
-}
-
-auto Argument::operator = (Argument &&argument) TL_NOEXCEPT -> Argument &
-{
-    if(this != &argument) {
-
-        this->mName = std::move(argument.mName);
-        this->mDescription = std::move(argument.mDescription);
-        this->mShortName = argument.mShortName;
-        this->mType = argument.mType;
-
-    }
-
-    return *this;
-}
+//Argument::Argument(const Argument &argument)
+//  : mName(argument.mName),
+//    mDescription(argument.mDescription),
+//    mShortName(argument.mShortName),
+//    mType(argument.mType)
+//{
+//}
+//
+//Argument::Argument(Argument &&argument) noexcept
+//  : mName(std::move(argument.mName)),
+//    mDescription(std::move(argument.mDescription)),
+//    mShortName(argument.mShortName),
+//    mType(argument.mType)
+//{
+//}
+//
+//auto Argument::operator=(const Argument &argument) -> Argument &
+//{
+//    if(this != &argument) {
+//
+//        this->mName = argument.mName;
+//        this->mDescription = argument.mDescription;
+//        this->mShortName = argument.mShortName;
+//        this->mType = argument.mType;
+//    }
+//
+//    return *this;
+//}
+//
+//auto Argument::operator = (Argument &&argument) noexcept -> Argument &
+//{
+//    if(this != &argument) {
+//
+//        this->mName = std::move(argument.mName);
+//        this->mDescription = std::move(argument.mDescription);
+//        this->mShortName = argument.mShortName;
+//        this->mType = argument.mType;
+//
+//    }
+//
+//    return *this;
+//}
 
 auto Argument::name() const -> std::string
 {

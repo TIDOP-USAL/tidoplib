@@ -72,6 +72,22 @@ BOOST_AUTO_TEST_CASE(ArgumentIntegerOptional_constructor)
     BOOST_CHECK_EQUAL('i', arg_int.shortName());
     BOOST_CHECK_EQUAL("int", arg_int.typeName());
     BOOST_CHECK_EQUAL(false, arg_int.isRequired());
+
+    Argument_<int> arg_int2('i', "integer argument", val_i);
+
+    BOOST_CHECK_EQUAL("", arg_int2.name());
+    BOOST_CHECK_EQUAL("integer argument", arg_int2.description());
+    BOOST_CHECK_EQUAL('i', arg_int2.shortName());
+    BOOST_CHECK_EQUAL("int", arg_int2.typeName());
+    BOOST_CHECK_EQUAL(false, arg_int2.isRequired());
+
+    Argument_<int> arg_int3("int", "integer argument", val_i);
+
+    BOOST_CHECK_EQUAL("int", arg_int3.name());
+    BOOST_CHECK_EQUAL("integer argument", arg_int3.description());
+    BOOST_CHECK_EQUAL(char(), arg_int3.shortName());
+    BOOST_CHECK_EQUAL("int", arg_int3.typeName());
+    BOOST_CHECK_EQUAL(false, arg_int3.isRequired());
 }
 
 BOOST_AUTO_TEST_CASE(ArgumentDoubleRequired_constructor)

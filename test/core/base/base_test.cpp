@@ -907,7 +907,7 @@ BOOST_AUTO_TEST_CASE(get_type_id)
     BOOST_CHECK(Type::type_float64 == getTypeId<double>());
     BOOST_CHECK(Type::type_string == getTypeId<std::string>());
     BOOST_CHECK(Type::type_wstring == getTypeId<std::wstring>());
-    BOOST_CHECK(Type::type_path == getTypeId<tl::Path>());
+    //BOOST_CHECK(Type::type_path == getTypeId<tl::Path>());
     //BOOST_CHECK(Type::type_size == getTypeId<Size<int>>());
     //auto type = getTypeId<std::map<int, std::string>>();
     //BOOST_CHECK(Type::type_map == type);
@@ -936,7 +936,7 @@ BOOST_AUTO_TEST_CASE(get_type_name)
     BOOST_CHECK_EQUAL("double", getTypeName<double>());
     BOOST_CHECK_EQUAL("std::string", getTypeName<std::string>());
     BOOST_CHECK_EQUAL("std::wstring", getTypeName<std::wstring>());
-    BOOST_CHECK_EQUAL("tl::Path", getTypeName<tl::Path>());
+    //BOOST_CHECK_EQUAL("tl::Path", getTypeName<tl::Path>());
     //BOOST_CHECK_EQUAL("tl::Size", getTypeName<Size<int>>());
     //auto name = getTypeName<std::map<int, std::string>>();
     //BOOST_CHECK_EQUAL("std::map", name);
@@ -965,7 +965,7 @@ BOOST_AUTO_TEST_CASE(type_to_string)
     BOOST_CHECK_EQUAL("double", typeToString(Type::type_float64));
     BOOST_CHECK_EQUAL("std::string", typeToString(Type::type_string));
     BOOST_CHECK_EQUAL("std::wstring", typeToString(Type::type_wstring));
-    BOOST_CHECK_EQUAL("tl::Path", typeToString(Type::type_path));
+    //BOOST_CHECK_EQUAL("tl::Path", typeToString(Type::type_path));
     //BOOST_CHECK_EQUAL("tl::Size", typeToString(Type::type_size));
     //BOOST_CHECK_EQUAL("std::map", typeToString(Type::type_map));
     BOOST_CHECK_EQUAL("int8", typeToString(Type::type_schar));
@@ -993,7 +993,7 @@ BOOST_AUTO_TEST_CASE(string_to_type)
     BOOST_CHECK(Type::type_double == stringToType("double"));
     BOOST_CHECK(Type::type_string == stringToType("std::string"));
     BOOST_CHECK(Type::type_wstring == stringToType("std::wstring"));
-    BOOST_CHECK(Type::type_path == stringToType("tl::Path"));
+    //BOOST_CHECK(Type::type_path == stringToType("tl::Path"));
     //BOOST_CHECK(Type::type_size == stringToType("tl::Size"));
     //BOOST_CHECK(Type::type_map == stringToType("std::map"));
 }

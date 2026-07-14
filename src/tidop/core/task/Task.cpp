@@ -85,7 +85,7 @@ TaskBase::TaskBase(const TaskBase &task)
 
 }
 
-TaskBase::TaskBase(TaskBase &&task) TL_NOEXCEPT
+TaskBase::TaskBase(TaskBase &&task) noexcept
   : Task(),
     mTaskErrorEvent(std::move(task.mTaskErrorEvent)),
     mTaskFinalizedEvent(std::move(task.mTaskFinalizedEvent)),
@@ -140,7 +140,7 @@ auto TaskBase::operator=(const TaskBase &task) -> TaskBase &
     return *this;
 }
 
-auto TaskBase::operator=(TaskBase &&task) TL_NOEXCEPT -> TaskBase &
+auto TaskBase::operator=(TaskBase &&task) noexcept -> TaskBase &
 {
     if (this != &task) {
         mTaskErrorEvent = std::move(task.mTaskErrorEvent);
@@ -334,7 +334,7 @@ auto TaskBase::stoppingEvent() const -> TaskStoppingEvent*
     return mTaskStoppingEvent.get();
 }
 
-void TaskBase::executeTask(Progress *progressBar) TL_NOEXCEPT
+void TaskBase::executeTask(Progress *progressBar) noexcept
 {
     if (mStatus != Status::start) return;
        

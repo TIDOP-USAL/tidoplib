@@ -178,22 +178,4 @@ BOOST_FIXTURE_TEST_CASE(reset, SiftDetectorDescriptorTest)
     BOOST_CHECK_EQUAL(1.6, sift.sigma());
 }
 
-BOOST_FIXTURE_TEST_CASE(sift_detector_descriptor_properties, SiftDetectorDescriptorTest)
-{
-    auto &properties = siftDetectorDescriptor->properties();
-
-    BOOST_CHECK_EQUAL(500, properties.getProperty<int>("FeaturesNumber"));
-    BOOST_CHECK_EQUAL(3.0, properties.getProperty<double>("Sigma"));
-    BOOST_CHECK_EQUAL(4, properties.getProperty<int>("OctaveLayers"));
-    BOOST_CHECK_EQUAL(0.5, properties.getProperty<double>("ContrastThreshold"));
-    BOOST_CHECK_EQUAL(20.0, properties.getProperty<double>("EdgeThreshold"));
-
-    BOOST_CHECK_EQUAL("500", properties.getPropertyAsString("FeaturesNumber"));
-    BOOST_CHECK_EQUAL("3.000000", properties.getPropertyAsString("Sigma"));
-    BOOST_CHECK_EQUAL("4", properties.getPropertyAsString("OctaveLayers"));
-    BOOST_CHECK_EQUAL("0.500000", properties.getPropertyAsString("ContrastThreshold"));
-    BOOST_CHECK_EQUAL("20.000000", properties.getPropertyAsString("EdgeThreshold"));
-}
-
-
 BOOST_AUTO_TEST_SUITE_END()

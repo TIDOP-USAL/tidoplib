@@ -45,7 +45,7 @@ namespace tl
  * \brief Base class for feature detection and description algorithms.
  */
 class TL_EXPORT Feature
-  : public Properties
+  //: public Properties
 {
 
 public:
@@ -87,7 +87,10 @@ public:
      * \brief Constructor initializing the feature with a specific type.
      * \param[in] type The type of the feature.
      */
-    Feature(std::string name, Type type) : Properties(std::move(name)), mFeatType(type) {}
+    Feature(std::string name, Type type) 
+      : mProperties(std::move(name)),
+        mFeatType(type) 
+    {}
 
     /*!
      * \brief Virtual destructor.
@@ -103,13 +106,43 @@ public:
         return mFeatType.flags();
     }
 
+    auto name() const noexcept -> std::string
+    {
+        return mProperties.name();
+    }
+
+    auto begin() const
+    { 
+        return mProperties.begin(); 
+    }
+
+    auto end() const
+    { 
+        return mProperties.end(); 
+    }
+
     /*!
      * \brief Reset the feature to its default values.
      */
     virtual void reset() = 0;
 
+protected:
+
+    template<typename T>
+    void setProperty(const std::string &key, T value)
+    {
+        mProperties.setProperty(key, value);
+    }
+
+    template<typename T>
+    auto getProperty(const std::string &key) const -> T
+    {
+        return mProperties.getProperty<T>(key);
+    }
+
 private:
 
+    Properties mProperties;
     tl::EnumFlags<Type> mFeatType;
 
 };

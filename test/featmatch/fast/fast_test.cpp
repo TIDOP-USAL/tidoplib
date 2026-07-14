@@ -148,17 +148,4 @@ BOOST_FIXTURE_TEST_CASE(reset, FastDetectorTest)
   BOOST_CHECK_EQUAL(true, fast.nonmaxSuppression());
 }
 
-BOOST_FIXTURE_TEST_CASE(fast_detector_properties, FastDetectorTest)
-{
-    auto &properties = fastDetector->properties();
-
-    BOOST_CHECK_EQUAL(11, properties.getProperty<int>("Threshold"));
-    BOOST_CHECK_EQUAL(false, properties.getProperty<bool>("NonmaxSuppression"));
-    BOOST_CHECK_EQUAL("TYPE_7_12", properties.getProperty<std::string>("DetectorType"));
-
-    BOOST_CHECK_EQUAL("11", properties.getPropertyAsString("Threshold"));
-    BOOST_CHECK_EQUAL("false", properties.getPropertyAsString("NonmaxSuppression"));
-    BOOST_CHECK_EQUAL("TYPE_7_12", properties.getPropertyAsString("DetectorType"));
-}
-
 BOOST_AUTO_TEST_SUITE_END() 

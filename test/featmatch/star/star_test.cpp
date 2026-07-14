@@ -158,21 +158,4 @@ BOOST_FIXTURE_TEST_CASE(reset, StarDetectorTest)
     BOOST_CHECK_EQUAL(5, star.suppressNonmaxSize());
 }
 
-BOOST_FIXTURE_TEST_CASE(star_detector_properties, StarDetectorTest)
-{
-    auto &properties = starDetector->properties();
-
-    BOOST_CHECK_EQUAL(35, properties.getProperty<int>("MaxSize"));
-    BOOST_CHECK_EQUAL(20, properties.getProperty<int>("ResponseThreshold"));
-    BOOST_CHECK_EQUAL(20, properties.getProperty<int>("LineThresholdProjected"));
-    BOOST_CHECK_EQUAL(10, properties.getProperty<int>("LineThresholdBinarized"));
-    BOOST_CHECK_EQUAL(20, properties.getProperty<int>("SuppressNonmaxSize"));
-
-    BOOST_CHECK_EQUAL("35", properties.getPropertyAsString("MaxSize"));
-    BOOST_CHECK_EQUAL("20", properties.getPropertyAsString("ResponseThreshold"));
-    BOOST_CHECK_EQUAL("20", properties.getPropertyAsString("LineThresholdProjected"));
-    BOOST_CHECK_EQUAL("10", properties.getPropertyAsString("LineThresholdBinarized"));
-    BOOST_CHECK_EQUAL("20", properties.getPropertyAsString("SuppressNonmaxSize"));
-}
-
 BOOST_AUTO_TEST_SUITE_END()

@@ -63,12 +63,12 @@ void TaskList::setCancelTaskOnError(bool cancel)
     this->cancelOnError = cancel;
 }
 
-auto TaskList::size() const TL_NOEXCEPT -> size_t
+auto TaskList::size() const noexcept -> size_t
 {
     return tasks.size();
 }
 
-auto TaskList::empty() const TL_NOEXCEPT -> bool
+auto TaskList::empty() const noexcept -> bool
 {
     return tasks.empty();
 }

@@ -100,7 +100,7 @@ public:
      *
      * This method returns the size of the `tasks` list.
      */
-    auto size() const TL_NOEXCEPT -> size_t;
+    auto size() const noexcept -> size_t;
 
     /*!
      * \brief Checks if the task list is empty.
@@ -108,7 +108,7 @@ public:
      *
      * This method checks if there are any tasks in the list.
      */
-    auto empty() const TL_NOEXCEPT -> bool;
+    auto empty() const noexcept -> bool;
 
     /*!
      * \brief Sets whether to cancel the execution of the remaining tasks if an error occurs.

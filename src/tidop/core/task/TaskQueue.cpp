@@ -56,17 +56,17 @@ void TaskQueue::push(std::shared_ptr<Task> task)
 
 }
 
-void TaskQueue::pop() TL_NOEXCEPT
+void TaskQueue::pop() noexcept
 {
     queue.pop();
 }
 
-auto TaskQueue::size() const TL_NOEXCEPT -> size_t
+auto TaskQueue::size() const noexcept -> size_t
 {
     return queue.size();
 }
 
-auto TaskQueue::empty() const TL_NOEXCEPT -> bool
+auto TaskQueue::empty() const noexcept -> bool
 {
     return queue.empty();
 }

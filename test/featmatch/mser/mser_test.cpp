@@ -226,30 +226,5 @@ BOOST_FIXTURE_TEST_CASE(reset, MserDetectorTest)
     BOOST_CHECK_EQUAL(5, mser.edgeBlurSize());
 }
 
-BOOST_FIXTURE_TEST_CASE(mser_detector_properties, MserDetectorTest)
-{
-    auto &properties = mserDetector->properties();
-
-    BOOST_CHECK_EQUAL(10, properties.getProperty<int>("Delta"));
-    BOOST_CHECK_EQUAL(50, properties.getProperty<int>("MinArea"));
-    BOOST_CHECK_EQUAL(10000, properties.getProperty<int>("MaxArea"));
-    BOOST_CHECK_EQUAL(0.5, properties.getProperty<double>("MaxVariation"));
-    BOOST_CHECK_EQUAL(.3, properties.getProperty<double>("MinDiversity"));
-    BOOST_CHECK_EQUAL(150, properties.getProperty<int>("MaxEvolution"));
-    BOOST_CHECK_EQUAL(1.1, properties.getProperty<double>("AreaThreshold"));
-    BOOST_CHECK_EQUAL(0.01, properties.getProperty<double>("MinMargin"));
-    BOOST_CHECK_EQUAL(6, properties.getProperty<int>("EdgeBlurSize"));
-
-    BOOST_CHECK_EQUAL("10", properties.getPropertyAsString("Delta"));
-    BOOST_CHECK_EQUAL("50", properties.getPropertyAsString("MinArea"));
-    BOOST_CHECK_EQUAL("10000", properties.getPropertyAsString("MaxArea"));
-    BOOST_CHECK_EQUAL("0.500000", properties.getPropertyAsString("MaxVariation"));
-    BOOST_CHECK_EQUAL("0.300000", properties.getPropertyAsString("MinDiversity"));
-    BOOST_CHECK_EQUAL("150", properties.getPropertyAsString("MaxEvolution"));
-    BOOST_CHECK_EQUAL("1.100000", properties.getPropertyAsString("AreaThreshold"));
-    BOOST_CHECK_EQUAL("0.010000", properties.getPropertyAsString("MinMargin"));
-    BOOST_CHECK_EQUAL("6", properties.getPropertyAsString("EdgeBlurSize"));
-}
-
 
 BOOST_AUTO_TEST_SUITE_END()
