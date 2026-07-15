@@ -22,47 +22,15 @@
  *                                                                        *
  **************************************************************************/
 
-/*!
- * \file command.h
- * \brief Command-line interface for console applications
- *
- * This module provides a comprehensive framework for building command-line interfaces (CLI).
- * It includes:
- * - `Command`: Single command with arguments, parsing, and help generation
- * - `CommandList`: Multiple commands with hierarchical structure (e.g., `git commit`, `git push`)
- * - `UsageSignature`: Argument validation patterns
- *
- * ### Features
- *
- * - Type-safe argument handling with templates
- * - Automatic help generation with formatting
- * - Validation of argument combinations via usage signatures
- * - Support for boolean flags and valued parameters
- * - Short (`-h`) and long (`--help`) argument names
- * - Default arguments: log level, logging, progress bar
- * - Version and license information display
- * - Usage examples in help output
- *
- * ### Architecture
- *
- * ```
- * CommandList                 (Multiple commands)
- *     └─ Command              (Single command)
- *         └─ Argument         (Individual parameter)
- *             └─ Validator    (Value validation)
- * ```
- *
- * \see Command, CommandList, Argument, UsageSignature
- */
-
 #pragma once
 
 #include "tidop/config.h"
 
-#include <list>
+
 #include <memory>
 
 #include "tidop/core/console/Argument.h"
+#include "tidop/core/console/UsageSignature.h"
 #include "tidop/core/app/License.h"
 #include "tidop/core/app/Message.h"
 
@@ -72,61 +40,6 @@ namespace tl
 /*! \addtogroup Console
  *  \{
  */
-
-/*!
- * \struct UsageSignature
- * \brief Represents a valid usage pattern for a command
- *
- * A `UsageSignature` defines a specific combination of arguments that is considered
- * a valid way to invoke a command. Each signature can include:
- *
- * - A list of **required** arguments (must be present to match the signature)
- * - A list of **optional** arguments (may or may not be present)
- * - An optional **description** (displayed in the help message next to the usage line)
- *
- * When multiple signatures are defined for a command, the parser will check that
- * the user input matches at least one of them. The help message will list each signature
- * as a separate `Usage:` line.
- *
- * ### Example
- * \code{.cpp}
- * auto arg_input = Argument::make<std::string>("input", "Input file");
- * auto arg_output = Argument::make<std::string>("output", "Output file");
- * auto arg_verbose = Argument::make<bool>("verbose", 'v', "Verbose output", false);
- *
- * UsageSignature sig1({arg_input, arg_output}, {}, "Basic input-output usage");
- * UsageSignature sig2({arg_input}, {arg_verbose}, "Alternative with verbose flag");
- * cmd.addUsage(sig1).addUsage(sig2);
- * \endcode
- *
- * \see Command::addUsage
- */
-struct UsageSignature
-{
-    std::vector<Argument::Ptr> required;   /*!< Required arguments for this signature */
-    std::vector<Argument::Ptr> optional;   /*!< Optional arguments for this signature */
-    std::string description;               /*!< Description shown in help output */
-
-
-    UsageSignature() = default;
-
-    /*!
-     * \brief Constructs a usage signature with required and optional arguments
-     *
-     * \param[in] req Required arguments
-     * \param[in] opt Optional arguments (default: empty)
-     * \param[in] desc Description (default: empty)
-     */   
-    UsageSignature(const std::vector<Argument::Ptr> &req,
-                   const std::vector<Argument::Ptr> &opt = {},
-                   const std::string &desc = "")
-      : required(req),
-        optional(opt), 
-        description(desc)
-    {
-    }
-};
-
 
 /*!
  * \brief Class for command-line interface command management
@@ -203,9 +116,6 @@ public:
     };
 
     using value_type = std::vector<Argument::Ptr>::value_type;
-    //using size_type = std::list<Argument::Ptr>::size_type;
-    //using pointer = std::list<Argument::Ptr>::pointer;
-    //using const_pointer = std::list<Argument::Ptr>::const_pointer;
     using reference = std::vector<Argument::Ptr>::reference;
     using const_reference = std::vector<Argument::Ptr>::const_reference;
     using iterator = std::vector<Argument::Ptr>::iterator;
@@ -298,16 +208,27 @@ public:
     ~Command() = default;
 
     /*!
+     * \brief Assignment operator
+     */
+    auto operator=(const Command &command) -> Command &;
+
+    /*!
+     * \brief Move assignment operator
+     */
+    auto operator=(Command &&command) noexcept -> Command &;
+
+    /*!
      * \brief Returns the name of the command
      * \return Command name
      */
+    [[nodiscard]]
     auto name() const -> std::string;
 
     /*!
      * \brief Sets the name of the command
      * \param[in] name Command name
      */
-    auto setName(const std::string &name) -> void;
+    auto setName(std::string name) -> void;
 
     /*!
      * \brief Returns the description of the command.
@@ -318,6 +239,7 @@ public:
      *
      * \return The description of the command as a string.
      */
+    [[nodiscard]]
     auto description() const -> std::string;
 
     /*!
@@ -329,7 +251,7 @@ public:
      *
      * \param[in] description The description to assign to the command.
      */
-    auto setDescription(const std::string &description) -> void;
+    auto setDescription(std::string description) -> void;
 
     /*!
      * \brief Returns the version of the program.
@@ -339,6 +261,7 @@ public:
      *
      * \return The program's version as a string.
      */
+    [[nodiscard]]
     auto version() const -> std::string;
 
     /*!
@@ -349,27 +272,23 @@ public:
      *
      * \param[in] version The version string to assign to the program.
      */
-    auto setVersion(const std::string &version) -> void;
+    auto setVersion(std::string version) -> void;
 
     // ========================================================================
     // Argument Management
     // ========================================================================
 
+    [[nodiscard]]
     auto begin() noexcept -> iterator;
-    auto begin() const noexcept -> const_iterator;
-    auto end() noexcept -> iterator;
-    auto end() const noexcept -> const_iterator;
 
-    /*!
-     * \brief Adds an argument to the command
-     *
-     * This method adds a shared pointer to an existing `Argument` object to the command.
-     * It is used to add arguments to the command, allowing the user to specify command-line
-     * parameters and their associated behavior.
-     *
-     * \param[in] argument A shared pointer to the `Argument` object to be added.
-     */
-    auto push_back(const Argument::Ptr &argument) -> void;
+    [[nodiscard]]
+    auto begin() const noexcept -> const_iterator;
+
+    [[nodiscard]]
+    auto end() noexcept -> iterator;
+
+    [[nodiscard]]
+    auto end() const noexcept -> const_iterator;
 
     /*!
      * \brief Adds an argument to the command
@@ -380,29 +299,7 @@ public:
      * \param[in] argument A shared pointer to the `Argument` object to be added.
      * \return The current `Command` object, allowing for method chaining.
      */
-    auto addArgument(const Argument::Ptr &argument) -> Command &;
-
-    /*!
-     * \brief Adds an argument to the command (move version)
-     *
-     * This method adds a shared pointer to an `Argument` object (moved) to the command.
-     * It is used to add arguments to the command while transferring ownership of the argument.
-     *
-     * \param[in] argument A shared pointer to the `Argument` object to be added (moved).
-     */
-    auto push_back(Argument::Ptr &&argument) noexcept -> void;
-
-    /*!
-     * \brief Adds an argument to the command (move version)
-     *
-     * This method adds an argument to the command using a shared pointer to an `Argument`
-     * (moved). It enables efficient argument management and allows for argument addition
-     * via move semantics.
-     *
-     * \param[in] argument A shared pointer to the `Argument` object to be added (moved).
-     * \return The current `Command` object, allowing for method chaining.
-     */
-    auto addArgument(Argument::Ptr &&argument) noexcept -> Command &;
+    auto addArgument(Argument::Ptr argument) -> Command &;
 
     /*!
      * \brief Adds a typed argument to the command
@@ -488,7 +385,7 @@ public:
      *
      * \note This operation is irreversible, and the arguments will be lost once cleared.
      */
-    auto clear() noexcept -> void;
+    void clear() noexcept;
 
     /*!
      * \brief Check if there are no arguments
@@ -498,6 +395,7 @@ public:
      *
      * \return `true` if there are no arguments, `false` if there are one or more arguments.
      */
+    [[nodiscard]]
     auto empty() const noexcept -> bool;
 
     /*!
@@ -508,6 +406,7 @@ public:
      *
      * \return The number of arguments added to the command.
      */
+    [[nodiscard]]
     auto size() const noexcept -> size_t;
 
     /*!
@@ -539,6 +438,7 @@ public:
      *         when the parsing was successful.
      * \see Status
      */
+    [[nodiscard]]
     auto parse(int argc, char **argv) -> Status;
 
     /*!
@@ -547,7 +447,8 @@ public:
      * \return Shared pointer to the argument
      * \exception Exception if argument not found
      */
-    auto argument(const std::string &name) const -> Argument::Ptr;
+    [[nodiscard]]
+    auto argument(std::string_view name) const -> Argument::Ptr;
 
     /*!
      * \brief Retrieves an argument by short name
@@ -556,7 +457,8 @@ public:
      * \return Shared pointer to the argument
      * \exception Exception if argument not found
      */
-    auto argument(const char &shortName) const -> Argument::Ptr;
+    [[nodiscard]]
+    auto argument(char shortName) const -> Argument::Ptr;
 
     /*!
      * \brief Retrieves the parsed value of an argument by name
@@ -576,7 +478,8 @@ public:
      * \endcode
      */
     template<typename T>
-    auto value(const std::string &name) const -> T
+    [[nodiscard]] 
+    auto value(std::string_view name) const -> T
     {
         try {
 
@@ -608,7 +511,8 @@ public:
      * \endcode
      */
     template<typename T>
-    auto value(const char &shortName) const -> T
+    [[nodiscard]]
+    auto value(char shortName) const -> T
     {
         try {
 
@@ -639,7 +543,7 @@ public:
      * - Usage examples (if any)
      * - Syntax conventions
      */
-    auto showHelp() const -> void;
+    void showHelp() const;
 
     /*!
      * \brief Displays the version in the console
@@ -649,7 +553,7 @@ public:
      *
      * \note The short form `-v` is not used for the version argument.
      */
-    auto showVersion() const -> void;
+    void showVersion() const;
 
     /*!
      * \brief Display the license on the console
@@ -657,7 +561,7 @@ public:
      * This method outputs the license information for the command-line application
      * to the console. It can be triggered by the `--license` argument.
      */
-    auto showLicense() const -> void;
+    void showLicense() const;
 
     /*!
      * \brief Adds a usage example for help output
@@ -674,7 +578,7 @@ public:
      * cmd.addExample("convert input.jpg output.png --format=PNG --quality=95");
      * \endcode
      */
-    auto addExample(const std::string &example) -> Command &;
+    auto addExample(std::string example) -> Command &;
 
     // ========================================================================
     // Advanced Configuration
@@ -716,16 +620,6 @@ public:
      * \see License
      */
     auto setLicense(const License &license) -> void;
-	
-    /*!
-     * \brief Assignment operator
-     */
-    auto operator=(const Command &command) -> Command &;
-
-    /*!
-     * \brief Move assignment operator
-     */
-    auto operator=(Command &&command) noexcept -> Command &;
 
     /*!
      * \brief Creates a new command via factory method
@@ -734,10 +628,10 @@ public:
      * \param[in] description Command description
      * \return Shared pointer to new Command
      */
-    static auto create(const std::string &name,
-                       const std::string &description) noexcept -> std::shared_ptr<Command>
+    static auto create(std::string name,
+                       std::string description) noexcept -> std::shared_ptr<Command>
     {
-        return std::make_shared<Command>(name, description);
+        return std::make_shared<Command>(std::move(name), std::move(description));
     }
 
     /*!
@@ -748,266 +642,29 @@ public:
      * \param[in] arguments Initial arguments
      * \return Shared pointer to new Command
      */
-    static auto create(const std::string &name,
-                       const std::string &description,
+    static auto create(std::string name,
+                       std::string description,
                        std::initializer_list<Argument::Ptr> arguments) noexcept -> std::shared_ptr<Command>
     {
-        return std::make_shared<Command>(name, description, arguments);
+        return std::make_shared<Command>(std::move(name), std::move(description), arguments);
     }
 
 protected:
 
-    void init();
-    
+    void printUsage() const;
+    void printArguments() const;
     void printArgument(const tl::Argument::Ptr &arg, int maxNameSize) const;
+    void printArgumentSyntax() const;
+    void printExamples() const; 
+    auto parseCommandLineArguments(int argc, char **argv) -> std::map<std::string, std::string>;
+    auto processUserArguments(std::map<std::string, std::string> &cmd_in) -> bool;
+    void processSystemDefaultArguments(std::map<std::string, std::string> &cmd_in);
+    auto validateUsageSignatures(std::map<std::string, std::string> &cmd_in) -> bool;
 
 };
-
-
-
-
-
-
-/*!
- * \brief Container for multiple related commands (subcommands)
- *
- * The `CommandList` class is designed to manage a list of commands, enabling applications 
- * to parse and execute multiple related commands. Each command can have its own arguments 
- * and functionalities, allowing for complex and hierarchical command structures.
- *
- * ### Example
- * ```cpp
- * #include <iostream>
- * #include "tidop/core/console/Command.h"
- * 
- * int main(int argc, char **argv)
- * {
- *     // Define arguments for translation command
- *     auto arg_compute = Argument::make<bool>("compute", "Calculates the transformation from two point lists", false);
- *     auto arg_transform = Argument::make<bool>("transform", "Applies the transformation to a point list", true);
- *     auto arg_tx = Argument::make<double>("tx", "Translation in X", 0.0);
- *     auto arg_ty = Argument::make<double>("ty", "Translation in Y", 0.0);
- * 
- *     // Create a translation command
- *     auto cmd_translation = Command::create("Translation", "Translation transform", {
- *         arg_compute,
- *         arg_transform,
- *         arg_tx,
- *         arg_ty
- *     });
- * 
- *     // Define arguments for rotation command
- *     auto arg_rotation = Argument::make<double>("rotation", "Rotation angle", 0.0);
- *     auto cmd_rotation = Command::create("Rotation", "Rotation transform");
- *     cmd_rotation->addArgument(arg_compute);
- *     cmd_rotation->addArgument(arg_transform);
- *     cmd_rotation->addArgument(arg_rotation);
- * 
- *     // Create a command list for transformations
- *     CommandList cmd_list_transform("transform", "Transforms a list of points according to the specified transformation");
- *     cmd_list_transform.addCommand(cmd_translation);
- *     cmd_list_transform.addCommand(cmd_rotation);
- * 
- *     // Parse and execute the command list
- *     auto status = cmd_list_transform.parse(argc, argv);
- * 
- *     if (status == Command::Status::parse_success) {
- *         std::cout << "Command parsed successfully!" << std::endl;
- *     } else {
- *         std::cerr << "Error parsing command!" << std::endl;
- *     }
- * }
- * ```
- */
-class TL_EXPORT CommandList
-{
-
-public:
-
-    using value_type = std::list<Command::SharedPtr>::value_type;
-    using size_type = std::list<Command::SharedPtr>::size_type;
-    using pointer = std::list<Command::SharedPtr>::pointer;
-    using const_pointer = std::list<Command::SharedPtr>::const_pointer;
-    using reference = std::list<Command::SharedPtr>::reference;
-    using const_reference = std::list<Command::SharedPtr>::const_reference;
-    using iterator = std::list<Command::SharedPtr>::iterator;
-    using const_iterator = std::list<Command::SharedPtr>::const_iterator;
-
-
-private:
-
-    std::string mName;
-    std::string mDescription;
-    std::list<Command::SharedPtr> mCommands;
-    Command::SharedPtr mCommand;
-    std::string mVersion;
-    License mLicense;
-
-public:
-
-    /*!
-     * \brief Default constructor.
-     */
-    CommandList();
-
-    /*!
-     * \brief Constructor with name and description.
-     * \param[in] name The name of the command list.
-     * \param[in] description The description of the command list.
-     */
-    CommandList(std::string name,
-                std::string description);
-
-    /*!
-     * \brief Copy constructor
-     */
-    CommandList(const CommandList &commandList);
-
-    /*!
-     * \brief Move constructor
-     */
-    CommandList(CommandList &&commandList) noexcept;
-
-    /*!
-     * \brief Constructor with an initializer list of commands.
-     * \param[in] name The name of the command list.
-     * \param[in] description The description of the command list.
-     * \param[in] commands An initializer list of commands to add to the list.
-     */
-    CommandList(std::string name,
-                std::string description,
-                std::initializer_list<Command::SharedPtr> commands);
-
-    ~CommandList() = default;
-
-    /*!
-     * \brief Retrieves the name of the command list.
-     * \return The name of the command list.
-     */
-    auto name() const -> std::string;
-
-    /*!
-     * \brief Sets the name of the command list.
-     * \param[in] name The new name for the command list.
-     */
-    auto setName(const std::string &name) -> void;
-
-    /*!
-     * \brief Retrieves the description of the command list.
-     * \return The description of the command list.
-     */
-    auto description() const -> std::string;
-
-    /*!
-     * \brief Sets the description of the command list.
-     * \param[in] description The new description for the command list.
-     */
-    auto setDescription(const std::string &description) -> void;
-
-    /*!
-     * \brief Retrieves the version of the program.
-     * \return The program version.
-     */
-    auto version() const -> std::string;
-
-    /*!
-     * \brief Sets the program version.
-     * \param[in] version The new program version.
-     */
-    auto setVersion(const std::string &version) -> void;
-
-    /*!
-     * \brief Parses command-line arguments
-     *
-     * Dispatches to appropriate command based on first argument (argv[1]).
-     * Handles special arguments: --help, --version, --license at app level.
-     *
-     * \param[in] argc Number of arguments
-     * \param[in] argv Command-line arguments
-     * \return Parse status
-     */
-    auto parse(int argc, char **argv) -> Command::Status;
-
-    auto begin() noexcept -> iterator;
-    auto begin() const noexcept -> const_iterator;
-    auto end() noexcept -> iterator;
-    auto end() const noexcept -> const_iterator;
-
-    /*!
-     * \brief Adds a command to the list.
-     * \param[in] command A shared pointer to the command to add.
-     */
-    auto push_back(const Command::SharedPtr &command) -> void;
-
-    /*!
-     * \brief Adds a command to the list.
-     * \param[in] command A shared pointer to the command to add.
-     */
-    auto addCommand(const Command::SharedPtr &command) -> CommandList &;
-
-    /*!
-     * \brief Adds a command to the list (move semantics).
-     * \param[in] command A shared pointer to the command to move into the list.
-     */
-    auto push_back(Command::SharedPtr &&command) noexcept -> void;
-
-    /*!
-     * \brief Adds a command to the list (move semantics).
-     * \param[in] command A shared pointer to the command to move into the list.
-     */
-    auto addCommand(Command::SharedPtr &&command) noexcept -> CommandList &;
-
-    /*!
-     * \brief Removes commands
-     */
-    auto clear() noexcept -> void;
-
-    /*!
-     * \brief Checks if the command list is empty.
-     * \return True if the command list is empty, false otherwise.
-     */
-    auto empty() const noexcept -> bool;
-
-    /*!
-     * \brief Returns the number of commands in the list.
-     * \return The size of the command list.
-     */
-    auto size() const noexcept -> size_type;
-
-    auto operator=(const CommandList &cmdList) -> CommandList &;
-    auto operator=(CommandList &&cmdList) noexcept -> CommandList &;
-
-    /*!
-     * \brief Removes the interval
-     */
-    auto erase(const_iterator first, const_iterator last) -> iterator;
-
-    /*!
-     * \brief Displays the help text for the command list.
-     */
-    auto showHelp() const -> void;
-
-    /*!
-     * \brief Displays the version information.
-     */
-    auto showVersion() const -> void;
-
-    /*!
-     * \brief Displays the license information.
-     */
-    auto showLicense() const -> void;
-
-    /*!
-     * \brief Retrieves the name of the command currently being parsed.
-     * \return The command name.
-     */
-    auto commandName() const -> std::string;
-
-};
-
 
 /*! \} */
 
 
-} // End namespace tl
+} // namespace tl
 

@@ -31,7 +31,7 @@
 #include <tidop/core/app/Logger.h>
 #include <tidop/core/app/Message.h>
 #include <tidop/core/console/Console.h>
-#include <tidop/core/console/Command.h>
+#include <tidop/core/console/CommandList.h>
 #include <tidop/core/base/Chrono.h>
 #include <tidop/core/base/Path.h>
 #include <tidop/rastertools/io/Reader.h>

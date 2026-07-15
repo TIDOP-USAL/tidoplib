@@ -27,7 +27,7 @@
 #include <tidop/core/base/Path.h>
 #include <tidop/core/base/Chrono.h>
 #include <tidop/core/console/Argument.h>
-#include <tidop/core/console/Command.h>
+#include <tidop/core/console/CommandList.h>
 #include <tidop/rastertools/io/Reader.h>
 #include <tidop/featmatch/features/features.h>
 #include <tidop/featmatch/features/agast.h>

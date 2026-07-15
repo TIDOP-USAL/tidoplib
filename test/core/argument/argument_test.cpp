@@ -26,6 +26,7 @@
 #include <boost/test/unit_test.hpp>
 #include <tidop/core/console/Argument.h>
 #include <tidop/core/console/Command.h>
+#include <tidop/core/console/CommandList.h>
 
 #include <array>
 
@@ -395,13 +396,12 @@ struct CommandTest
 
         /* addArgument with Argument::make() */
         cmd_arg_posix2->addArgument(Argument::make<double>("par", 'p', "Parámetro", 3.46));
+        cmd_arg_posix2->addArgument(Argument::make<bool>("option", 'o', "Option", false));
 
         /* addArgument */
         cmd_arg_posix2->addArgument<float>("float", 'f', "Parámetro float", 2.23f);
         cmd_arg_posix2->addArgument<bool>("bool", 'b', "boolean", false);
 
-        /* Alternative to addArgument with push_back */
-        cmd_arg_posix2->push_back(Argument::make<bool>("option", 'o', "Option", false));
         
         /* addArgument with list validator */
         auto arg_list = Argument::make<int>("list", "lista de argumentos", 20);
@@ -410,7 +410,7 @@ struct CommandTest
 
         auto arg_options = Argument::make<std::string>("options", "lista de opciones", "OPT0");
         arg_options->setValidator(ValuesValidator<std::string>::create({"OPT0", "OPT1", "OPT2", "OPT3", "OPT4"}));
-        cmd_arg_list->push_back(arg_options);
+        cmd_arg_list->addArgument(arg_options);
     }
 
     void teardown() {}

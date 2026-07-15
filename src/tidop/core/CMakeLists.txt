@@ -52,6 +52,7 @@ if(BUILD_TL_CORE)
                              console/Console.cpp
                              console/Argument.cpp
                              console/Command.cpp
+                             console/CommandList.cpp
                              console/Menu.cpp
                              private/gdalreg.cpp
                              task/Events.cpp
@@ -101,11 +102,13 @@ if(BUILD_TL_CORE)
                              concurrency/Queue.h							 
                              concurrency/QueueMPMC.h							 
                              concurrency/QueueSPSC.h							 
-                             console/Console.h
                              console/Argument.h
                              console/Command.h
-                             console/Validator.h
+                             console/CommandList.h
+                             console/Console.h
                              console/Menu.h
+                             console/UsageSignature.h
+                             console/Validator.h
                              private/gdalreg.h
                              task/Events.h
                              task/Process.h

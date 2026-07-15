@@ -121,6 +121,8 @@ class RangeValidator final
   : public ValidatorBase<T>
 {
 
+    static_assert(std::is_arithmetic<T>::value, "Only arithmetic types are allowed");
+
 public:
 
     /*!
@@ -134,7 +136,6 @@ public:
       : mMin(std::numeric_limits<T>::lowest()),
         mMax(std::numeric_limits<T>().max())
     {
-        static_assert(std::is_arithmetic<T>::value, "Only arithmetic types are allowed");
     }
 
     /*!
@@ -149,7 +150,6 @@ public:
       : mMin(min),
         mMax(max)
     {
-        static_assert(std::is_arithmetic<T>::value, "Only arithmetic types are allowed");
     }
 
     /*!

@@ -37,7 +37,7 @@ namespace tl
   
 static auto getShortNameString(char shortName) -> std::string
 {
-    return shortName == '\0' ? "" : std::string(1, shortName);
+    return shortName == '\0' ? "" : "-" + std::string(1, shortName);
 }
 
 
@@ -46,7 +46,7 @@ Command::Command()
     mVersion("0.0.0"),
     mEnableLog(false)
 {
-    init();
+    //init();
 }
 
 Command::Command(const Command &command)
@@ -57,7 +57,6 @@ Command::Command(const Command &command)
     mExamples(command.mExamples),
     mEnableLog(command.mEnableLog)
 {
-    init();
 }
 
 Command::Command(Command &&command) noexcept
@@ -68,7 +67,6 @@ Command::Command(Command &&command) noexcept
     mExamples(std::move(command.mExamples)),
     mEnableLog(command.mEnableLog)
 {
-    init();
 }
 
 Command::Command(std::string name, std::string description)
@@ -78,7 +76,6 @@ Command::Command(std::string name, std::string description)
     mVersion("0.0.0"),
     mEnableLog(false)
 {
-    init();
 }
 
 Command::Command(std::string name, 
@@ -90,7 +87,6 @@ Command::Command(std::string name,
     mVersion("0.0.0"),
     mEnableLog(false)
 {
-    init();
 }
 
 auto Command::name() const -> std::string
@@ -98,9 +94,9 @@ auto Command::name() const -> std::string
     return mName;
 }
 
-auto Command::setName(const std::string &name) -> void
+void Command::setName(std::string name)
 {
-    mName = name;
+    mName = std::move(name);
 }
 
 auto Command::description() const -> std::string
@@ -108,9 +104,9 @@ auto Command::description() const -> std::string
     return mDescription;
 }
 
-auto Command::setDescription(const std::string &description) -> void
+void Command::setDescription(std::string description)
 {
-    mDescription = description;
+    mDescription = std::move(description);
 }
 
 auto Command::version() const -> std::string
@@ -118,9 +114,9 @@ auto Command::version() const -> std::string
     return mVersion;
 }
 
-auto Command::setVersion(const std::string &version) -> void
+void Command::setVersion(std::string version)
 {
-    mVersion = version;
+    mVersion = std::move(version);
 }
 
 auto Command::parse(int argc, char **argv) -> Status
@@ -131,238 +127,37 @@ auto Command::parse(int argc, char **argv) -> Status
         return Status::parse_error;
     }
 	
-    std::map<std::string, std::string> cmd_in;
+    auto cmd_in = parseCommandLineArguments(argc, argv);
 
-    for(int i = 1; i < argc; ++i) {
-        std::string arg_cmd_name = std::string(argv[i]);
-        std::size_t found_name = arg_cmd_name.find("--");
-        std::size_t found_short_name = arg_cmd_name.find('-');
-
-        if(found_name != std::string::npos && found_name == 0) {
-            arg_cmd_name = (argv[i]) + 2;
-            /// argumento-valor separado por =
-            std::vector<std::string> v = split<std::string>(arg_cmd_name, '=');
-            if(v.size() == 2) {
-                cmd_in[v[0]] = v[1];
-                continue;
-            }
-        } else if(found_short_name != std::string::npos && found_short_name == 0) {
-            arg_cmd_name = (argv[i]) + 1;
-            if(arg_cmd_name.size() > 1) {
-                /// Se da el caso de combinación de multiples opciones o
-                /// parametro corto seguido de argumento
-                /// Habría que ver si lo que sigue son todo nombres cortos
-                bool check_combined = true;
-                for(auto &opt : arg_cmd_name) {
-                    bool bFind = false;
-                    for(auto &argument : mArguments) {
-                        if(argument->shortName()) {
-                            if(argument->shortName() == opt) {
-                                bFind = true;
-                                break;
-                            }
-                        }
-                    }
-                    if(!bFind) {
-                        /// Si no encuentra no es opción
-                        check_combined = false;
-                        break;
-                    }
-                }
-
-                if(check_combined) {
-                    for(auto &opt : arg_cmd_name) {
-                        std::stringstream ss;
-                        std::string short_name;
-                        ss << opt;
-                        ss >> short_name;
-                        cmd_in[short_name] = "true";
-                    }
-                } else {
-                    std::string short_name = arg_cmd_name.substr(0, 1);
-                    std::string arg_value = arg_cmd_name.substr(1, arg_cmd_name.size() - 1);
-                    cmd_in[short_name] = arg_value;
-                }
-                continue;
-            }
-        } else {
-            continue;
-        }
-
-        std::string value;
-
-        if(i + 1 < argc) {
-            /// Se comprueba si el elemento siguiente es un valor
-            std::string arg_value = std::string(argv[i + 1]);
-            std::size_t found_next_name = arg_value.find("--");
-            std::size_t found_next_short_name = arg_value.find('-');
-            if((found_next_name != std::string::npos && found_next_name == 0) ||
-                (found_next_short_name != std::string::npos && found_next_short_name == 0)) {
-                //value = "true";
-            } else {
-                value = arg_value;
-                i++;
-            }
-        }
-
-        cmd_in[arg_cmd_name] = value;
-
-    }
-
-    if(cmd_in.find("h") != cmd_in.end() || cmd_in.find("help") != cmd_in.end()) {
+    if(cmd_in.contains("-h") || cmd_in.contains("--help")) {
         showHelp();
-        return Command::Status::show_help;
+        return Status::show_help;
     }
 
-    if(cmd_in.find("version") != cmd_in.end()) {
+    if(cmd_in.contains("--version")) {
         showVersion();
-        return Command::Status::show_version;
+        return Status::show_version;
     }
 
-    if(cmd_in.find("license") != cmd_in.end()) {
+    if(cmd_in.contains("--license")) {
         showLicense();
-        return Command::Status::show_license;
+        return Status::show_license;
     }
 
+    if (!processUserArguments(cmd_in))
+        return Status::parse_error;
 
-    for(auto &argument : mArguments) {
-        bool bOptional = !argument->isRequired();
-        bool bFind = false;
-        bool bFindValue = false;
+    processSystemDefaultArguments(cmd_in);
 
-        //std::stringstream ss;
-        //std::string short_name;
-        //ss << argument->shortName();
-        //ss >> short_name;
-        std::string short_name = getShortNameString(argument->shortName());
-
-        if(cmd_in.find(short_name) != cmd_in.end()) {
-            bFind = true;
-            std::string value = cmd_in.find(short_name)->second;
-            if(value.empty()) {
-                if(argument->typeName() == "bool") {
-                    value = "true";
-                    bFindValue = true;
-                }
-            } else {
-                bFindValue = true;
-            }
-
-            if(bFindValue)
-                argument->fromString(value);
-
-        } else if(cmd_in.find(argument->name()) != cmd_in.end()) {
-            bFind = true;
-            std::string value = cmd_in.find(argument->name())->second;
-            if(value.empty()) {
-                if(argument->typeName() == "bool") {
-                    value = "true";
-                    bFindValue = true;
-                }
-            } else {
-                bFindValue = true;
-            }
-
-            if(bFindValue)
-                argument->fromString(value);
-
-        } else {
-            bFind = false;
-        }
-
-        if(!bFind && !bOptional) {
-            Message::error("Missing mandatory argument: {}", argument->name());
-            return Command::Status::parse_error;
-        }
-
-        if(bFind && !bFindValue) {
-            Message::error("Missing value for argument: {}", argument->name());
-            return Command::Status::parse_error;
-        }
-
-        if(!argument->isValid()) {
-            Message::error("Invalid argument ({})", argument->name());
-            return Command::Status::parse_error;
-        }
+    if (!validateUsageSignatures(cmd_in)) {
+        Message::error("Invalid argument combination for command '{}'", mName);
+        return Status::parse_error;
     }
 
-    for (auto &argument : mDefaultArguments) {
-
-        if(cmd_in.find("log_level") != cmd_in.end() && argument->name() == "log_level") {
-
-            std::string log_level = cmd_in.find("log_level")->second;
-            if(!log_level.empty()) {
-
-                argument->fromString(log_level);
-
-                if (argument->isValid()) {
-
-                    MessageLevel message_level = MessageLevel::all;
-                    if (log_level == "ERROR") message_level = MessageLevel::error;
-                    else if (log_level == "WARNING") message_level = MessageLevel::warning;
-                    else if (log_level == "SUCCESS") message_level = MessageLevel::success;
-                    else if (log_level == "INFO") message_level = MessageLevel::info;
-                    else if (log_level == "ALL") message_level = MessageLevel::all;
-
-                    Console &console = App::console();
-                    console.setMessageLevel(message_level);
-                    Message::addMessageHandler(&console);
-
-                    if (mEnableLog) {
-                        Logger &log = App::log();
-                        log.setMessageLevel(message_level);
-                        Message::addMessageHandler(&log);
-                    }
-                }
-            }
-
-        } else if (cmd_in.find("log") != cmd_in.end() && argument->name() == "log") {
-
-            tl::Path log_path = cmd_in.find("log")->second;
-
-            if(!log_path.empty()) {
-
-                log_path.parentPath().createDirectories();
-                argument->fromString(log_path.toString());
-                Logger &log = App::log();
-                log.open(log_path);
-                Message::addMessageHandler(&log);
-            }
-
-        }
-    }
-
-    if (!mUsages.empty()) {
-
-        bool match = false;
-
-        for (const auto &usage : mUsages) {
-
-            bool valid = true;
-
-            for (const auto &arg : usage.required) {
-                std::string short_key(1, arg->shortName());
-                if (cmd_in.find(arg->name()) == cmd_in.end() &&
-                    cmd_in.find(short_key) == cmd_in.end()) {
-                    valid = false;
-                    break;
-                }
-            }
-
-            if (valid) {
-                match = true;
-                break;
-            }
-        }
-
-        if (!match) {
-            Message::error("Invalid argument combination for command '{}'", mName);
-            return Command::Status::parse_error;
-        }
-    }
-
-    return Command::Status::parse_success;
+    return Status::parse_success;
 }
+
+
 
 auto Command::begin() noexcept -> iterator
 {
@@ -384,25 +179,9 @@ auto Command::end() const noexcept -> const_iterator
     return mArguments.cend();
 }
 
-auto Command::push_back(const Argument::Ptr &argument) -> void
+auto Command::addArgument(Argument::Ptr argument) -> Command &
 {
-    mArguments.push_back(argument);
-}
-
-auto Command::addArgument(const Argument::Ptr &argument) -> Command &
-{
-    mArguments.push_back(argument);
-    return (*this);
-}
-
-auto Command::push_back(Argument::Ptr &&argument) noexcept -> void
-{
-    mArguments.push_back(std::forward<Argument::Ptr>(argument));
-}
-
-auto Command::addArgument(Argument::Ptr &&argument) noexcept -> Command &
-{
-    mArguments.push_back(std::forward<Argument::Ptr>(argument));
+    mArguments.push_back(std::move(argument));
     return (*this);
 }
 
@@ -462,137 +241,14 @@ auto Command::showHelp() const -> void
 {
     Console &console = App::console();
 
-    /// Descripción del comando
-    console << mDescription << "\n";
+    console << mDescription << "\n\n";
 
-    console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
-    console.setFontBold(true);
-
-    console << "\nUsage:\n\n";
-
-    console.clear();
-
-    console << "  " << mName << " [-h | --help] [--version] [--license] \n";
-
-    if (!mUsages.empty()) {
-
-        for (const auto &usage : mUsages) {
-
-            console << "  " << mName;
-
-            for (const auto &arg : usage.required) {
-                std::stringstream ss;
-                ss << " ";
-                if (arg->shortName() && !arg->name().empty()) {
-                    ss << "[-" << arg->shortName() << " | --" << arg->name() << "] <value>";
-                } else if (arg->shortName()) {
-                    ss << "-" << arg->shortName() << " <value>";
-                } else if (!arg->name().empty()) {
-                    ss << "--" << arg->name() << " <value>";
-                }
-                console << ss.str();
-            }
-
-            for (const auto &arg : usage.optional) {
-                std::stringstream ss;
-                ss << " ";
-                if (arg->shortName() && !arg->name().empty()) {
-                    ss << "[-" << arg->shortName() << " | --" << arg->name() << "] <value>";
-                } else if (arg->shortName()) {
-                    ss << "[-" << arg->shortName() << " <value>]";
-                } else if (!arg->name().empty()) {
-                    ss << "[--" << arg->name() << " <value>]";
-                }
-                console << ss.str();
-            }
-
-            if (!usage.description.empty())
-                console << "    " << usage.description;
-
-            console << "\n";
-        }
-
-    }
-
-    console << "\n";
-
-    int max_name_size = 7;
-    for(const auto &arg : mArguments) {
-        max_name_size = std::max(max_name_size, static_cast<int>(arg->name().size()));
-    }
-
-    for (const auto &arg : mDefaultArguments) {
-        max_name_size = std::max(max_name_size, static_cast<int>(arg->name().size()));
-    }
-
-    max_name_size += 1;
-
-    console << "  -h, --" << std::left << std::setw(max_name_size) << "help" << "    Display this help and exit\n";
-    console << "    , --" << std::left << std::setw(max_name_size) << "version" << "    Show version information and exit\n";
-
-    for(const auto &arg : mArguments) {
-
-        printArgument(arg, max_name_size);
-    }
-
-    for(const auto &arg : mDefaultArguments) {
-
-        printArgument(arg, max_name_size);
-    }
-
-    console << "\n\n";
-
-    console << "R: Required argument\n";
-    console << "O: Optional argument\n\n";
-
-
-    console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
-    console.setFontBold(true);
-    console << "Argument Syntax Conventions\n\n";
-    console.clear();
-
-    console << "  - Arguments are options if they begin with a hyphen delimiter (-).\n";
-    console << "  - Multiple options may follow a hyphen delimiter in a single token if the options do not take arguments. '-abc' is equivalent to '-a -b -c'.\n";
-    console << "  - Option names are single alphanumeric characters.\n";
-    console << "  - An option and its argument may or may not appear as separate tokens. '-o foo' and '-ofoo' are equivalent.\n";
-    console << "  - Long options (--) can have arguments specified after space or equal sign (=).  '--name=value' is equivalent to '--name value'.\n\n";
-
-    if(!mExamples.empty()) {
-        console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
-        console.setFontBold(true);
-        console << "Examples\n\n";
-        console.clear();
-
-        for(auto &example : mExamples) {
-            console << "  " << example << "\n";
-        }
-    }
+    printUsage();
+    printArguments();
+    printArgumentSyntax();
+    printExamples();
 
     console << std::endl;
-}
-
-void Command::printArgument(const tl::Argument::Ptr &arg, int maxNameSize) const
-{
-    Console &console = App::console();
-
-    if (arg->shortName()) {
-        console << "  -" << arg->shortName() << ", ";
-    } else {
-        console << "    , ";
-    }
-
-    if (!arg->name().empty()) {
-        console << "--" << std::left << std::setw(maxNameSize) << arg->name() << (arg->isRequired() ? "[R] " : "[O] ")
-            << arg->description() << ". ";
-        //TODO: Añadir valor por defecto
-        if (arg->validator() != nullptr) arg->validator()->print(); // por ahora...
-    } else {
-        console << "--" << std::left << std::setw(maxNameSize) << "" << (arg->isRequired() ? "[R] " : "[O] ")
-            << arg->description() << ". ";
-        if (arg->validator() != nullptr) arg->validator()->print();
-    }
-
-    console << "\n";
 }
 
 auto Command::showVersion() const -> void
@@ -601,7 +257,7 @@ auto Command::showVersion() const -> void
     console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
     console.setFontBold(true);
 
-    console << "Version: " << mVersion << "\n";
+    console << tl::format("Version: {}\n", mVersion);
 
     console.clear();
 }
@@ -614,7 +270,7 @@ auto Command::showLicense() const -> void
     console << "License\n\n";
     console.clear();
 
-    console << mLicense.productName() << ": " << mLicense.version() << "\n";
+    console << tl::format("{}: {}\n", mLicense.productName(), mLicense.version());
 
     //mLicense.productName();
     //mLicense.version();
@@ -623,9 +279,9 @@ auto Command::showLicense() const -> void
     //mLicense.type();
 }
 
-auto Command::addExample(const std::string &example) -> Command &
+auto Command::addExample(std::string example) -> Command &
 {
-    mExamples.push_back(example);
+    mExamples.push_back(std::move(example));
     return *this;
 }
 
@@ -657,7 +313,7 @@ auto Command::setLicense(const License &license) -> void
     mLicense = license;
 }
 
-auto Command::argument(const std::string &name) const -> Argument::Ptr
+auto Command::argument(std::string_view name) const -> Argument::Ptr
 {
     for(const auto &arg : mArguments) {
         if(arg->name() == name) {
@@ -668,11 +324,11 @@ auto Command::argument(const std::string &name) const -> Argument::Ptr
     TL_THROW_EXCEPTION("Argument not found: '{}'", name);
 }
 
-auto Command::argument(const char &shortName) const -> Argument::Ptr
+auto Command::argument(char shortName) const -> Argument::Ptr
 {
     TL_ASSERT(shortName != '\0', "Invalid short name (null character)");
 
-    for(auto &arg : mArguments) {
+    for(const auto &arg : mArguments) {
         if(arg->shortName() == shortName) {
             return arg;
         }
@@ -681,285 +337,309 @@ auto Command::argument(const char &shortName) const -> Argument::Ptr
     TL_THROW_EXCEPTION("Argument not found with short name: '{}'", shortName);
 }
 
-void Command::init()
+void Command::printUsage() const
 {
+    Console &console = App::console();
 
-}
+    console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
+    console.setFontBold(true);
+    console << "Usage:\n\n";
+    console.clear();
 
+    console << tl::format("  {} [-h | --help] [--version] [--license]\n", mName);
 
-/* ---------------------------------------------------------------------------------- */
+    for (const auto &usage : mUsages) {
 
-CommandList::CommandList()
-  : mVersion("0.0.0")
-{
-}
+        std::string line = tl::format("  {}", mName);
 
-CommandList::CommandList(std::string name,
-                         std::string description)
-  : mName(std::move(name)),
-    mDescription(std::move(description)),
-    mVersion("0.0.0")
-{
-}
-
-CommandList::CommandList(const CommandList &commandList)
-  : mName(commandList.mName),
-    mDescription(commandList.mDescription),
-    mCommands(commandList.mCommands),
-    mVersion(commandList.mVersion)
-{
-}
-
-CommandList::CommandList(CommandList &&commandList) noexcept
-  : mName(std::move(commandList.mName)),
-    mDescription(std::move(commandList.mDescription)),
-    mCommands(std::move(commandList.mCommands)),
-    mVersion(std::move(commandList.mVersion))
-{
-}
-
-CommandList::CommandList(std::string name,
-                         std::string description,
-                         std::initializer_list<Command::SharedPtr> commands)
-  : mName(std::move(name)),
-    mDescription(std::move(description)),
-    mCommands(commands),
-    mVersion("0.0.0")
-{
-}
-
-auto CommandList::name() const -> std::string
-{
-    return mName;
-}
-
-void CommandList::setName(const std::string &name)
-{
-    mName = name;
-}
-
-auto CommandList::description() const -> std::string
-{
-    return mDescription;
-}
-
-void CommandList::setDescription(const std::string &description)
-{
-    mDescription = description;
-}
-
-auto CommandList::version() const -> std::string
-{
-    return mVersion;
-}
-
-auto CommandList::setVersion(const std::string &version) -> void
-{
-    mVersion = version;
-}
-
-auto CommandList::parse(int argc, char **argv) -> Command::Status
-{
-    if(argc <= 1) {
-        Message::error("No command found");
-        showHelp();
-        return Command::Status::parse_error;
-    }
-
-    std::string arg_cmd_name = std::string(argv[1]);
-    std::size_t found_name = arg_cmd_name.find("--");
-    std::size_t found_short_name = arg_cmd_name.find('-');
-    if(found_name != std::string::npos && found_name == 0) {
-        arg_cmd_name = (argv[1]) + 2;
-    } else if(found_short_name != std::string::npos && found_short_name == 0) {
-        arg_cmd_name = (argv[1]) + 1;
-    }
-
-    if(arg_cmd_name == "h" || arg_cmd_name == "help") {
-        showHelp();
-        return Command::Status::show_help;
-    }
-
-    if(arg_cmd_name == "version") {
-        showVersion();
-        return Command::Status::show_version;
-    }
-
-    if(arg_cmd_name == "license") {
-        showLicense();
-        return Command::Status::show_license;
-    }
-
-    for(const auto &command : mCommands) {
-
-        if(command->name() == arg_cmd_name) {
-
-            mCommand = command;
-            std::vector<char *> cmd_argv;
-            for(size_t i = 0; i < static_cast<size_t>(argc); ++i) {
-                if(i != 1)
-                    cmd_argv.push_back(argv[i]);
+        // Argumentos requeridos (Sin corchetes según estándar POSIX/GNU CLI)
+        for (const auto &arg : usage.required) {
+            if (arg->shortName() && !arg->name().empty()) {
+                line += tl::format(" -{}|--{} <value>", arg->shortName(), arg->name());
+            } else if (arg->shortName()) {
+                line += tl::format(" -{} <value>", arg->shortName());
+            } else if (!arg->name().empty()) {
+                line += tl::format(" --{} <value>", arg->name());
             }
-            
-            return command->parse(argc - 1, cmd_argv.data());
+        }
+
+        for (const auto &arg : usage.optional) {
+            if (arg->shortName() && !arg->name().empty()) {
+                line += tl::format(" [-{}|--{}] <value>", arg->shortName(), arg->name());
+            } else if (arg->shortName()) {
+                line += tl::format(" [-{}] <value>", arg->shortName());
+            } else if (!arg->name().empty()) {
+                line += tl::format(" [--{}] <value>", arg->name());
+            }
+        }
+
+        if (!usage.description.empty())
+            line += tl::format("    {}", usage.description);
+
+        console << line << "\n";
+    }
+
+    console << "\n";
+}
+
+void Command::printArguments() const
+{
+    Console &console = App::console();
+
+    int max_name_size = 7;
+    for (const auto &arg : mArguments) {
+        max_name_size = std::max(max_name_size, static_cast<int>(arg->name().size()));
+    }
+
+    for (const auto &arg : mDefaultArguments) {
+        max_name_size = std::max(max_name_size, static_cast<int>(arg->name().size()));
+    }
+
+    max_name_size += 1;
+
+    console << tl::format("  -h, --{:<{}}    Display this help and exit\n", "help", max_name_size);
+    console << tl::format("    , --{:<{}}    Show version information and exit\n", "version", max_name_size);
+
+    for (const auto &arg : mArguments) {
+        printArgument(arg, max_name_size);
+    }
+
+    for (const auto &arg : mDefaultArguments) {
+        printArgument(arg, max_name_size);
+    }
+
+    console << "\n\n";
+
+    console << "R: Required argument\n";
+    console << "O: Optional argument\n\n";
+}
+
+void Command::printArgument(const tl::Argument::Ptr &arg, int maxNameSize) const
+{
+    Console &console = App::console();
+
+    std::string short_part = arg->shortName() ? tl::format("-{}, ", arg->shortName()) : "  , ";
+    std::string requirement = arg->isRequired() ? "[R]" : "[O]";
+
+    console << tl::format("  {}{:<{}} {} {}.",
+        short_part,
+        arg->name().empty() ? "" : "--" + arg->name(),
+        maxNameSize + 1,
+        requirement,
+        arg->description());
+
+    if (arg->validator() != nullptr) {
+        arg->validator()->print();
+    }
+
+    console << "\n";
+}
+
+void Command::printArgumentSyntax() const
+{
+    Console &console = App::console();
+
+    console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
+    console.setFontBold(true);
+    console << "Argument Syntax Conventions\n\n";
+    console.clear();
+
+    console << "  - Arguments are options if they begin with a hyphen delimiter (-).\n"
+            << "  - Multiple options may follow a hyphen delimiter in a single token if the options do not take arguments. '-abc' is equivalent to '-a -b -c'.\n"
+            << "  - Option names are single alphanumeric characters.\n"
+            << "  - An option and its argument may or may not appear as separate tokens. '-o foo' and '-ofoo' are equivalent.\n"
+            << "  - Long options (--) can have arguments specified after space or equal sign (=).  '--name=value' is equivalent to '--name value'.\n\n";
+}
+
+void Command::printExamples() const
+{
+    if (!mExamples.empty()) {
+        Console &console = App::console();
+
+        console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
+        console.setFontBold(true);
+        console << "Examples\n\n";
+        console.clear();
+
+        for (auto &example : mExamples) {
+            console << tl::format("  {}\n", example);
+        }
+    }
+}
+
+auto Command::parseCommandLineArguments(int argc, char **argv) -> std::map<std::string, std::string>
+{
+    std::map<std::string, std::string> cmd_in;
+
+    auto consume_next_value = [&](int &index) -> std::string {
+        if (index + 1 < argc && !std::string_view(argv[index + 1]).starts_with('-')) {
+            return argv[++index];
+        }
+        return "";
+        };
+
+    for (int i = 1; i < argc; ++i) {
+
+        std::string_view arg(argv[i]);
+
+
+        if (arg.starts_with("--")) {
+
+            if (auto pos = arg.find('='); pos != std::string_view::npos) {
+                cmd_in[std::string(arg.substr(0, pos))] = std::string(arg.substr(pos + 1));
+            } else {
+                std::string value = consume_next_value(i);
+                cmd_in[std::string(arg)] = std::move(value);
+            }
+
+        } else if (arg.starts_with('-') && arg.size() > 1) {
+
+            arg.remove_prefix(1);
+
+            if (arg.size() > 1) {
+
+                bool is_combined_flags = true;
+
+                for (char c : arg) {
+
+                    auto exists = std::any_of(mArguments.begin(), mArguments.end(), [c](const auto &a) {
+                        return a->shortName() == c;
+                        });
+
+                    if (!exists) {
+                        is_combined_flags = false;
+                        break;
+                    }
+                }
+
+                if (is_combined_flags) {
+                    for (char c : arg) {
+                        cmd_in["-" + std::string(1, c)] = "true";
+                    }
+                } else {
+                    cmd_in["-" + std::string(1, arg[0])] = std::string(arg.substr(1));
+                }
+
+            } else {
+
+                std::string value = consume_next_value(i);
+                cmd_in["-" + std::string(1, arg[0])] = std::move(value);
+            }
+
 
         }
     }
 
-    if(!mCommand) {
-        Message::error("Unknow command : {}", arg_cmd_name);
+    return cmd_in;
+}
 
-        showHelp();
+auto Command::processUserArguments(std::map<std::string, std::string> &cmd_in) -> bool
+{
+    for (auto &argument : mArguments) {
+
+        std::string short_key = getShortNameString(argument->shortName());
+        std::string long_key = "--" + argument->name();
+        std::string value;
+        bool found = false;
+
+        if (!short_key.empty() && cmd_in.contains(short_key)) {
+            value = cmd_in.at(short_key);
+            found = true;
+        } else if (cmd_in.contains(long_key)) {
+            value = cmd_in.at(long_key);
+            found = true;
+        }
+
+        if (!found) {
+            if (argument->isRequired()) {
+                Message::error("Missing mandatory argument: --{}", argument->name());
+                return false;
+            }
+            continue;
+        }
+
+        if (value.empty()) {
+            if (argument->typeName() == "bool") {
+                value = "true";
+            } else {
+                Message::error("Missing value for argument: --{}", argument->name());
+                return false;
+            }
+        }
+
+        argument->fromString(value);
+
+        if (!argument->isValid()) {
+            Message::error("Invalid argument (--{})", argument->name());
+            return false;
+        }
     }
 
-    return Command::Status::parse_error;
+    return true;
 }
 
-auto CommandList::begin() noexcept -> iterator
+void Command::processSystemDefaultArguments(std::map<std::string, std::string> &cmd_in)
 {
-    return mCommands.begin();
-}
+    for (auto &argument : mDefaultArguments) {
 
-auto CommandList::begin() const noexcept -> const_iterator
-{
-    return mCommands.cbegin();
-}
+        std::string long_key = "--" + argument->name();
 
-auto CommandList::end() noexcept -> iterator
-{
-    return mCommands.end();
-}
+        if (argument->name() == "log_level" && cmd_in.contains(long_key)) {
 
-auto CommandList::end() const noexcept -> const_iterator
-{
-    return mCommands.cend();
-}
+            std::string log_level = cmd_in.at(long_key);
+            if (log_level.empty()) continue;
 
-auto CommandList::push_back(const Command::SharedPtr &command) -> void
-{
-    mCommands.push_back(command);
-}
+            argument->fromString(log_level);
 
-auto CommandList::addCommand(const Command::SharedPtr &command) -> CommandList &
-{
-    mCommands.push_back(command);
-    return *this;
-}
+            if (argument->isValid()) {
 
-auto CommandList::push_back(Command::SharedPtr &&command) noexcept -> void
-{
-    mCommands.push_back(std::forward<Command::SharedPtr>(command));
-}
+                MessageLevel message_level = MessageLevel::all;
+                if (log_level == "ERROR") message_level = MessageLevel::error;
+                else if (log_level == "WARNING") message_level = MessageLevel::warning;
+                else if (log_level == "SUCCESS") message_level = MessageLevel::success;
+                else if (log_level == "INFO") message_level = MessageLevel::info;
+                else if (log_level == "ALL") message_level = MessageLevel::all;
 
-auto CommandList::addCommand(Command::SharedPtr &&command) noexcept -> CommandList &
-{
-    mCommands.push_back(std::forward<Command::SharedPtr>(command));
-    return *this;
-}
+                Console &console = App::console();
+                console.setMessageLevel(message_level);
+                Message::addMessageHandler(&console);
 
-auto CommandList::clear() noexcept -> void
-{
-    mCommands.clear();
-}
+                if (mEnableLog) {
+                    Logger &log = App::log();
+                    log.setMessageLevel(message_level);
+                    Message::addMessageHandler(&log);
+                }
+            }
 
-auto CommandList::empty() const noexcept -> bool
-{
-    return mCommands.empty();
-}
+        } else if (argument->name() == "log" && cmd_in.contains(long_key)) {
 
-auto CommandList::size() const noexcept -> size_type
-{
-    return mCommands.size();
-}
+            tl::Path log_path = cmd_in.at(long_key);
 
-auto CommandList::erase(const_iterator first, const_iterator last) -> iterator
-{
-    return mCommands.erase(first, last);
-}
+            if (log_path.empty()) continue;
 
-auto CommandList::operator=(const CommandList &cmdList) -> CommandList &
-{
-    if(this != &cmdList) {
-        this->mName = cmdList.mName;
-        this->mDescription = cmdList.mDescription;
-        this->mCommands = cmdList.mCommands;
-        this->mVersion = cmdList.mVersion;
+            log_path.parentPath().createDirectories();
+            argument->fromString(log_path.toString());
+            Logger &log = App::log();
+            log.open(log_path);
+            Message::addMessageHandler(&log);
+
+        }
     }
- 
-    return (*this);
 }
 
-auto CommandList::operator=(CommandList &&cmdList) noexcept -> CommandList &
+auto Command::validateUsageSignatures(std::map<std::string, std::string> &cmd_in) -> bool
 {
-    if(this != &cmdList) {
-        this->mName = std::move(cmdList.mName);
-        this->mDescription = std::move(cmdList.mDescription);
-        this->mCommands = std::move(cmdList.mCommands);
-        this->mVersion = std::move(cmdList.mVersion);
-    }
- 
-    return (*this);
+    if (mUsages.empty()) return true;
+
+    return std::any_of(mUsages.begin(), mUsages.end(), [&cmd_in](const auto &usage) {
+        return std::all_of(usage.required.begin(), usage.required.end(), [&cmd_in](const auto &arg) {
+            std::string short_key = getShortNameString(arg->shortName());
+            std::string long_key = "--" + arg->name();
+            return (!short_key.empty() && cmd_in.contains(short_key)) || cmd_in.contains(long_key);
+            });
+        });
 }
 
-auto CommandList::showHelp() const -> void
-{
-
-    Console &console = App::console();
-
-    console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
-    console.setFontBold(true);
-    console << "\nUsage: " << mName << " [--version] [-h | --help] [--license] <command> [<args>] \n\n";
-    
-    console.clear();
-
-    console << mDescription << " \n\n";
-
-    console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
-    console.setFontBold(true);
-    console << "Command list: \n\n";
-    console.clear();
-
-    size_t max_name_size = 10;
-    for(auto &arg : mCommands) {
-        max_name_size = std::max(max_name_size, arg->name().size());
-    }
-    max_name_size += 2;
-
-    for(auto &arg : mCommands) {
-        console << std::left << std::setw(max_name_size) << arg->name() << arg->description() << "\n";
-    }
-
-    console << std::endl;
-}
-
-auto CommandList::showVersion() const -> void
-{
-    Console &console = App::console();
-    console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
-    console.setFontBold(true);
-
-    console << "Version: " << mVersion << "\n";
-
-    console.clear();
-}
-
-auto CommandList::showLicense() const -> void
-{
-    Console &console = App::console();
-    console.setForegroundColor(Console::Color::green, Console::Intensity::bright);
-    console.setFontBold(true);
-    console << "License\n\n";
-    console.clear();
-
-    console << mLicense.productName() << ": " << mLicense.version() << "\n";
-}
-
-auto CommandList::commandName() const -> std::string
-{
-    return mCommand ? mCommand->name() : std::string();
-}
-
-
-} // End namespace tl
+} // namespace tl
 
 

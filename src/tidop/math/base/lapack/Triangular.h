@@ -49,7 +49,7 @@ namespace lapack
  * \tparam T The data type (float or double).
  * \param order Storage order (row-major or column-major).
  * \param form Whether A is upper ('U') or lower ('L') triangular.
- * \param trans Specifies the form of the system (NoTrans, Trans, ConjTrans).
+ * \param transpose Specifies the form of the system (NoTrans, Trans, ConjTrans).
  * \param diag Whether A has unit diagonal ('U' for unit, 'N' for non-unit).
  * \param n Order of the matrix A.
  * \param nrhs Number of right-hand sides (columns of B).
