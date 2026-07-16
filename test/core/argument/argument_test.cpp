@@ -27,6 +27,8 @@
 #include <tidop/core/console/Argument.h>
 #include <tidop/core/console/Command.h>
 #include <tidop/core/console/CommandList.h>
+#include <tidop/core/console/RangeValidator.h>
+#include <tidop/core/console/ValuesValidator.h>
 
 #include <array>
 

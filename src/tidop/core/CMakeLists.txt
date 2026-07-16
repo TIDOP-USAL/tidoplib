@@ -109,6 +109,11 @@ if(BUILD_TL_CORE)
                              console/Menu.h
                              console/UsageSignature.h
                              console/Validator.h
+                             console/CustomValidator.h
+                             console/PathValidator.h
+                             console/RangeValidator.h
+                             console/RegexValidator.h
+                             console/ValuesValidator.h
                              private/gdalreg.h
                              task/Events.h
                              task/Process.h

@@ -107,6 +107,36 @@
  */
 
 /*!
+ * \defgroup Validators Validators for console arguments
+ * \ingroup Console
+ * \brief Set of validators to restrict the values of command-line arguments.
+ *
+ * Validators are associated with \ref Argument objects to check that the value
+ * provided by the user meets certain conditions (range, allowed values, path
+ * type, regex pattern, etc.).
+ *
+ * All validators inherit from \ref ValidatorBase, which defines the common
+ * interface:
+ * - `validate(value)`: returns `true` if the value is valid; otherwise, it
+ *   shows an error message and returns `false`.
+ * - `toString()`: returns a textual description of the validator, useful for
+ *   displaying in help messages.
+ *
+ * \section usage_example Example usage with Argument
+ * \code
+ * auto arg_format = Argument::make<std::string>("format", 'f', "Format", "XML");
+ * auto validator = std::make_shared<ValuesValidator<std::string>>(
+ *     std::vector<std::string>{"XML", "YML", "TXT", "BIN"}
+ * );
+ * arg_format->setValidator(validator);
+ *
+ * // During parsing, validator->validate(parsed_value) will be called
+ * \endcode
+ *
+ * \see Argument, Command, ValidatorBase
+ */
+
+/*!
  * \defgroup concurrency Concurrency
  * \ingroup Core
  * \brief Utilities to simplify concurrent programming tasks.

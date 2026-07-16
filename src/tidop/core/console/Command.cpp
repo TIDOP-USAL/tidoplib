@@ -28,6 +28,7 @@
 #include "tidop/core/app/Logger.h"
 #include "tidop/core/base/split.h"
 #include "tidop/core/console/Console.h"
+#include "tidop/core/console/ValuesValidator.h"
 
 #include <map>
 #include <iomanip>
@@ -429,7 +430,7 @@ void Command::printArgument(const tl::Argument::Ptr &arg, int maxNameSize) const
         arg->description());
 
     if (arg->validator() != nullptr) {
-        arg->validator()->print();
+        console << arg->validator()->toString();
     }
 
     console << "\n";
