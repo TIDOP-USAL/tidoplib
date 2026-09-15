@@ -30,8 +30,8 @@
 #include "tidop/core/base/Exception.h"
 #include "tidop/core/base/split.h"
 #include "tidop/geotools/GeoToolsDefinitions.h"
+#include "tidop/geotools/CRSsToolsDefinitions.h"
 #include "tidop/geotools/impl/CRSsUtils.h"
-#include "tidop/geotools/impl/CRSsToolsDefinitions.h"
 #include "tidop/geotools/impl/CRS.h"
 
 using namespace tl;

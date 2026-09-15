@@ -40,11 +40,11 @@ if (BUILD_TL_GEOTOOLS AND TL_HAVE_GDAL AND TL_HAVE_PROJ)
 							 impl/CRS.cpp
 							 impl/CRSsUtils.cpp
                          HEADER_FILES
+                             CRSsToolsDefinitions.h
 						     GeoToolsDefinitions.h
 						     GeoTools.h
                              CRSsTools.h
                              impl/CRSsTools.h
-							 impl/CRSsToolsDefinitions.h
 							 impl/CRS.h
 							 impl/CRSsUtils.h)
 
