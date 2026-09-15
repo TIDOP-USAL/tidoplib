@@ -335,7 +335,7 @@ public:
      * \param value Option value as a string (e.g., "LZW", "YES", "75").
      * \return Reference to this ImageOptions object (for chaining).
      */
-    auto &set(std::string_view key, std::string_view value);
+    auto set(std::string_view key, std::string_view value) -> ImageOptions &;
 
     /*!
      * \brief Retrieve an option value.

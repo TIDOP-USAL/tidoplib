@@ -108,11 +108,11 @@ public:
     /*!
      * \brief Retrieves the value associated with a single key.
      * \param key Key to look up.
-     * \return An optional containing the value as string_view if found,
+     * \return An optional containing the value as string if found,
      *         or std::nullopt otherwise.
      */
     [[nodiscard]]
-    auto value(std::string_view key) const -> std::optional<std::string_view>;
+    auto value(std::string_view key) const -> std::optional<std::string>;
 
     /*!
      * \brief Retrieves the value associated with the first existing key in a list.
@@ -125,7 +125,7 @@ public:
      *         or std::nullopt if none of the keys exist.
      */
     [[nodiscard]]
-    auto value(std::span<const std::string> keys) const -> std::optional<std::string_view>;
+    auto value(std::span<const std::string> keys) const -> std::optional<std::string>;
 
     /*!
      * \brief Sets the value for a specific key.

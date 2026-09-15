@@ -34,7 +34,7 @@ auto ImageMetadata::contains(std::string_view key) -> bool
     return mMetadata.contains(key);
 }
 
-auto ImageMetadata::value(std::string_view key) const -> std::optional<std::string_view>
+auto ImageMetadata::value(std::string_view key) const -> std::optional<std::string>
 {
     if (auto it = mMetadata.find(key); it != mMetadata.end()) {
         return it->second;
@@ -42,7 +42,7 @@ auto ImageMetadata::value(std::string_view key) const -> std::optional<std::stri
     return std::nullopt;
 }
 
-auto ImageMetadata::value(std::span<const std::string> keys) const -> std::optional<std::string_view>
+auto ImageMetadata::value(std::span<const std::string> keys) const -> std::optional<std::string>
 {
     for (const auto &key : keys) {
         if (auto it = mMetadata.find(key); it != mMetadata.end()) {

@@ -30,7 +30,7 @@
 namespace tl
 {
 
-auto &ImageOptions::set(std::string_view key, std::string_view value)
+auto ImageOptions::set(std::string_view key, std::string_view value) -> ImageOptions &
 {
     mOptions[std::string(key)] = std::string(value);
     return *this;
