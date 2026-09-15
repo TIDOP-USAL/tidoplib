@@ -306,6 +306,39 @@ bool instanceof(const T *ptr)
     return dynamic_cast<const Base *>(ptr) != nullptr;
 }
 
+
+
+
+template<typename T>
+struct CallableTraits;
+
+template<typename T>
+struct CallableTraits
+    : CallableTraits<decltype(&T::operator())>
+{
+};
+
+template<typename C, typename R, typename Arg>
+struct CallableTraits<R(C:: *)(Arg) const>
+{
+    using argument_type = std::remove_cvref_t<Arg>;
+};
+
+// task1.subscribe([&, count = 0](TaskRunningEvent *event) mutable { // <--- mutable!
+// count++; // Ahora el operator() ya NO es const
+// });
+template<typename C, typename R, typename Arg>
+struct CallableTraits<R(C:: *)(Arg)>
+{
+    using argument_type = std::remove_cvref_t<Arg>;
+};
+
+template<typename R, typename Arg>
+struct CallableTraits<R(*)(Arg)>
+{
+    using argument_type = std::remove_cvref_t<Arg>;
+};
+
 /*! \} */
 
 }

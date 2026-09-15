@@ -130,9 +130,9 @@ BOOST_FIXTURE_TEST_CASE(replace_extension, PathTest)
 #endif
     path.replaceExtension("csv");
 #if defined WIN32
-    BOOST_CHECK_EQUAL(Path("C:\\temp\\file.csv"), path.toString());
+    BOOST_CHECK_EQUAL(Path("C:\\temp\\file.csv"), path);
 #else
-    BOOST_CHECK_EQUAL(Path("/home/user/file.csv"), path.toString());
+    BOOST_CHECK_EQUAL(Path("/home/user/file.csv"), path);
 #endif
     BOOST_CHECK_EQUAL(Path("file.csv"), path.fileName());
     BOOST_CHECK_EQUAL(Path("file"), path.baseName());

@@ -122,9 +122,9 @@ TL_EXPORT uint32_t optimalNumberOfThreads();
  */
 template<typename Function>
 void parallel_for(size_t ini,
-    size_t end,
-    Function &&f,
-    std::stop_token stopToken = {})
+                  size_t end,
+                  Function &&f,
+                  std::stop_token stopToken = {})
 {
     size_t size = end - ini;
     if (size == 0) return;

@@ -129,13 +129,13 @@ public:
      * \brief Constructs a Path object from a string.
      * \param utf8Path The path as a std::string.
      */
-    Path(const std::string &utf8Path);
+    explicit Path(const std::string &utf8Path);
 
     /*!
      * \brief Constructs a Path object from a wide string.
      * \param path The path as a std::wstring.
      */
-    Path(const std::wstring &path);
+    explicit Path(const std::wstring &path);
     Path(const Path &path);
     Path(Path &&path) noexcept;
     ~Path();
@@ -368,6 +368,9 @@ public:
      * \brief Appends another Path to the path.
      */
     auto append(const Path &text) -> Path&;
+
+    [[nodiscard]]
+    auto operator/(const Path &path) const -> Path;
 
     /*!
      * \brief Compares this path with another path lexicographically.

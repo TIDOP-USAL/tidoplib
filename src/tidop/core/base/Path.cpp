@@ -367,6 +367,12 @@ auto Path::append(const Path &text) -> Path&
     return append(text.toWString());
 }
 
+auto Path::operator/(const Path &path) const -> Path
+{
+    fs::path new_path = mPath->ref() / path.mPath->ref();
+    return Path(new_path.native());
+}
+
 auto Path::createDirectory() const -> bool
 {
     if (mPath->exists()) return true;

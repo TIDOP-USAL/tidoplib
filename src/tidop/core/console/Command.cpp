@@ -130,6 +130,8 @@ auto Command::parse(int argc, char **argv) -> Status
 	
     auto cmd_in = parseCommandLineArguments(argc, argv);
 
+    if (cmd_in.empty()) return Status::parse_error;
+
     if(cmd_in.contains("-h") || cmd_in.contains("--help")) {
         showHelp();
         return Status::show_help;
@@ -483,7 +485,6 @@ auto Command::parseCommandLineArguments(int argc, char **argv) -> std::map<std::
 
         std::string_view arg(argv[i]);
 
-
         if (arg.starts_with("--")) {
 
             if (auto pos = arg.find('='); pos != std::string_view::npos) {
@@ -527,7 +528,10 @@ auto Command::parseCommandLineArguments(int argc, char **argv) -> std::map<std::
                 cmd_in["-" + std::string(1, arg[0])] = std::move(value);
             }
 
-
+        } else {
+            tl::Message::error("Unexpected argument '{}'. "
+                               "If it is part of a path containing spaces, enclose it in quotes.", arg);
+            return std::map<std::string, std::string>{};
         }
     }
 
@@ -614,7 +618,7 @@ void Command::processSystemDefaultArguments(std::map<std::string, std::string> &
 
         } else if (argument->name() == "log" && cmd_in.contains(long_key)) {
 
-            tl::Path log_path = cmd_in.at(long_key);
+            tl::Path log_path(cmd_in.at(long_key));
 
             if (log_path.empty()) continue;
 

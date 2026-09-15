@@ -189,6 +189,9 @@ public:
      */
     auto hasProperty(const std::string &key) const -> bool;
 
+    auto property(const std::string &key) -> PropertyBase &;
+    auto property(const std::string &key) const -> const PropertyBase &;
+
     /*!
      * \brief Returns an iterator to the beginning of the properties.
      * \return Iterator pointing to the first property.

@@ -389,6 +389,8 @@ void Console::reset()
     fontUnderline = 24;
     fontReverse = 27;
     fontStrikethrough = 29;
+
+    update();
 }
 
 //https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences#example-of-enabling-virtual-terminal-processing

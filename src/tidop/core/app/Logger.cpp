@@ -115,6 +115,7 @@ void Logger::dispatch(MessageLevel level, std::string_view message)
     auto now = std::chrono::system_clock::now();
 
     _stream << std::format("{:%d/%b/%Y %H:%M:%S} - {:<7}: {}\n", now, levelToString(level), message);
+    _stream.flush();
 }
 
 constexpr auto Logger::levelToString(MessageLevel level) -> std::string_view

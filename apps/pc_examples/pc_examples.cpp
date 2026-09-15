@@ -54,8 +54,8 @@ int main(int argc, char* argv[])
     //std::string pointCloudFileName = "D:/dev/pnoa_lidar_2009.laz";
     //std::string pointCloudFileName = "D:/dev/pnoa_lidar_2009_dhl_writer_crs.copc.laz";
     bool doNoCopc = false;
-    std::string pointCloudFileNameNoCopc = "D:/dev/pnoa_lidar_2009_crs_features.laz";
-    std::string pointCloudFileName = "D:/dev/pnoa_lidar_2009_crs_features.copc.laz";
+    tl::Path pointCloudFileNameNoCopc("D:/dev/pnoa_lidar_2009_crs_features.laz");
+    tl::Path pointCloudFileName("D:/dev/pnoa_lidar_2009_crs_features.copc.laz");
     outputFileName = "D:/dev/pnoa_lidar_2009_dhl_writer_crs.copc.laz.csv";
 
     Path app_path(argv[0]);

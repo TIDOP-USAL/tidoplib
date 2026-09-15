@@ -67,6 +67,24 @@ auto Properties::hasProperty(const std::string &key) const -> bool
     return mProperties.find(key) != mProperties.end();
 }
 
+auto Properties::property(const std::string &key) -> PropertyBase &
+{
+    auto it = mProperties.find(key);
+    if (it == mProperties.end()) {
+        throw std::out_of_range("Property not found: " + key);
+    }
+    return *it->second;
+}
+
+auto Properties::property(const std::string &key) const -> const PropertyBase &
+{
+    auto it = mProperties.find(key);
+    if (it == mProperties.end()) {
+        throw std::out_of_range("Property not found: " + key);
+    }
+    return *it->second;
+}
+
 void Properties::print() const
 {
     std::cout << "Properties: " << mName << std::endl;
