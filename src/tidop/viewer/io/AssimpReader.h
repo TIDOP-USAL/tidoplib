@@ -19,12 +19,12 @@ class AssimpReader : public ModelReader
 
 private:
 
-	std::string directory, path;
+	tl::Path directory, path;
 	std::vector<Mesh::Ptr> meshes;
 
 public:
 
-	AssimpReader(const Path& path);
+	AssimpReader(const Path &path);
 	AssimpReader() = default;
 	~AssimpReader() = default;
 

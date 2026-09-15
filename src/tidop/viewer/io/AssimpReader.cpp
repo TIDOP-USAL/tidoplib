@@ -5,7 +5,7 @@
 namespace tl
 {
 
-AssimpReader::AssimpReader(const Path& path)
+AssimpReader::AssimpReader(const Path &path)
 {
     // read file via ASSIMP
     Assimp::Importer importer;
@@ -18,7 +18,7 @@ AssimpReader::AssimpReader(const Path& path)
     }
 
     // retrieve the directory path of the filepath
-    directory = path.parentPath().toString();
+    directory = path.parentPath();
 
     // process ASSIMP's root node recursively
     processNode(scene->mRootNode, scene);
@@ -120,7 +120,7 @@ std::vector<Texture::Ptr> AssimpReader::loadMaterialTextures(aiMaterial* mat, ai
         aiString str;
         mat->GetTexture(type, i, &str);
 
-        std::string texturePath = directory + "/" + str.C_Str();
+        tl::Path texturePath = directory / tl::Path(str.C_Str());
         Texture::Ptr texture = Texture::New(texturePath, Texture::Type::None, false);
 
         if (typeName == "texture_ambient") texture->setType(Texture::Type::TextureAmbient);

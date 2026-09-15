@@ -51,7 +51,7 @@ namespace tl
  * \param[out] green Green component
  * \param[out] blue Blue component
  */
-TL_EXPORT void intToRGB(int color, int *red, int *green, int *blue);
+//TL_EXPORT void intToRGB(int color, int *red, int *green, int *blue);
 
 
 /*!

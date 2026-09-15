@@ -368,7 +368,6 @@ public:
     }
 
     template<VectorExpr Vec>
-    [[nodiscard]]
     constexpr auto operator+=(const Vec &vec)
     {
         this->mData += vec;

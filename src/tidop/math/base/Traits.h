@@ -371,7 +371,7 @@ template<typename LHS, typename RHS>
 struct is_matrix_product<MatMulExpr<LHS, RHS>> : std::true_type {};
 
 template<typename T>
-inline constexpr bool is_matrix_product_v = is_matrix_product<std::remove_cvref_t<T>>::value;
+constexpr bool is_matrix_product_v = is_matrix_product<std::remove_cvref_t<T>>::value;
 
 
 template<typename T>

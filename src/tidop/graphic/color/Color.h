@@ -404,6 +404,25 @@ public:
     [[nodiscard]]
     static auto randomColor() -> Color;
 
+    [[nodiscard]]
+    static auto fromRGB(uint32_t rgb) -> Color
+    {
+        uint8_t r = (rgb >> 16) & 0xFF;
+        uint8_t g = (rgb >> 8) & 0xFF;
+        uint8_t b = rgb & 0xFF;
+        return Color(r, g, b);
+    }
+
+    [[nodiscard]]
+    static auto fromRGBA(uint32_t rgba) -> Color
+    {
+        uint8_t r = (rgba >> 24) & 0xFF;
+        uint8_t g = (rgba >> 16) & 0xFF;
+        uint8_t b = (rgba >> 8) & 0xFF;
+        uint8_t a = rgba & 0xFF;
+        return Color(r, g, b, a);
+    }
+
     auto operator<=>(const Color &) const = default;
 
 };

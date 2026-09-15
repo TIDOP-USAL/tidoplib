@@ -22,25 +22,18 @@ int main(int argc, char* argv[])
     tl::Path app_path(argv[0]);
 
 #ifdef TL_OS_WINDOWS
-//    tl::Path graphos_path = app_path.parentPath().parentPath();
-//    tl::Path gdal_data_path(graphos_path);
-//    gdal_data_path.append("gdal\\data");
-//    tl::Path proj_data_path(graphos_path);
-//    proj_data_path.append("proj");
-#   if GDAL_VERSION_NUM >= GDAL_COMPUTE_VERSION(3,7,0)
-    //CPLSetConfigOption("PROJ_DATA", proj_data_path.toString().c_str());
-    //CPLSetConfigOption("PROJ_LIB", proj_data_path.toString().c_str());
-    std::string proj_data_path = "E:/libs/proj/9.2/vc17/share/proj";
-    CPLSetConfigOption("PROJ_DATA", proj_data_path.c_str());
-    CPLSetConfigOption("PROJ_LIB", proj_data_path.c_str());
-#   else
-    std::string s_proj = proj_data_path.toString();
-    const char* proj_data[]{ s_proj.c_str(), nullptr };
-    OSRSetPROJSearchPaths(proj_data);
-#   endif
-    std::string gdal_data_path = "E:/libs/gdal/3.7.0/vc17/share/gdal";
+
+    std::string gdal_data_path(CPLGetConfigOption("TL_GDAL_DATA", ""));
+    std::string proj_data_path(CPLGetConfigOption("TL_PROJ_DATA", ""));
+
     CPLSetConfigOption("GDAL_DATA", gdal_data_path.c_str());
-    //CPLSetConfigOption("GDAL_DATA", gdal_data_path.toString().c_str());
+    CPLSetConfigOption("PROJ_LIB", proj_data_path.c_str());
+
+#if GDAL_VERSION_NUM < GDAL_COMPUTE_VERSION(3,7,0)
+    const char *proj_data[]{proj_data_path.c_str(), nullptr};
+    OSRSetPROJSearchPaths(proj_data);
+#endif
+
 #endif // TL_OS_WINDOWS
 
 #ifdef DEBUG
@@ -54,7 +47,7 @@ int main(int argc, char* argv[])
     tl::Message::addMessageHandler(&console);
 
     // Log file
-    tl::Logger& log = tl::Logger::instance();
+    auto &log = tl::Logger::instance();
     log.setMessageLevel(tl::MessageLevel::all);
     tl::Message::addMessageHandler(&log);
 

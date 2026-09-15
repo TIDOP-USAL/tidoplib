@@ -7,11 +7,11 @@
 #include <QWheelEvent>
 
 #include "tidop/viewer/group/PointCloud.h"
-#include <tidop/viewer/io/ASCIIReader.h>
+#include "tidop/viewer/io/ASCIIReader.h"
 #include "tidop/viewer/group/Grid.h"
 #include "tidop/viewer/group/Mesh.h"
 #include "tidop/viewer/texture/Texture.h"
-
+#include "tidop/core/base/TypeConversions.h"
 
 namespace tl
 {
@@ -88,7 +88,7 @@ void ViewerWidget::initializeGL()
     mesh->scale(5.f, 5.f, 5.f);
     //mesh->rotate(AxisAngle<float>(consts::pi<float>, { 1.0, 1.0, 0.0 }));
 
-    Texture::Ptr texture = Texture::New("C:/Users/EquipoTidop/Documents/Texturas/albedo.png");
+    Texture::Ptr texture = Texture::New(tl::Path("C:/Users/EquipoTidop/Documents/Texturas/albedo.png"));
     mesh->addTexture(texture);
 
     renderer->addModel(mesh);
