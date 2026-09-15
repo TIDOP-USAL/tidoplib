@@ -52,7 +52,7 @@ class Progress;
  *
  */
 class TL_EXPORT TaskQueue
-  : public TaskBase
+  : public Task
 {
 
 public:
@@ -106,7 +106,7 @@ public:
 
 private:
 
-    void execute(Progress *progressBar = nullptr) override;
+    void execute(Progress *progressBar, std::stop_token stopToken) override;
 
 private:
 

@@ -50,7 +50,7 @@ class Progress;
  * The tasks are executed respecting these dependencies. Tasks in the tree can be stopped or executed based on their status.
  */
 class TL_EXPORT TaskTree
-  : public TaskBase
+  : public Task
 {
 
 public:
@@ -83,7 +83,7 @@ public:
 
 private:
 
-    void execute(Progress *progressBar = nullptr) override;
+    void execute(Progress *progressBar, std::stop_token stopToken) override;
 
 private:
 

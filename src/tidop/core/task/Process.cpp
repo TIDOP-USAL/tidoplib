@@ -128,7 +128,7 @@ Process::~Process()
 #endif
 }
 
-void Process::execute(Progress *)
+void Process::execute(Progress *, std::stop_token stopToken)
 {
     try {
 
@@ -179,9 +179,9 @@ void Process::execute(Progress *)
 
             if (GetExitCodeProcess(mProcessInformation.hProcess, &exitCode)) {
                 if (exitCode == 0) {
-                    eventTriggered(Event::Type::task_finalized);
+                    triggerEvent<TaskEventType::task_finalized>();
                 } else {
-                    eventTriggered(Event::Type::task_error);
+                    triggerEvent<TaskEventType::task_error>();
                 }
             } else {
                 TL_THROW_EXCEPTION("Error ({}: {}) when executing the command: {}",
@@ -291,14 +291,14 @@ auto Process::createPipe() -> bool
     // Usar los miembros del objeto
     if (!CreatePipe(&mPipeReadHandle, &mPipeWriteHandle, &mSecurityAttributes, 0)) {
         Message::error("CreateProcess failed ({}) {}", GetLastError(), formatErrorMsg(GetLastError()));
-        eventTriggered(Event::Type::task_error);
+        triggerEvent<TaskEventType::task_error>();
         return false;
     }
 
     // Evitar que el proceso hijo herede el extremo de lectura
     if (!SetHandleInformation(mPipeReadHandle, HANDLE_FLAG_INHERIT, 0)) {
         Message::error("CreateProcess failed ({}) {}", GetLastError(), formatErrorMsg(GetLastError()));
-        eventTriggered(Event::Type::task_error);
+        triggerEvent<TaskEventType::task_error>();
         return false;
     }
 

@@ -55,7 +55,7 @@ if(BUILD_TL_CORE)
                              console/CommandList.cpp
                              console/Menu.cpp
                              private/gdalreg.cpp
-                             task/Events.cpp
+                             task/events/Events.cpp
                              task/Process.cpp
                              task/Progress.cpp
                              task/Task.cpp
@@ -115,7 +115,9 @@ if(BUILD_TL_CORE)
                              console/RegexValidator.h
                              console/ValuesValidator.h
                              private/gdalreg.h
-                             task/Events.h
+                             task/events/Concepts.h
+                             task/events/Events.h
+                             task/events/Traits.h
                              task/Process.h
                              task/Progress.h
                              task/Task.h

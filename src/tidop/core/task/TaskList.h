@@ -51,7 +51,7 @@ class Progress;
  *
  */
 class TL_EXPORT TaskList
-  : public TaskBase
+  : public Task
 {
 
 private:
@@ -126,7 +126,7 @@ public:
 
 private:
 
-    void execute(Progress *progressBar = nullptr) override;
+    void execute(Progress *progressBar, std::stop_token stopToken) override;
 
 };
 

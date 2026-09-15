@@ -33,7 +33,7 @@ namespace tl
 std::mutex TaskQueue::mtx;
 
 TaskQueue::TaskQueue()
-  : TaskBase()
+  : Task()
 {
 }
 
@@ -48,7 +48,8 @@ void TaskQueue::push(std::shared_ptr<Task> task)
 
     if (status() == Status::finalized ||
         status() == Status::stopped) {
-        setStatus(Status::start);
+        reset();
+        //setStatus(Status::start);
         //  setStatus(Status::running);
         //  // Al ser una cola se vuelve a ejecutar cada vez que se añade un elemento
         //  run();
@@ -73,10 +74,10 @@ auto TaskQueue::empty() const noexcept -> bool
 
 void TaskQueue::stop()
 {
-    TaskBase::stop();
+    Task::stop();
 }
 
-void TaskQueue::execute(Progress */*progressBar*/)
+void TaskQueue::execute(Progress */*progressBar*/, std::stop_token stopToken)
 {
     while (!queue.empty()) {
         

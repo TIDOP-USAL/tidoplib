@@ -31,13 +31,13 @@
 using namespace tl;
 
 class Task1
-    : public TaskBase
+  : public Task
 {
 
 public:
 
     Task1()
-        : TaskBase()
+        : Task()
     {
     }
 
@@ -54,7 +54,7 @@ public:
 
 protected:
 
-    void execute(Progress *progressBar = nullptr) override
+    void execute(Progress *progressBar, std::stop_token stopToken) override
     {
         _count = 0;
 
@@ -118,7 +118,7 @@ BOOST_FIXTURE_TEST_CASE(run, TaskTest)
 BOOST_FIXTURE_TEST_CASE(running_event, TaskTest)
 {
 
-    task1.subscribe([&](TaskRunningEvent *event) {
+    task1.subscribe([&](TaskRunningEvent &event) {
         BOOST_CHECK_EQUAL(0, task1.count());
     });
 
@@ -128,7 +128,7 @@ BOOST_FIXTURE_TEST_CASE(running_event, TaskTest)
 BOOST_FIXTURE_TEST_CASE(finalized_event, TaskTest)
 {
 
-    task1.subscribe([&](TaskFinalizedEvent *event) {
+    task1.subscribe([&](TaskFinalizedEvent &event) {
         BOOST_CHECK_EQUAL(100, task1.count());
     });
 

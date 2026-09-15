@@ -43,10 +43,10 @@ void TaskTree::addTask(const std::shared_ptr<Task> &task,
 
 void TaskTree::stop()
 {
-    TaskBase::stop();
+    Task::stop();
 }
 
-void TaskTree::execute(Progress *progressBar)
+void TaskTree::execute(Progress *progressBar, std::stop_token stopToken)
 {
 
 }

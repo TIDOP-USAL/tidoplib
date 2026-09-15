@@ -115,23 +115,23 @@ public:
      * ### UI Events
      * - `image_change` - Image displayed has changed
      */
-    enum class Type
-    {
-        /* Task events*/
+    //enum class Type
+    //{
+    //    /* Task events*/
 
-        task_running,    /*!< Task has started execution */
-        task_pausing,    /*!< Task is about to pause */
-        task_paused,     /*!< Task has been paused */
-        task_resumed,    /*!< Task has resumed from pause */
-        task_stopping,   /*!< Task is about to stop */
-        task_stopped,    /*!< Task has stopped */
-        task_finalized,  /*!< Task has completed all cleanup */
-        task_error,      /*!< Error occurred during task execution */
+    //    task_running,    /*!< Task has started execution */
+    //    task_pausing,    /*!< Task is about to pause */
+    //    task_paused,     /*!< Task has been paused */
+    //    task_resumed,    /*!< Task has resumed from pause */
+    //    task_stopping,   /*!< Task is about to stop */
+    //    task_stopped,    /*!< Task has stopped */
+    //    task_finalized,  /*!< Task has completed all cleanup */
+    //    task_error,      /*!< Error occurred during task execution */
 
-        /* Image events */
+    //    /* Image events */
 
-        image_change     /*!< Image displayed has changed */
-    };
+    //    image_change     /*!< Image displayed has changed */
+    //};
 
 public:
 
@@ -142,8 +142,8 @@ public:
      * \brief Get the type of this event.
      * \return The event type enumeration value
      */
-    [[nodiscard]]
-    virtual auto type() const -> Type = 0;
+    //[[nodiscard]]
+    //virtual auto type() const -> Type = 0;
 
     /*!
      * \brief Clear all event data.
@@ -163,31 +163,31 @@ public:
  * a single Type value. Suitable for events that don't require additional
  * data beyond their type.
  */
-class TL_EXPORT EventBase
-  : public Event
-{
-
-public:
-
-    /*!
-     * \brief Constructor with event type.
-     *
-     * \param[in] type The type of event this instance represents
-     */
-	explicit EventBase(Type type);
-
-    /*!
-     * \brief Get the type of this event.
-     * \return The event type passed in constructor
-     */
-    [[nodiscard]]
-    auto type() const -> Type override;
-
-private:
-
-    Type mType;
-
-};
+//class TL_EXPORT EventBase
+//  : public Event
+//{
+//
+//public:
+//
+//    /*!
+//     * \brief Constructor with event type.
+//     *
+//     * \param[in] type The type of event this instance represents
+//     */
+//	explicit EventBase(Type type);
+//
+//    /*!
+//     * \brief Get the type of this event.
+//     * \return The event type passed in constructor
+//     */
+//    [[nodiscard]]
+//    auto type() const -> Type override;
+//
+//private:
+//
+//    Type mType;
+//
+//};
 
 
 
@@ -209,7 +209,7 @@ private:
  * \endcode
  */
 class TL_EXPORT ImageChangeEvent final
-    : public EventBase
+    : public Event
 {
 private:
 

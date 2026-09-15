@@ -49,7 +49,7 @@ class Progress;
  * \note Thread-safe. Internally synchronized when managing process execution.
  */
 class TL_EXPORT Process
-  : public TaskBase
+  : public Task
 {
 
 public:
@@ -160,7 +160,7 @@ private:
 
 // TaskBase
   
-    void execute(Progress *progressBar = nullptr) override;
+    void execute(Progress *progressBar, std::stop_token stopToken) override;
   
 };
 

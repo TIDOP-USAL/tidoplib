@@ -25,6 +25,7 @@
 
 #include "tidop/core/task/TaskList.h"
 #include "tidop/core/task/Progress.h"
+#include "tidop/core/base/Exception.h"
 
 namespace tl
 {
@@ -38,18 +39,18 @@ TaskList::TaskList()
 {
 }
 
-TaskList::TaskList(const TaskList &taskList)
-  : TaskBase(),
-    tasks(taskList.tasks),
-    cancelOnError(false)
-{
-}
-
-TaskList::TaskList(std::initializer_list<std::shared_ptr<Task>> tasks)
-  : tasks(tasks),
-    cancelOnError(false)
-{
-}
+//TaskList::TaskList(const TaskList &taskList)
+//  : TaskBase(),
+//    tasks(taskList.tasks),
+//    cancelOnError(false)
+//{
+//}
+//
+//TaskList::TaskList(std::initializer_list<std::shared_ptr<Task>> tasks)
+//  : tasks(tasks),
+//    cancelOnError(false)
+//{
+//}
 
 TaskList::~TaskList() = default;
 
@@ -75,8 +76,8 @@ auto TaskList::empty() const noexcept -> bool
 
 void TaskList::stop()
 {
-    TaskBase::stop();
-
+    Task::stop();
+    //TODO: revisar esto
     if (status() == Status::stopping) {
         for (const auto &task : tasks) {
             task->stop();
@@ -84,17 +85,17 @@ void TaskList::stop()
     }
 }
 
-void TaskList::execute(Progress *progressBar)
+void TaskList::execute(Progress *progressBar, std::stop_token stopToken)
 {
     for (const auto &task : tasks) {
 
-        if (status() == Status::stopping) return;
+        //if (status() == Status::stopping) return;
+        if (stopToken.stop_requested()) return;
 
         task->run();
 
         if (task->status() == Status::error && this->cancelOnError){
-            setStatus(Status::error);
-            break;
+            TL_THROW_EXCEPTION("A subtask failed.");
         }
 
         if (progressBar) (*progressBar)();

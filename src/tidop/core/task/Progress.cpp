@@ -42,7 +42,8 @@ bool Progress::isRunning()
 
 void Progress::cleanConsole()
 {
-    std::cout << "\r";
+    //std::cout << "\r";
+    std::cout << "\r\033[K" << std::flush;
 }
 
 std::mutex ProgressBase::sMutex;

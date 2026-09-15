@@ -29,21 +29,21 @@ namespace tl
 
 
 
-EventBase::EventBase(Type type)
-  : mType(type)
-{
-}
-
-EventBase::Type EventBase::type() const
-{
-  return mType;
-}
+//EventBase::EventBase(Type type)
+//  : mType(type)
+//{
+//}
+//
+//EventBase::Type EventBase::type() const
+//{
+//  return mType;
+//}
 
 
 /* Image Change Event */
 
 ImageChangeEvent::ImageChangeEvent()
-  : EventBase(Type::image_change)
+  : Event()
 {
 }
 
