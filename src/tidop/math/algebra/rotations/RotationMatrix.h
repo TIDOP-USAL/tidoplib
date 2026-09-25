@@ -84,6 +84,14 @@ public:
     RotationMatrix(Matrix<T, 3, 3> rot);
 
     /*!
+     * \brief Constructs a RotationMatrix from a matrix expression.
+     * \tparam Expr A type satisfying `MatrixExpr`.
+     * \param[in] expr The expression to evaluate.
+     */
+    template<MatrixExpr Expr>
+    constexpr RotationMatrix(const Expr &expr);
+
+    /*!
      * \brief Destructor
      */
     ~RotationMatrix() = default;
@@ -102,6 +110,17 @@ public:
      */
     constexpr auto operator=(RotationMatrix &&rot) noexcept -> RotationMatrix & = default;
 
+    /*!
+     * \brief Assignment from a matrix expression.
+     * \tparam Expr A type satisfying `MatrixExpr`.
+     * \param[in] expr The expression to evaluate and assign.
+     * \return Reference to `*this`.
+     */
+    template<MatrixExpr Expr>
+    constexpr auto operator=(const Expr &expr) -> RotationMatrix &
+    {
+        return detail::assign(*this, expr);
+    }
 };
 
 
@@ -118,6 +137,15 @@ RotationMatrix<T>::RotationMatrix(Matrix<T, 3, 3> rot)
 
 }
 
+template<typename T>
+template<MatrixExpr Expr>
+constexpr RotationMatrix<T>::RotationMatrix(const Expr &expr)
+{
+
+    TL_ASSERT(expr.rows() == 3 && expr.cols() == 3, "Invalid size: [{}x{}]", expr.rows(), expr.cols());
+
+    detail::assign(*this, expr);
+}
 
 /*! \} */
 

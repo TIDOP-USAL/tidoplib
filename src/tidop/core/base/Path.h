@@ -129,13 +129,13 @@ public:
      * \brief Constructs a Path object from a string.
      * \param utf8Path The path as a std::string.
      */
-    explicit Path(const std::string &utf8Path);
+    Path(const std::string &utf8Path);
 
     /*!
      * \brief Constructs a Path object from a wide string.
      * \param path The path as a std::wstring.
      */
-    explicit Path(const std::wstring &path);
+    Path(const std::wstring &path);
     Path(const Path &path);
     Path(Path &&path) noexcept;
     ~Path();
