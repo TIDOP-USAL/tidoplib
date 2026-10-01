@@ -500,9 +500,9 @@ auto Path::hash(const Path &path) -> size_t
     return fs::hash_value(path.mPath->ref());
 }
 
-void tl::Path::copy(const Path &from, const Path &to)
+void tl::Path::copy(const Path &from, const Path &to, CopyOptions options)
 {
-    fs::copy(from.toWString(), to.toWString());
+    fs::copy(from.toWString(), to.toWString(), static_cast<fs::copy_options>(options));
 }
 
 auto Path::currentPath() -> Path

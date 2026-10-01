@@ -112,6 +112,22 @@ namespace tl
 class TL_EXPORT Path
 {
 
+public:
+
+    enum class CopyOptions
+    {
+        none,                         /*!< File already exists -> Report an error (default behavior). Subdirectories -> Skip subdirectories (default behavior). Symbolic links -> Follow symlinks (default behavior). */
+        skip_existing = 0x1,          /*!< Keep the existing file, without reporting an error. */
+        overwrite_existing = 0x2,     /*!< Replace the existing file. */
+        update_existing = 0x4,        /*!< Replace the existing file only if it is older than the file being copied. */
+        recursive = 0x10,             /*!< Recursively copy subdirectories and their content. */
+        copy_symlinks = 0x100,        /*!< Copy symlinks as symlinks, not as the files they point to. */
+        skip_symlinks = 0x200,        /*!< Ignore symlinks. */
+        directories_only = 0x1000,    /*!< Copy the directory structure, but do not copy any non-directory files. */
+        create_symlinks = 0x2000,     /*!< Instead of creating copies of files, create symlinks pointing to the originals. Note: the source path must be an absolute path unless the destination path is in the current directory. */
+        create_hard_links = 0x4000    /*!< Instead of creating copies of files, create hardlinks that resolve to the same files as the originals. */
+    };
+
 private:
 
     //Pointer to implementation
@@ -579,7 +595,7 @@ public:
      * \endcode
      *
      */
-    static void copy(const Path &from, const Path &to);
+    static void copy(const Path &from, const Path &to, CopyOptions options = CopyOptions::none);
 
     /*!
      * \brief Returns the current working directory path.
