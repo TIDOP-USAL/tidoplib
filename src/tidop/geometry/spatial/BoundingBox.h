@@ -515,6 +515,20 @@ constexpr auto merge(const BoundingBox<Point_t> &b1, const BoundingBox<Point_t> 
     return BoundingBox<Point_t>(new_min, new_max);
 }
 
+template<typename Point_t>
+constexpr auto expand(const BoundingBox<Point_t> &box, double margin) -> BoundingBox<Point_t>
+{
+    if (!box.isValid())  return box;
+
+    Point_t new_min, new_max;
+    for (size_t i = 0; i < point_traits<Point_t>::spatial_dims; ++i) {
+        new_min[i] = box.min()[i] - margin;
+        new_max[i] = box.max()[i] + margin;
+    }
+
+    return BoundingBox<Point_t>(new_min, new_max);
+}
+
 /*! \} */
 
 } // End namespace tl

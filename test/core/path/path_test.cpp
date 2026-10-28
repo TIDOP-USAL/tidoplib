@@ -140,6 +140,13 @@ BOOST_FIXTURE_TEST_CASE(replace_extension, PathTest)
     BOOST_CHECK_EQUAL(false, path.empty());
 }
 
+BOOST_FIXTURE_TEST_CASE(replace_extension_unicode, PathTest)
+{
+    Path path("mañana.á");
+    path.replaceExtension("é");
+    BOOST_CHECK_EQUAL("mañana.é", path.toUtf8());
+}
+
 BOOST_FIXTURE_TEST_CASE(replace_file_name, PathTest)
 {
 #if defined WIN32
@@ -164,6 +171,13 @@ BOOST_FIXTURE_TEST_CASE(replace_base_name, PathTest)
     path.replaceBaseName("file2");
     BOOST_CHECK_EQUAL("/home/temp/file2.xyz", path.toString());
 #endif
+}
+
+BOOST_FIXTURE_TEST_CASE(replace_base_name_unicode, PathTest)
+{
+    Path path("mañana.á");
+    path.replaceBaseName("niño");
+    BOOST_CHECK_EQUAL("niño.á", path.toUtf8());
 }
 
 BOOST_FIXTURE_TEST_CASE(parent_path, PathTest)
@@ -226,6 +240,7 @@ BOOST_FIXTURE_TEST_CASE(utf8_support, PathTest)
     Path path_utf8("áéíóú ñ ç € 中 文 😃.txt");
     std::string utf8 = path_utf8.toUtf8();
     std::cout << "UTF-8 path: " << utf8 << std::endl;
+    BOOST_CHECK_EQUAL("áéíóú ñ ç € 中 文 😃.txt", utf8);
     BOOST_CHECK(!utf8.empty());
     BOOST_CHECK(utf8.find("ñ") != std::string::npos);
     BOOST_CHECK(utf8.find("€") != std::string::npos);

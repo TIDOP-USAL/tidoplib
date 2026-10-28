@@ -237,11 +237,11 @@ auto Path::list(const std::string &extension) -> std::list<Path>
 
         fs::path _path = it->path();
 
-        std::string extension_found = it->path().extension().string();
+        std::string extension_found = tl::toUtf8(it->path().extension().wstring());
 
         if (compareInsensitiveCase(extension_found, extension)) {
 
-            list.emplace_back(it->path().filename().string());
+            list.emplace_back(tl::toUtf8(it->path().filename().wstring()));
         }
     }
 
@@ -261,7 +261,7 @@ auto Path::list(const std::regex &filter) -> std::list<Path>
 
         std::smatch what;
 
-        std::string fname = it->path().filename().string();
+        std::string fname = tl::toUtf8(it->path().filename().wstring());
 
         if (!std::regex_match(fname, what, filter)) continue;
 
@@ -305,7 +305,7 @@ auto Path::replaceBaseName(const std::string &utf8BaseName) -> Path&
     fs::path &_path = mPath->ref();
 
     if (_path.has_filename()) {
-        std::string ext = _path.extension().string();
+        std::string ext = tl::toUtf8(_path.extension().wstring());
         std::string file_name = utf8BaseName + ext;
         _path.remove_filename();
         _path.append(tl::fromUtf8(file_name));
@@ -335,7 +335,7 @@ auto Path::replaceBaseName(const Path &baseName) -> Path&
 
 auto Path::replaceExtension(const std::string &extension) -> Path&
 {
-    mPath->ref().replace_extension(extension);
+    mPath->ref().replace_extension(tl::fromUtf8(extension));
     return *this;
 }
 
@@ -347,7 +347,7 @@ auto Path::replaceExtension(const std::wstring &extension) -> Path&
 
 auto Path::replaceExtension(const Path &extension) -> Path&
 {
-    return replaceExtension(extension.toString());
+    return replaceExtension(extension.toWString());
 }
 
 auto Path::append(const std::string &text) -> Path&
@@ -408,7 +408,7 @@ auto Path::exists(const Path &path) -> bool
 
 auto Path::tempPath() -> Path
 {
-    Path temp_path(fs::temp_directory_path().string());
+    Path temp_path(fs::temp_directory_path().native());
     return temp_path;
 }
 
@@ -446,7 +446,7 @@ auto Path::createTempDirectory() -> Path
         fs::path temp_dir = fs::temp_directory_path() / generateUniquePathString();
 
         if (fs::create_directories(temp_dir)) {
-            return Path(temp_dir.string());
+            return Path(temp_dir.native());
         }
     } catch (const std::exception &e) {
         Message::warning("Failed to create temporary directory: {}", e.what());
@@ -482,7 +482,7 @@ void Path::removeDirectory(const Path &directory)
 
 void Path::removeDirectory(const std::string &directory)
 {
-    fs::remove_all(directory);
+    fs::remove_all(tl::fromUtf8(directory));
 }
 
 void Path::removeDirectory(const std::wstring &directory)
@@ -558,4 +558,3 @@ std::ostream &operator<< (std::ostream &os, const Path &path)
 
 
 } // End namespace tl
-

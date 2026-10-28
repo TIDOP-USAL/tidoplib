@@ -127,7 +127,7 @@ void ImageReaderGdal::open()
 
         GDALAccess access = (mMode == Mode::Update) ? GA_Update : GA_ReadOnly;
 
-        mDataset = static_cast<GDALDataset *>(GDALOpen(file().toString().c_str(), access));
+        mDataset = static_cast<GDALDataset *>(GDALOpen(file().toUtf8().c_str(), access));
 
         if (mDataset) {
 
@@ -240,6 +240,7 @@ auto ImageReaderGdal::read(const BoundingBox2d &terrainWindow,
 
         cv::Mat image = read(scaleX, scaleY, rect_to_read);
 
+        /// TODO: revisar esto
         if (georeference) {
             p1 = rect_to_read.topLeft();
             p2 = rect_to_read.bottomRight();

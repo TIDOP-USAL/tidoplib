@@ -1203,7 +1203,7 @@ void VectorReaderGdal::open()
 
         this->close();
 
-        mDataset = static_cast<GDALDataset *>(GDALOpenEx(mFile.toString().c_str(),
+        mDataset = static_cast<GDALDataset *>(GDALOpenEx(mFile.toUtf8().c_str(),
                                               GDAL_OF_VECTOR,
                                               nullptr,
                                               nullptr/*options->getOptions()*/,

@@ -25,6 +25,8 @@
 #include "tidop/core/base/TextEncoding.h"
 
 #include <codecvt>
+#include <limits>
+#include <stdexcept>
 
 namespace tl
 {
@@ -32,10 +34,7 @@ namespace tl
 auto fromLocalEncoding(const std::string& local) -> std::wstring
 {
 #ifdef TL_OS_WINDOWS
-    int len = MultiByteToWideChar(CP_ACP, 0, local.c_str(), -1, nullptr, 0);
-    std::wstring wide(len - 1, L'\0'); // -1 para quitar el '\0' agregado
-    MultiByteToWideChar(CP_ACP, 0, local.c_str(), -1, &wide[0], len);
-    return wide;
+    return fromLocal8Bit(local);
 #else
     // Assume local encoding is UTF-8
     return fromUtf8(local);
@@ -44,35 +43,55 @@ auto fromLocalEncoding(const std::string& local) -> std::wstring
 
 auto toUtf8(const std::wstring& wstr) -> std::string
 {
-#if TL_CPP_VERSION< 20
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    return converter.to_bytes(wstr);
+#ifdef TL_OS_WINDOWS
+    if (wstr.empty()) return {};
+    if (wstr.size() > static_cast<size_t>(std::numeric_limits<int>::max())) {
+        throw std::length_error("Wide string is too large to convert to UTF-8");
+    }
+
+    int size_needed = WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, wstr.data(),
+                                          static_cast<int>(wstr.size()), nullptr, 0, nullptr, nullptr);
+    if (size_needed == 0) {
+        throw std::range_error("Invalid wide string");
+    }
+
+    std::string utf8(size_needed, '\0');
+    int converted = WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, wstr.data(),
+                                        static_cast<int>(wstr.size()), &utf8[0], size_needed, nullptr, nullptr);
+    if (converted != size_needed) {
+        throw std::range_error("Failed to convert wide string to UTF-8");
+    }
+    return utf8;
 #else
-    std::string str;
-    mbstate_t state = {};
-    const wchar_t *src = wstr.data();
-    size_t len = std::wcsrtombs(nullptr, &src, 0, &state);
-    if (len == static_cast<size_t>(-1)) return {};
-    str.resize(len);
-    std::wcsrtombs(&str[0], &src, len, &state);
-    return str;
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+    return converter.to_bytes(wstr);
 #endif
 }
 
 auto fromUtf8(const std::string& utf8str) -> std::wstring
 {
-#if TL_CPP_VERSION< 20
-    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-    return converter.from_bytes(utf8str);
+#ifdef TL_OS_WINDOWS
+    if (utf8str.empty()) return {};
+    if (utf8str.size() > static_cast<size_t>(std::numeric_limits<int>::max())) {
+        throw std::length_error("UTF-8 string is too large to convert");
+    }
+
+    int size_needed = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, utf8str.data(),
+                                          static_cast<int>(utf8str.size()), nullptr, 0);
+    if (size_needed == 0) {
+        throw std::range_error("Invalid UTF-8 string");
+    }
+
+    std::wstring wide(size_needed, L'\0');
+    int converted = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, utf8str.data(),
+                                        static_cast<int>(utf8str.size()), &wide[0], size_needed);
+    if (converted != size_needed) {
+        throw std::range_error("Failed to convert UTF-8 string");
+    }
+    return wide;
 #else
-    std::wstring wstr;
-    mbstate_t state = {};
-    const char *src = utf8str.data();
-    size_t len = std::mbsrtowcs(nullptr, &src, 0, &state);
-    if (len == static_cast<size_t>(-1)) return {};
-    wstr.resize(len);
-    std::mbsrtowcs(&wstr[0], &src, len, &state);
-    return wstr;
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+    return converter.from_bytes(utf8str);
 #endif
 }
 
@@ -109,4 +128,3 @@ auto fromLocal8Bit(const std::string& str) -> std::wstring
 }
 
 } // End namespace tl
-

@@ -161,8 +161,10 @@ if(BUILD_TL_MATH)
                              base/simd/detail/Min.h
                              base/simd/detail/PackedAdd.h
                              base/simd/detail/PackedDiv.h
+                             base/simd/detail/PackedMadd.h
                              base/simd/detail/PackedMul.h
                              base/simd/detail/PackedSub.h
+                             base/simd/detail/PackedSqrt.h
                              base/simd/detail/SetPacked.h
                              base/simd/detail/SetZero.h
                              base/simd/detail/SignBias.h

@@ -109,7 +109,7 @@ constexpr auto abs(T val) noexcept -> T
     }
 }
 
-template<typename T>
+template<Arithmetic T>
 [[nodiscard]] constexpr auto sqrt(T x) noexcept
 {
     if (std::is_constant_evaluated()) {

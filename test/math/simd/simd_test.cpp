@@ -3282,6 +3282,68 @@ BOOST_FIXTURE_TEST_CASE(mean, PackedTest)
     BOOST_CHECK_CLOSE(7.695, mean, 0.01);
 }
 
+BOOST_FIXTURE_TEST_CASE(packed_madd, PackedTest)
+{
+    Packed<float> p1;
+    Packed<float> p2;
+    Packed<float> p3(0.25f);
+
+    Vector<float> v3(v1.size());
+    
+
+    size_t max_vector = (v1.size() / p1.size()) * p1.size();
+    for (size_t i = 0; i < max_vector; i += p1.size()) {
+
+        p1.loadAligned(&v1[i]);
+        p2.loadAligned(&v2[i]);
+
+        Packed<float> pr = madd(p1, p3, p2);
+        pr.storeAligned(&v3[i]);
+    }
+
+    for (size_t i = max_vector; i < v1.size(); ++i) {
+        v3[i] = v1[i] * 0.25f + v2[i];
+    }
+
+    BOOST_CHECK_CLOSE(-0.75f, v3[0], 0.01);
+    BOOST_CHECK_CLOSE(4.f, v3[1], 0.01);
+    BOOST_CHECK_CLOSE(2.75f, v3[2], 0.01);
+    BOOST_CHECK_CLOSE(3.25, v3[3], 0.01);
+    BOOST_CHECK_CLOSE(4.f, v3[4], 0.01);
+    BOOST_CHECK_CLOSE(10.25f, v3[5], 0.01);
+    BOOST_CHECK_CLOSE(2.5f, v3[6], 0.01);
+    BOOST_CHECK_CLOSE(3.5f, v3[7], 0.01);
+    BOOST_CHECK_CLOSE(9.25f, v3[8], 0.01);
+    BOOST_CHECK_CLOSE(4.5f, v3[9], 0.01);
+    BOOST_CHECK_CLOSE(3.25f, v3[10], 0.01);
+    BOOST_CHECK_CLOSE(8.25f, v3[11], 0.01);
+}
+
+BOOST_FIXTURE_TEST_CASE(packed_sqrt, PackedTest)
+{
+    Packed<float> p1;
+
+    Vector<float> v2(v1.size());
+
+
+    size_t max_vector = (v1.size() / p1.size()) * p1.size();
+    for (size_t i = 0; i < max_vector; i += p1.size()) {
+
+        p1.loadAligned(&v1[i]);
+
+        Packed<float> pr = tl::sqrt(p1);
+        pr.storeAligned(&v2[i]);
+    }
+
+    for (size_t i = max_vector; i < v1.size(); ++i) {
+        v2[i] = std::sqrt(v1[i]);
+    }
+
+
+    for (size_t i = 0; i < v1.size(); i++)
+       BOOST_CHECK_CLOSE(std::sqrt(v1[i]), v2[i], 0.01);
+
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 

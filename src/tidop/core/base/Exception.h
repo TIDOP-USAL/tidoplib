@@ -147,6 +147,11 @@ public:
         messagef();
     }
 
+    Exception(const Exception &) noexcept = default;
+    Exception(Exception &&) noexcept = default;
+    Exception &operator=(const Exception &) noexcept = default;
+    Exception &operator=(Exception &&) noexcept = default;
+
     ~Exception() noexcept override = default;
 
     /*!

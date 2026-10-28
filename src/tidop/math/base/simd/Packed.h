@@ -47,6 +47,8 @@
 #include "tidop/math/base/simd/detail/PackedSub.h"
 #include "tidop/math/base/simd/detail/SetPacked.h"
 #include "tidop/math/base/simd/detail/SetZero.h"
+#include "tidop/math/base/simd/detail/PackedSqrt.h"
+#include "tidop/math/base/simd/detail/PackedMadd.h"
 #include "tidop/math/base/simd/detail/StorePacked.h"
 
 /// \cond
@@ -370,6 +372,42 @@ auto max(const P &packed1, const P &packed2) -> P
 }
 
 /*!
+ * \brief Element‑wise square root of a SIMD packet.
+ * \tparam P A type satisfying `PackedConcept`.
+ * \param[in] packed The packet to compute the square root of.
+ * \return A packet containing the element‑wise square roots.
+ *
+ * This function uses the native SIMD sqrt instruction.
+ * Only floating-point types (float, double) are supported.
+ */
+template<PackedConcept P>
+[[nodiscard]]
+auto sqrt(const P &packed) -> P
+{
+    return detail::sqrt_impl(packed);
+}
+
+/*!
+ * \brief Fused multiply-add: a * b + c for SIMD packets.
+ * \tparam P A type satisfying `PackedConcept`.
+ * \param[in] a First packet (multiplicand).
+ * \param[in] b Second packet (multiplier).
+ * \param[in] c Third packet (addend).
+ * \return A packet containing the result of a * b + c.
+ *
+ * This function uses the native FMA instruction when available (e.g., _mm256_fmadd_ps),
+ * which provides better performance and precision than separate multiply and add.
+ * Falls back to separate multiply and add operations when FMA is not available.
+ * Only floating-point types (float, double) are supported.
+ */
+template<PackedConcept P>
+[[nodiscard]]
+auto madd(const P &a, const P &b, const P &c) -> P
+{
+    return detail::madd_impl(a, b, c);
+}
+
+/*!
  * \brief Checks whether all elements of a mask packet are true (non‑zero).
  * \tparam T Arithmetic type (integral or floating‑point).
  * \param[in] mask A `Packed<T>` interpreted as a mask (non‑zero = true, zero = false).
@@ -378,9 +416,9 @@ auto max(const P &packed1, const P &packed2) -> P
  * The implementation uses the appropriate `movemask` intrinsic for the type
  * (e.g., `_mm256_movemask_ps` for `float`, `_mm256_movemask_epi8` for integers).
  */
-template<typename T>
+template<PackedConcept P>
 [[nodiscard]]
-auto all(const Packed<T> &mask) -> bool
+auto all(const P &mask) -> bool
 {
     return detail::all_impl(mask);
 }
@@ -391,9 +429,9 @@ auto all(const Packed<T> &mask) -> bool
  * \param[in] mask A `Packed<T>` interpreted as a mask.
  * \return `true` if all elements are zero; `false` otherwise.
  */
-template<typename T>
+template<PackedConcept P>
 [[nodiscard]]
-auto none(const Packed<T> &mask) -> bool
+auto none(const P &mask) -> bool
 {
     return detail::none_impl(mask);
 }
@@ -406,9 +444,9 @@ auto none(const Packed<T> &mask) -> bool
  *
  * Equivalent to `!none(mask)`.
  */
-template<typename T>
+template<PackedConcept P>
 [[nodiscard]]
-bool any(const Packed<T> &mask)
+bool any(const P &mask)
 {
     return !none(mask);
 }

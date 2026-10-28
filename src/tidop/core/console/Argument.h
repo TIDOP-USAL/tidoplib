@@ -122,7 +122,6 @@ class TL_EXPORT Argument
 
 public:
 
-    //using SharedPtr = std::shared_ptr<Argument>;
     GENERATE_SHARED_PTR(Argument)
 
 private:

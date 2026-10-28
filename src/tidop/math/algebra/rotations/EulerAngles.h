@@ -54,7 +54,7 @@ namespace tl
  */
 template<typename T, Axes Order = Axes::xyz>
 class EulerAngles
-    : public RotationBase<EulerAngles<T, Order>>
+  : public RotationBase<EulerAngles<T, Order>>
 {
 
     static_assert(Floating<T>, "Integral type not supported");
