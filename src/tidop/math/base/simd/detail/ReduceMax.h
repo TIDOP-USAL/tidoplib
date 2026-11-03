@@ -41,59 +41,42 @@ class Packed;
 namespace detail
 {
 
-template<Arithmetic T>
+template<typename T>
 [[nodiscard]]
-auto add_impl(const Packed<T> &a, const Packed<T> &b) noexcept -> Packed<T>
+auto reduce_max_impl(const Packed<T> &packed) -> enableIfFloat<T, T>
 {
-    if constexpr (Floating<T>) {
-
 #ifdef TL_HAVE_AVX
+    __m128 v = _mm_max_ps(
+        _mm256_castps256_ps128(packed),
+        _mm256_extractf128_ps(packed, 1));
 
-        if constexpr (std::same_as<T, float>) {
-            return _mm256_add_ps(a, b);
-        } else {
-            return _mm256_add_pd(a, b);
-        }
+    v = _mm_max_ps(v, _mm_movehl_ps(v, v));
+    v = _mm_max_ss(v, _mm_shuffle_ps(v, v, 1));
 
-#elif defined(TL_HAVE_SSE2)
+    return _mm_cvtss_f32(v);
+#elif defined(TL_HAVE_SSE)
+    __m128 v = _mm_max_ps(packed, _mm_movehl_ps(packed, packed));
+    v = _mm_max_ss(v, _mm_shuffle_ps(v, v, 1));
 
-        if constexpr (std::same_as<T, float>) {
-            return _mm_add_ps(a, b);
-        } else {
-            return _mm_add_pd(a, b);
-        }
+    return _mm_cvtss_f32(v);
 #endif
-
-    } else {
-
-#ifdef TL_HAVE_AVX2
-
-        if constexpr (sizeof(T) == 1) {
-            return _mm256_add_epi8(a, b);
-        } else if constexpr (sizeof(T) == 2) {
-            return _mm256_add_epi16(a, b);
-        } else if constexpr (sizeof(T) == 4) {
-            return _mm256_add_epi32(a, b);
-        } else {
-            return _mm256_add_epi64(a, b);
-        }
-
-#elif defined(TL_HAVE_SSE2)
-
-        if constexpr (sizeof(T) == 1) {
-            return _mm_add_epi8(a, b);
-        } else if constexpr (sizeof(T) == 2) {
-            return _mm_add_epi16(a, b);
-        } else if constexpr (sizeof(T) == 4) {
-            return _mm_add_epi32(a, b);
-        } else {
-            return _mm_add_epi64(a, b);
-        }
-
-#endif
-    }
 }
 
+
+template<typename T>
+[[nodiscard]]
+auto reduce_max_impl(const Packed<T> &packed) -> enableIfDouble<T, T>
+{
+#ifdef TL_HAVE_AVX
+    __m128d v = _mm_max_pd(_mm256_castpd256_pd128(packed),
+        _mm256_extractf128_pd(packed, 1));
+    v = _mm_max_sd(v, _mm_unpackhi_pd(v, v));
+    return _mm_cvtsd_f64(v);
+#elif defined TL_HAVE_SSE2
+    __m128d v = _mm_max_sd(packed, _mm_unpackhi_pd(packed, packed));
+    return _mm_cvtsd_f64(v);
+#endif
+}
 
 } // namespace detail 
 

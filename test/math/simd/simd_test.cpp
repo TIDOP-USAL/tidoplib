@@ -3319,6 +3319,198 @@ BOOST_FIXTURE_TEST_CASE(packed_madd, PackedTest)
     BOOST_CHECK_CLOSE(8.25f, v3[11], 0.01);
 }
 
+BOOST_FIXTURE_TEST_CASE(packed_msub, PackedTest)
+{
+    Packed<float> p1;
+    Packed<float> p2;
+    Packed<float> p3(0.25f);
+
+    Vector<float> v3(v1.size());
+
+    size_t max_vector = (v1.size() / p1.size()) * p1.size();
+    for (size_t i = 0; i < max_vector; i += p1.size()) {
+        p1.loadAligned(&v1[i]);
+        p2.loadAligned(&v2[i]);
+
+        Packed<float> pr = tl::msub(p1, p3, p2); // v1 * 0.25 - v2
+        pr.storeAligned(&v3[i]);
+    }
+
+    for (size_t i = max_vector; i < v1.size(); ++i) {
+        v3[i] = v1[i] * 0.25f - v2[i];
+    }
+
+    for (size_t i = 0; i < v1.size(); ++i) {
+        BOOST_CHECK_CLOSE(v1[i] * 0.25f - v2[i], v3[i], 0.01);
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(packed_nmadd, PackedTest)
+{
+    Packed<float> p1;
+    Packed<float> p2;
+    Packed<float> p3(0.25f);
+
+    Vector<float> v3(v1.size());
+
+    size_t max_vector = (v1.size() / p1.size()) * p1.size();
+    for (size_t i = 0; i < max_vector; i += p1.size()) {
+        p1.loadAligned(&v1[i]);
+        p2.loadAligned(&v2[i]);
+
+        Packed<float> pr = tl::nmadd(p1, p3, p2); // -(v1 * 0.25) + v2
+        pr.storeAligned(&v3[i]);
+    }
+
+    for (size_t i = max_vector; i < v1.size(); ++i) {
+        v3[i] = -(v1[i] * 0.25f) + v2[i];
+    }
+
+    for (size_t i = 0; i < v1.size(); ++i) {
+        BOOST_CHECK_CLOSE(-(v1[i] * 0.25f) + v2[i], v3[i], 0.01);
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(packed_nmsub, PackedTest)
+{
+    Packed<float> p1;
+    Packed<float> p2;
+    Packed<float> p3(0.25f);
+
+    Vector<float> v3(v1.size());
+
+    size_t max_vector = (v1.size() / p1.size()) * p1.size();
+    for (size_t i = 0; i < max_vector; i += p1.size()) {
+        p1.loadAligned(&v1[i]);
+        p2.loadAligned(&v2[i]);
+
+        Packed<float> pr = tl::nmsub(p1, p3, p2); // -(v1 * 0.25) - v2
+        pr.storeAligned(&v3[i]);
+    }
+
+    for (size_t i = max_vector; i < v1.size(); ++i) {
+        v3[i] = -(v1[i] * 0.25f) - v2[i];
+    }
+
+    for (size_t i = 0; i < v1.size(); ++i) {
+        BOOST_CHECK_CLOSE(-(v1[i] * 0.25f) - v2[i], v3[i], 0.01);
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(packed_abs, PackedTest)
+{
+    // Test para float (v2 tiene valores negativos)
+    Packed<float> p1;
+    Vector<float> v_res(v2.size());
+
+    size_t max_vector = (v2.size() / p1.size()) * p1.size();
+    for (size_t i = 0; i < max_vector; i += p1.size()) {
+        p1.loadAligned(&v2[i]);
+        Packed<float> pr = tl::abs(p1);
+        pr.storeAligned(&v_res[i]);
+    }
+
+    for (size_t i = max_vector; i < v2.size(); ++i) {
+        v_res[i] = std::abs(v2[i]);
+    }
+
+    for (size_t i = 0; i < v2.size(); ++i) {
+        BOOST_CHECK_CLOSE(std::abs(v2[i]), v_res[i], 0.01);
+    }
+
+    // Test para entero con signo (v2i32 tiene valores negativos)
+    Packed<int32_t> p_i32;
+    Vector<int32_t> v_res_i32(v2i32.size());
+
+    size_t max_vec_i32 = (v2i32.size() / p_i32.size()) * p_i32.size();
+    for (size_t i = 0; i < max_vec_i32; i += p_i32.size()) {
+        p_i32.loadAligned(&v2i32[i]);
+        Packed<int32_t> pr = tl::abs(p_i32);
+        pr.storeAligned(&v_res_i32[i]);
+    }
+
+    for (size_t i = max_vec_i32; i < v2i32.size(); ++i) {
+        v_res_i32[i] = std::abs(v2i32[i]);
+    }
+
+    for (size_t i = 0; i < v2i32.size(); ++i) {
+        BOOST_CHECK_EQUAL(std::abs(v2i32[i]), v_res_i32[i]);
+    }
+}
+
+BOOST_FIXTURE_TEST_CASE(packed_isnan, PackedTest)
+{
+    // Crear vector con valores numéricos y un NaN en el índice 2
+    Vector<float> v_nan = v1;
+    v_nan[2] = std::numeric_limits<float>::quiet_NaN();
+
+    Packed<float> p_normal;
+    p_normal.loadAligned(&v1[0]);
+    BOOST_CHECK(!tl::isNaN(p_normal));
+
+    Packed<float> p_with_nan;
+    p_with_nan.loadAligned(&v_nan[0]);
+    BOOST_CHECK(tl::isNaN(p_with_nan));
+
+    // Test de isNaNMask: para NaN, la máscara SIMD debe tener todos los bits a 1 (0xFFFFFFFF)
+    Packed<float> mask = tl::isNaNMask(p_with_nan);
+
+    // Extraemos el flotante y reintentamos la lectura de bits como uint32_t
+    float mask_val = mask.extract(2);
+    uint32_t mask_bits = std::bit_cast<uint32_t>(mask_val);
+
+    BOOST_CHECK_EQUAL(mask_bits, 0xFFFFFFFFu);
+    BOOST_CHECK_EQUAL(std::bit_cast<uint32_t>(mask.extract(0)), 0x0u); // Los valores normales deben ser 0
+}
+
+BOOST_FIXTURE_TEST_CASE(packed_reduce_min, PackedTest)
+{
+    // Test sobre vector de floats v1
+    Packed<float> p_f;
+    size_t max_vector = (v1.size() / p_f.size()) * p_f.size();
+
+    for (size_t i = 0; i < max_vector; i += p_f.size()) {
+        p_f.loadAligned(&v1[i]);
+
+        float expected_min = v1[i];
+        for (size_t j = 1; j < p_f.size(); ++j) {
+            expected_min = std::min(expected_min, v1[i + j]);
+        }
+
+        BOOST_CHECK_CLOSE(expected_min, tl::reduceMin(p_f), 0.01);
+    }
+
+    // Propagación de NaN en reduceMin
+    Vector<float> v_nan = v1;
+    v_nan[1] = std::numeric_limits<float>::quiet_NaN();
+    p_f.loadAligned(&v_nan[0]);
+    BOOST_CHECK(std::isnan(tl::reduceMin(p_f)));
+}
+
+BOOST_FIXTURE_TEST_CASE(packed_reduce_max, PackedTest)
+{
+    // Test sobre vector de floats v1
+    Packed<float> p_f;
+    size_t max_vector = (v1.size() / p_f.size()) * p_f.size();
+
+    for (size_t i = 0; i < max_vector; i += p_f.size()) {
+        p_f.loadAligned(&v1[i]);
+
+        float expected_max = v1[i];
+        for (size_t j = 1; j < p_f.size(); ++j) {
+            expected_max = std::max(expected_max, v1[i + j]);
+        }
+
+        BOOST_CHECK_CLOSE(expected_max, tl::reduceMax(p_f), 0.01);
+    }
+
+    // Propagación de NaN en reduceMax
+    Vector<float> v_nan = v1;
+    v_nan[1] = std::numeric_limits<float>::quiet_NaN();
+    p_f.loadAligned(&v_nan[0]);
+    BOOST_CHECK(std::isnan(tl::reduceMax(p_f)));
+}
+
 BOOST_FIXTURE_TEST_CASE(packed_sqrt, PackedTest)
 {
     Packed<float> p1;

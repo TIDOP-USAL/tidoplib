@@ -77,6 +77,7 @@ namespace tl
  */
 class TL_EXPORT Label
 {
+
 public:
 
     /*!
@@ -126,7 +127,7 @@ public:
      * \param[in] foregroundColor Text color (default: black).
      */
     Label(Font font, Color foregroundColor = {0, 0, 0})
-        : mFont(std::move(font)),
+      : mFont(std::move(font)),
         mForegroundColor(foregroundColor)
     {
     }

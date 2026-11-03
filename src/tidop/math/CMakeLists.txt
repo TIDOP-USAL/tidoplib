@@ -146,29 +146,36 @@ if(BUILD_TL_MATH)
                              base/simd/Intrinsics.h
                              base/simd/Packed.h
                              base/simd/Traits.h
+                             base/simd/detail/Abs.h
+                             base/simd/detail/Add.h
                              base/simd/detail/BitwiseAnd.h
                              base/simd/detail/BitwiseAndNot.h
                              base/simd/detail/BitwiseNot.h
                              base/simd/detail/BitwiseOr.h
                              base/simd/detail/BitwiseXor.h
                              base/simd/detail/ChangeSign.h
+                             base/simd/detail/Div.h
                              base/simd/detail/EqualTo.h
                              base/simd/detail/GreaterThan.h
                              base/simd/detail/HorizontalSum.h
+                             base/simd/detail/IsNaN.h
                              base/simd/detail/LoadPacked.h
+                             base/simd/detail/Madd.h
                              base/simd/detail/MaskOp.h
                              base/simd/detail/Max.h
                              base/simd/detail/Min.h
-                             base/simd/detail/PackedAdd.h
-                             base/simd/detail/PackedDiv.h
-                             base/simd/detail/PackedMadd.h
-                             base/simd/detail/PackedMul.h
-                             base/simd/detail/PackedSub.h
-                             base/simd/detail/PackedSqrt.h
+                             base/simd/detail/Msub.h
+                             base/simd/detail/Mul.h
+                             base/simd/detail/Nmadd.h
+                             base/simd/detail/Nmsub.h
+                             base/simd/detail/ReduceMax.h
+                             base/simd/detail/ReduceMin.h
                              base/simd/detail/SetPacked.h
                              base/simd/detail/SetZero.h
                              base/simd/detail/SignBias.h
+                             base/simd/detail/Sqrt.h
                              base/simd/detail/StorePacked.h
+                             base/simd/detail/Sub.h
                              geometry/angles/AngleBase.h
                              geometry/angles/Degrees.h
                              geometry/angles/Gradians.h

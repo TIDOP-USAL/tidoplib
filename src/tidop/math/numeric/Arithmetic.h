@@ -76,7 +76,7 @@ constexpr auto module(T a, T b) noexcept
 }
 
 
-template<typename T>
+template<Arithmetic T>
 [[nodiscard]]
 constexpr auto sign(T val) noexcept -> int
 {
@@ -84,21 +84,21 @@ constexpr auto sign(T val) noexcept -> int
 }
 
 
-template<typename T>
+template<Arithmetic T>
 [[nodiscard]]
 constexpr auto square(T x) noexcept -> T
 { 
     return x * x;
 }
 
-template<typename T>
+template<Arithmetic T>
 [[nodiscard]]
 constexpr auto cube(T x) noexcept -> T
 { 
     return x * x * x;
 }
 
-template<typename T>
+template<Arithmetic T>
 [[nodiscard]] 
 constexpr auto abs(T val) noexcept -> T
 {

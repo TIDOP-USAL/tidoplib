@@ -25,6 +25,7 @@
 #pragma once
 
 #include "tidop/config.h"
+#include "tidop/core/base/Concepts.h"
 
 #ifdef TL_HAVE_SIMD_INTRINSICS
 

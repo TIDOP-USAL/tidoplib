@@ -41,15 +41,22 @@
 #include "tidop/math/base/simd/detail/MaskOp.h"
 #include "tidop/math/base/simd/detail/Max.h"
 #include "tidop/math/base/simd/detail/Min.h"
-#include "tidop/math/base/simd/detail/PackedAdd.h"
-#include "tidop/math/base/simd/detail/PackedDiv.h"
-#include "tidop/math/base/simd/detail/PackedMul.h"
-#include "tidop/math/base/simd/detail/PackedSub.h"
+#include "tidop/math/base/simd/detail/Add.h"
+#include "tidop/math/base/simd/detail/Div.h"
+#include "tidop/math/base/simd/detail/Mul.h"
+#include "tidop/math/base/simd/detail/Sub.h"
 #include "tidop/math/base/simd/detail/SetPacked.h"
 #include "tidop/math/base/simd/detail/SetZero.h"
-#include "tidop/math/base/simd/detail/PackedSqrt.h"
-#include "tidop/math/base/simd/detail/PackedMadd.h"
+#include "tidop/math/base/simd/detail/Sqrt.h"
+#include "tidop/math/base/simd/detail/Madd.h"
+#include "tidop/math/base/simd/detail/Msub.h"
+#include "tidop/math/base/simd/detail/Nmadd.h"
+#include "tidop/math/base/simd/detail/Nmsub.h"
+#include "tidop/math/base/simd/detail/Abs.h"
 #include "tidop/math/base/simd/detail/StorePacked.h"
+#include "tidop/math/base/simd/detail/IsNaN.h"
+#include "tidop/math/base/simd/detail/ReduceMin.h"
+#include "tidop/math/base/simd/detail/ReduceMax.h"
 
 /// \cond
 #ifdef TL_HAVE_SIMD_INTRINSICS
@@ -372,6 +379,23 @@ auto max(const P &packed1, const P &packed2) -> P
 }
 
 /*!
+ * \brief Element-wise absolute value of a SIMD packet.
+ * \tparam P A type satisfying `PackedConcept`.
+ * \param[in] packed The packet to compute the absolute value of.
+ * \return A packet containing the element-wise absolute values.
+ *
+ * For floating-point types (`float`, `double`), this function clears the sign bit
+ * using a bitwise AND with a mask. For integral types, it uses native SIMD
+ * absolute value instructions where available.
+ */
+template<PackedConcept P>
+[[nodiscard]]
+auto abs(const P &packed) -> P
+{
+    return detail::abs_impl(packed);
+}
+
+/*!
  * \brief Element‑wise square root of a SIMD packet.
  * \tparam P A type satisfying `PackedConcept`.
  * \param[in] packed The packet to compute the square root of.
@@ -405,6 +429,60 @@ template<PackedConcept P>
 auto madd(const P &a, const P &b, const P &c) -> P
 {
     return detail::madd_impl(a, b, c);
+}
+
+/*!
+ * \brief Fused multiply-subtract: a * b - c for SIMD packets.
+ * \tparam P A type satisfying `PackedConcept`.
+ * \param[in] a First packet (multiplicand).
+ * \param[in] b Second packet (multiplier).
+ * \param[in] c Third packet (subtrahend).
+ * \return A packet containing the result of a * b - c.
+ *
+ * Uses native FMA instructions when available (e.g., `_mm256_fmsub_ps`).
+ * Only floating-point types (`float`, `double`) are supported.
+ */
+template<PackedConcept P>
+[[nodiscard]]
+auto msub(const P &a, const P &b, const P &c) -> P
+{
+    return detail::msub_impl(a, b, c);
+}
+
+/*!
+ * \brief Negated fused multiply-add: -(a * b) + c for SIMD packets.
+ * \tparam P A type satisfying `PackedConcept`.
+ * \param[in] a First packet (multiplicand).
+ * \param[in] b Second packet (multiplier).
+ * \param[in] c Third packet (addend).
+ * \return A packet containing the result of -(a * b) + c.
+ *
+ * Uses native FMA instructions when available (e.g., `_mm256_fnmadd_ps`).
+ * Only floating-point types (`float`, `double`) are supported.
+ */
+template<PackedConcept P>
+[[nodiscard]]
+auto nmadd(const P &a, const P &b, const P &c) -> P
+{
+    return detail::nmadd_impl(a, b, c);
+}
+
+/*!
+ * \brief Negated fused multiply-subtract: -(a * b) - c for SIMD packets.
+ * \tparam P A type satisfying `PackedConcept`.
+ * \param[in] a First packet (multiplicand).
+ * \param[in] b Second packet (multiplier).
+ * \param[in] c Third packet (subtrahend).
+ * \return A packet containing the result of -(a * b) - c.
+ *
+ * Uses native FMA instructions when available (e.g., `_mm256_fnmsub_ps`).
+ * Only floating-point types (`float`, `double`) are supported.
+ */
+template<PackedConcept P>
+[[nodiscard]]
+auto nmsub(const P &a, const P &b, const P &c) -> P
+{
+    return detail::nmsub_impl(a, b, c);
 }
 
 /*!
@@ -446,13 +524,85 @@ auto none(const P &mask) -> bool
  */
 template<PackedConcept P>
 [[nodiscard]]
-bool any(const P &mask)
+auto any(const P &mask) -> bool
 {
     return !none(mask);
 }
 
+/*!
+ * \brief Checks if any element in a SIMD packet is NaN (Not-a-Number).
+ * \tparam P A type satisfying `PackedConcept`.
+ * \param[in] packed The SIMD packet to check.
+ * \return `true` if at least one lane contains a NaN value; `false` otherwise.
+ */
+template<PackedConcept P>
+[[nodiscard]]
+auto isNaN(const P &packed) noexcept -> bool
+{
+    return any(isNaNMask(packed));
+}
 
-// compare
+/*!
+ * \brief Checks element-wise for NaN (Not-a-Number) values in a SIMD packet.
+ * \tparam P A type satisfying `PackedConcept`.
+ * \param[in] packed The SIMD packet to check.
+ * \return A mask packet where elements corresponding to NaN values have all bits set to 1,
+ *         and non-NaN elements have all bits set to 0.
+ *
+ * For floating-point types (`float`, `double`), this function performs an unordered comparison
+ * (a != a). For integral types, it always returns a zero mask since integers cannot represent NaN.
+ */
+template<PackedConcept P>
+[[nodiscard]]
+auto isNaNMask(const P &packed) noexcept -> P
+{
+    return detail::is_nan_mask_impl(packed);
+}
+
+/*!
+ * \brief Horizontal minimum reduction of a SIMD packet.
+ * \tparam P A type satisfying `PackedConcept`.
+ * \param[in] packed The packet to reduce.
+ * \return The minimum value among all SIMD lanes.
+ *
+ * For floating-point types, if any element in the packet is NaN, `quiet_NaN` is returned
+ * to guarantee NaN propagation according to IEEE 754.
+ */
+template<PackedConcept P>
+[[nodiscard]]
+auto reduceMin(const P &packed) -> typename P::value_type
+{
+    if (isNaN(packed))
+        return std::numeric_limits<typename P::value_type>::quiet_NaN();
+
+    return detail::reduce_min_impl(packed);
+}
+
+/*!
+ * \brief Horizontal maximum reduction of a SIMD packet.
+ * \tparam P A type satisfying `PackedConcept`.
+ * \param[in] packed The packet to reduce.
+ * \return The maximum value among all SIMD lanes.
+ *
+ * For floating-point types, if any element in the packet is NaN, `quiet_NaN` is returned
+ * to guarantee NaN propagation according to IEEE 754.
+ */
+template<PackedConcept P>
+[[nodiscard]]
+auto reduceMax(const P &packed) -> typename P::value_type
+{
+    if (isNaN(packed))
+        return std::numeric_limits<typename P::value_type>::quiet_NaN();
+
+    return detail::reduce_max_impl(packed);
+}
+
+// clamp     Clamping elemento a elemento
+// copysign  Copia el bit de signo
+// floor(a), ceil(a), trunc(a), round(a)
+// dot(a, b)
+// cbrt      Raiz cubica
+// hypot
 
 /// \cond
 

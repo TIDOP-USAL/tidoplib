@@ -113,7 +113,7 @@ public:
      * \param[in] v Vertical alignment.
      */
     constexpr LabelAnchor(Horizontal h, Vertical v) noexcept
-        : mHorizontal(h),
+      : mHorizontal(h),
         mVertical(v)
     {
     }

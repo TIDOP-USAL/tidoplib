@@ -29,7 +29,6 @@
 #ifdef TL_HAVE_SIMD_INTRINSICS
 
 #include "tidop/math/base/simd/Intrinsics.h"
-
 /// \cond
 
 namespace tl
@@ -43,41 +42,41 @@ namespace detail
 
 template<typename T>
 [[nodiscard]]
-auto madd_impl(const Packed<T> &a, const Packed<T> &b, const Packed<T> &c) -> enableIfFloat<T, Packed<T>>
+auto reduce_min_impl(const Packed<T> &packed) -> enableIfFloat<T, T>
 {
-#if defined(__FMA__) || defined(__AVX2__)
-    // Use FMA instruction: a * b + c
-#if defined(TL_HAVE_AVX512)
-    return _mm512_fmadd_ps(a, b, c);
-#elif defined(TL_HAVE_AVX)
-    return _mm256_fmadd_ps(a, b, c);
-#else
-    return _mm_fmadd_ps(a, b, c);
-#endif
-#else
-    // Fallback to multiply then add
-    return a * b + c;
+#ifdef TL_HAVE_AVX
+    __m128 v = _mm_min_ps(
+        _mm256_castps256_ps128(packed),
+        _mm256_extractf128_ps(packed, 1));
+
+    v = _mm_min_ps(v, _mm_movehl_ps(v, v));
+    v = _mm_min_ss(v, _mm_shuffle_ps(v, v, 1));
+
+    return _mm_cvtss_f32(v);
+#elif defined(TL_HAVE_SSE)
+    __m128 v = _mm_min_ps(packed, _mm_movehl_ps(packed, packed));
+    v = _mm_min_ss(v, _mm_shuffle_ps(v, v, 1));
+
+    return _mm_cvtss_f32(v);
 #endif
 }
 
+
 template<typename T>
 [[nodiscard]]
-auto madd_impl(const Packed<T> &a, const Packed<T> &b, const Packed<T> &c) -> enableIfDouble<T, Packed<T>>
+auto reduce_min_impl(const Packed<T> &packed) -> enableIfDouble<T, T>
 {
-#if defined(__FMA__) || defined(__AVX2__)
-    // Use FMA instruction: a * b + c
-#if defined(TL_HAVE_AVX512)
-    return _mm512_fmadd_pd(a, b, c);
-#elif defined(TL_HAVE_AVX)
-    return _mm256_fmadd_pd(a, b, c);
-#else
-    return _mm_fmadd_pd(a, b, c);
-#endif
-#else
-    // Fallback to multiply then add
-    return a * b + c;
+#ifdef TL_HAVE_AVX
+    __m128d v = _mm_min_pd(_mm256_castpd256_pd128(packed),
+                           _mm256_extractf128_pd(packed, 1));
+    v = _mm_min_sd(v, _mm_unpackhi_pd(v, v));
+    return _mm_cvtsd_f64(v);
+#elif defined TL_HAVE_SSE2
+    __m128d v = _mm_min_sd(packed, _mm_unpackhi_pd(packed, packed));
+    return _mm_cvtsd_f64(v);
 #endif
 }
+
 
 } // namespace detail 
 

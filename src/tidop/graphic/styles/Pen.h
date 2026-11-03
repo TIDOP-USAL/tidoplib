@@ -70,6 +70,7 @@ namespace tl
  */
 class TL_EXPORT Pen
 {
+
 public:
 
     /*!
@@ -135,8 +136,8 @@ public:
      * \param[in] width Line width (default: 1).
      */
     constexpr Pen(Color color,
-        uint8_t width = 1)
-        : mColor(color),
+                  uint8_t width = 1)
+      : mColor(color),
         mWidth(width)
     {
     }

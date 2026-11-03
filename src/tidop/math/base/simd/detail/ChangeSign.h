@@ -26,20 +26,11 @@
 
 #include "tidop/config.h"
 
+#include "tidop/core/base/Concepts.h"
+
 #ifdef TL_HAVE_SIMD_INTRINSICS
 
-#ifdef TL_HAVE_AVX
-#include <immintrin.h>
-#elif defined TL_HAVE_SSE4_2
-#include <nmmintrin.h>
-#elif defined TL_HAVE_SSE4_1
-#include <smmintrin.h>
-#elif defined TL_HAVE_SSE3
-#include <pmmintrin.h>
-#elif defined TL_HAVE_SSE2
-#include <emmintrin.h>
-#endif
-#include <type_traits>
+#include "tidop/math/base/simd/Intrinsics.h"
 
 /// \cond
 
