@@ -40,6 +40,7 @@
 
 #include "tidop/geometry/base/Traits.h"
 #include "tidop/geometry/io/wkt/Writer.h"
+#include "tidop/geometry/io/wkt/Reader.h"
 
 namespace tl
 {
@@ -107,6 +108,26 @@ struct WKTProxy
         return os;
     }
 };
+
+/*! \brief Lightweight proxy for reading a geometry from WKT. */
+template<typename Geometry_t>
+struct WKTReadProxy
+{
+    Geometry_t &geometry;
+
+    friend std::istream& operator>>(std::istream &is, WKTReadProxy proxy)
+    {
+        is >> proxy.geometry;
+        return is;
+    }
+};
+
+/*! \brief Create an input proxy for reading WKT into a geometry. */
+template<typename Geometry>
+auto read_wkt(Geometry &g)
+{
+    return WKTReadProxy<Geometry>{g};
+}
 
 
 /*!

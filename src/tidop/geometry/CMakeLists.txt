@@ -99,6 +99,7 @@ if(BUILD_TL_GEOMETRY)
                             base/Traits.h
                             io/wkt/Writer.h
                             io/wkt/Proxy.h
+                            io/wkt/Reader.h
                             primitives/LinearRing.h
                             primitives/LineString.h
                             primitives/Point.h
